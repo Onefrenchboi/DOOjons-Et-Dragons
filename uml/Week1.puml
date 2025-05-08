@@ -14,10 +14,10 @@ package "Game" #lightgrey {
     }
     package Races #palegreen{
         abstract class Races
-        class Human
-        class Elf
-        class Dwarf
-        class Halfling
+        class Human extends Races
+        class Elf extends Races
+        class Dwarf extends Races
+        class Halfling extends Races
     }
     class Character
     class Monster
