@@ -1,0 +1,41 @@
+@startuml
+
+package "Game" #lightgrey {
+  class Dice
+  class DM
+  class Dungeon
+  package Entities #7db87d{
+    package Classes #palegreen{
+        abstract class CharacterClass
+        class Rogue extends CharacterClass
+        class Clerk extends CharacterClass
+        class Warrior extends CharacterClass
+        class Wizard extends CharacterClass
+    }
+    package Races #palegreen{
+        abstract class Races
+        class Human extends Races
+        class Elf extends Races
+        class Dwarf extends Races
+        class Halfling extends Races
+    }
+    class Character
+    class Monster
+  }
+  package Equipment #ca82f5{
+    abstract class Equipment
+    abstract class Weapon extends Equipment
+    abstract class Armor extends Equipment
+    class MeleeWeapon extends Weapon
+    class RangedWeapon extends Weapon
+    class WarMeleeWeapon extends Weapon
+    class LightArmor extends Armor
+    class HeavyArmor extends Armor
+
+
+
+
+  }
+ }
+
+@enduml
