@@ -1,4 +1,4 @@
 package Game.Equipment;
 
-public class Weapon extends Equipment{
+public abstract class Weapon extends Equipment{
 }
