@@ -19,8 +19,23 @@ package "Game" #lightgrey {
         class Dwarf extends Races
         class Halfling extends Races
     }
-    class Character
+    class Character {
+        - String _name
+        - Race _race;
+        - CharacterClass _class;
+        - Statistics _stats;
+        - List<Equipment> _equipment;
+        - Weapon _equippedWeapon;
+        - Armor _equippedArmor;
+    }
     class Monster
+    class Statistics {
+        - int _hp
+        - int _strength
+        - int _dexterity;
+        - int _speed;
+        - int _initiative;
+    }
   }
   package Equipment #ca82f5{
     abstract class Equipment
