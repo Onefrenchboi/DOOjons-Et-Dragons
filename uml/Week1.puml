@@ -1,5 +1,6 @@
 @startuml
 
+
 package "Game" #lightgrey {
   class Dice
   class DM
@@ -8,7 +9,7 @@ package "Game" #lightgrey {
     package Classes #palegreen{
         abstract class CharacterClass
         class Rogue extends CharacterClass
-        class Clerk extends CharacterClass
+        class Cleric extends CharacterClass
         class Warrior extends CharacterClass
         class Wizard extends CharacterClass
     }
