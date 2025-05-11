@@ -7,18 +7,20 @@ skinparam shadowing true
 
 
 package "Game" <<frame>> #lightgrey  {
-  class Dice
-  class DM
+  class Dice #Bisque
+  class DM #Bisque
   class Dungeon #Bisque {
     - _map : String[][]
     - _height : Integer
     - _width : Integer
     - _obstacles : List<int>
     + <<create>> Dungeon(height : Integer, width : Integer)
-    + addObstacle() : void
-    + setDefaultObstacles() : void
+    + addObstacle(x : Integer, y : Integer) : void
+    + CreateDefaultObstacles() : void
+    + setObstacles() : void
+    + setPlayers() : void
+    + setMonsters() : void
     + displayGrid() : void
-    + displayObstacles() : void
     + displayMap() : void
 
   }
@@ -92,7 +94,7 @@ package "Game" <<frame>> #lightgrey  {
     + <<create>> Equipment(name : String)
     + get_name() : String
     }
-    class Repo {
+    class Repo #Bisque {
     + <<create>> Repo()
     + addEquipment(equipment : Equipment) : void
     + removeEquipment(equipment : Equipment) : void

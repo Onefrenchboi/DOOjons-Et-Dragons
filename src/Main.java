@@ -5,9 +5,11 @@ public class Main {
         System.out.println("Bienvenue dans DOOnjon et Dragons");
 
         //creation nouveau donjon
-        Dungeon d = new Dungeon(15,15);
-        d.setDefaultObstacles();
+        Dungeon d = new Dungeon(25,25);
+        d.CreateDefaultObstacles();
         d.displayMap();
+
+
 
 
     }
