@@ -6,7 +6,19 @@ left to right direction
 package "Game" <<frame>> #lightgrey  {
   class Dice
   class DM
-  class Dungeon
+  class Dungeon #Bisque {
+    - _map : String[][]
+    - _height : Integer
+    - _width : Integer
+    - _obstacles : List<int>
+    + <<create>> Dungeon(height : Integer, width : Integer)
+    + addObstacle() : void
+    + setDefaultObstacles() : void
+    + displayGrid() : void
+    + displayObstacles() : void
+    + displayMap() : void
+
+  }
   package Entities #7db87d{
     package Classes #palegreen{
         abstract class CharacterClass #Bisque {
