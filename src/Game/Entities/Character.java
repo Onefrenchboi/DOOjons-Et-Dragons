@@ -22,6 +22,7 @@ public class Character {
         this._class = charclass;
         this._stats = new Statistics(); //TODO initialize avec les lancés de dés
         this._stats.addStatistics(_class.getBonusStats());
+        this._stats.addStatistics(_race.getBonusStats());
 
     }
 

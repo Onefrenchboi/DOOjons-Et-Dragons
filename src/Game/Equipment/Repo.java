@@ -27,13 +27,13 @@ public class Repo {
        return _repo;
     }
 
-    public Equipment getEquipmentByName(String equipment) {
-        for (Equipment e : _repo) {
-            if (e.get_name().equals(equipment)) {
-                return e;
-            }
-        }
-        return null;
-    }
+//    public Equipment getEquipmentByName(String equipment) {
+//        for (Equipment e : _repo) {
+//            if (e.get_name().equals(equipment)) {
+//                return e;
+//            }
+//        }
+//        return null;
+//    }
 
 }

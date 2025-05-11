@@ -9,8 +9,5 @@ public class Main {
         d.CreateDefaultObstacles();
         d.displayMap();
 
-
-
-
     }
 }

@@ -41,7 +41,7 @@ public class Dungeon {
         //voulait juste pas comprendre comment ça marchait.
         //Si un prof (ou elisabeth, c'est plus probable) voit ça, sachez que j'ai perdu ma sanité mentale en faisant ça
 
-        //Première ligne = alphabet
+        //Derniere ligne = alphabet
 
         for (int j = 0; j < _map[0].length; j++) {
             if (j >= 1) {
