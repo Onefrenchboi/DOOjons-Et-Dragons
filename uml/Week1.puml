@@ -87,7 +87,11 @@ package "Game" <<frame>> #lightgrey  {
     }
   }
   package Equipment #ca82f5{
-    abstract class Equipment #Bisque
+    abstract class Equipment #Bisque {
+    - _name : String
+    + <<create>> Equipment(name : String)
+    + get_name() : String
+    }
     class Repo {
     + <<create>> Repo()
     + addEquipment(equipment : Equipment) : void
