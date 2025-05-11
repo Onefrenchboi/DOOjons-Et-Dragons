@@ -1,6 +1,9 @@
 @startuml
+top to bottom direction
+skinparam classfontStyle bold
+skinparam shadowing true
 
-left to right direction
+
 
 
 package "Game" <<frame>> #lightgrey  {
@@ -85,6 +88,14 @@ package "Game" <<frame>> #lightgrey  {
   }
   package Equipment #ca82f5{
     abstract class Equipment #Bisque
+    class Repo {
+    + <<create>> Repo()
+    + addEquipment(equipment : Equipment) : void
+    + removeEquipment(equipment : Equipment) : void
+    + getEquipmentByName() : Equipment
+    + get_repo() : List<Equipment>
+
+    }
     abstract class Weapon extends Equipment
     abstract class Armor extends Equipment
     class MeleeWeapon extends Weapon
@@ -101,18 +112,24 @@ package "Game" <<frame>> #lightgrey  {
 'Links
 
   Character "1"  o---> "-_class" Entities.Classes.CharacterClass : "> is"
-  Character "1"  o--left-> "-_race" Entities.Races.Race : "> is"
-  Character "1"  *-> "-_stats" Entities.Statistics : "> has"
-  Character "1"  *-> "-_inventory[*]" Equipment.Equipment : "> has"
+  Character "1"  o---> "-_race" Entities.Races.Race : "> is"
+  Character "1"  *---> "-_stats" Entities.Statistics : "> has"
+  Character "1"  o---> "-_inventory[*]" Equipment.Equipment : "> has"
   Character "1"  *--> "-_equippedWeapon" Equipment.Weapon : "> uses"
   Character "1"  *--> "-_equippedArmor" Equipment.Armor : "> wears"
 
 
   CharacterClass "1"  o---> "-_startingEquipment[*]" Equipment.Equipment : "> has"
-  CharacterClass "1"  o--up-> "-_bonusStat" Entities.Statistics : "> has a bonus"
+  CharacterClass "1"  o---> "-_bonusStat" Entities.Statistics : "> has a bonus"
 
 
-  Race "1"  o---> "-_bonusStat" Entities.Statistics : "> has a bonus"
+  Repo "1"  *-> "-_repo[*]" Equipment.Equipment : "> has"
+
+  Armor "1" *---> "-_bonusStat" Entities.Statistics : "> has a bonus"
+  Weapon "1" *---> "-_bonusStat" Entities.Statistics : "> has a bonus"
+
+
+  Race "1"  o--> "-_bonusStat" Entities.Statistics : "> has a bonus"
  }
 
 @enduml

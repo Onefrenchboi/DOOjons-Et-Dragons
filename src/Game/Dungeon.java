@@ -74,26 +74,26 @@ public class Dungeon {
 
     public void setDefaultObstacles() {
         for (int group = 0; group < 2; group++) { //Nombre de groupes d'obstacles, ici deux
-            //TODO : maybe rajouter un moyen de choisir ? idk
+            //TODO : maybe rajouter un moyen de choisir cb de trucs faire ? idk
             int x = (int) (Math.random() * (_map.length - 2)) + 2; // Coordonnée x aléatoire
             int y = (int) (Math.random() * (_map[0].length - 1)) + 1; // Coordonnée y aléatoire
 
             for (int i = 0; i < 5; i++) { // 5 obstacles par groupe
                 addObstacle(x, y);
 
-                // Choisir une direction aléatoire pour le prochain obstacle
+                //random direction
                 int direction = (int) (Math.random() * 4);
                 switch (direction) {
-                    case 0: // Haut
+                    case 0: // up
                         if (x > 1) x--;
                         break;
-                    case 1: // Bas
+                    case 1: // down
                         if (x < _map.length - 2) x++;
                         break;
-                    case 2: // Gauche
+                    case 2: // left
                         if (y > 1) y--;
                         break;
-                    case 3: // Droite
+                    case 3: // right
                         if (y < _map[0].length - 1) y++;
                         break;
                 }
