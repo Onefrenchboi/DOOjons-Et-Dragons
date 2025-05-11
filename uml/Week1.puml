@@ -1,41 +1,168 @@
 @startuml
+top to bottom direction
+skinparam classfontStyle bold
+skinparam shadowing true
 
-package "Game" #lightgrey {
-  class Dice
-  class DM
-  class Dungeon
+
+
+
+package "Game" <<frame>> #lightgrey  {
+  class Dice #Bisque
+  class DM #Bisque
+  class Dungeon #Bisque {
+    - _map : String[][]
+    - _height : Integer
+    - _width : Integer
+    - _obstacles : List<int>
+    + <<create>> Dungeon(height : Integer, width : Integer)
+    + addObstacle(x : Integer, y : Integer)
+    + CreateDefaultObstacles()
+    + setObstacles()
+    + setPlayers()
+    + setMonsters()
+    + displayGrid()
+    + displayMap()
+
+  }
   package Entities #7db87d{
     package Classes #palegreen{
-        abstract class CharacterClass
-        class Rogue extends CharacterClass
-        class Clerk extends CharacterClass
-        class Warrior extends CharacterClass
-        class Wizard extends CharacterClass
+        abstract class CharacterClass #Bisque {
+        - _name : String
+        + <<create>> CharacterClass(name : String , bonusStats : Statistics)
+        + getStartingEquipment() : Equipment.Equipment[*]
+        + getBonusStats() : Statistics
+        + getName() : String
+        }
+        class Rogue extends CharacterClass {
+        + <<create>> Rogue()
+        }
+        class Cleric extends CharacterClass {
+        + <<create>> Cleric()
+        }
+        class Warrior extends CharacterClass {
+        + <<create>> Warrior()
+        }
+        class Wizard extends CharacterClass {
+        + <<create>> Wizard()
+        }
     }
     package Races #palegreen{
-        abstract class Races
-        class Human extends Races
-        class Elf extends Races
-        class Dwarf extends Races
-        class Halfling extends Races
+        abstract class Race #Bisque {
+        - _name : String
+        + <<create>> Race(name : String , bonusStats : Statistics)
+        + getBonusStats() : Statistics
+        + getName() : String
+        }
+        class Human extends Race {
+        + <<create>> Human()
+        }
+        class Elf extends Race {
+        + <<create>> Elf()
+        }
+        class Dwarf extends Race {
+        + <<create>> Dwarf()
+        }
+        class Halfling extends Race {
+        + <<create>> Halfling()
+        }
     }
-    class Character
+    class Character #Bisque{
+        - _name : String
+    }
     class Monster
+    class Statistics #Bisque {
+        -_hp :  Integer
+        -_strength :  Integer
+        -_dexterity :  Integer
+        -_speed :  Integer
+        -_initiative : Integer
+        + <<create>> Statistics(hp : Integer, strength : Integer, dexterity : Integer, speed : Integer, initiative : Integer)
+        + <<create>> Statistics()
+        + addStatistics(s : statistics) : void
+        + removeStatistics(s : statistics) : void
+        + getHp() : Integer
+        + getStrength() : Integer
+        + getDexterity() : Integer
+        + getSpeed() : Integer
+        + getInitiative() : Integer
+
+    }
   }
   package Equipment #ca82f5{
-    abstract class Equipment
-    abstract class Weapon extends Equipment
-    abstract class Armor extends Equipment
-    class MeleeWeapon extends Weapon
-    class RangedWeapon extends Weapon
-    class WarMeleeWeapon extends Weapon
-    class LightArmor extends Armor
-    class HeavyArmor extends Armor
+    abstract class Equipment #Bisque {
+    - _name : String
+    + <<create>> Equipment(name : String)
+    + get_name() : String
+    }
+    class Repo #Bisque {
+    + <<create>> Repo()
+    + addEquipment(equipment : Equipment) : void
+    + removeEquipment(equipment : Equipment) : void
+    + getEquipmentByName() : Equipment
+    + get_repo() : List<Equipment>
+
+    }
+    abstract class Weapon extends Equipment {
+    - _name : String
+    - _range : Integer
+    - _damageroll : Integer
+    + <<create>> Weapon(name : String, range : Integer,
+     damageroll : Integer, bonusStat : Statistics)
+    }
+    abstract class Armor extends Equipment {
+    - _name : String
+    - _AC : Integer
+    + <<create>> Armor(name : String, AC : Integer,
+     bonusStat : Statistics)
+    }
+
+    class MeleeWeapon extends Weapon {
+    + <<create>> MeleeWeapon( _name : String,
+    _range : Integer, _damageroll : Integer)
+    }
+    class RangedWeapon extends Weapon {
+    + <<create>> RangedWeapon(_name : String,
+    _range : Integer, _damageroll : Integer)
+    }
+    class WarMeleeWeapon extends Weapon {
+    + <<create>> WarMeleeWeapon(_name : String,
+     _range : Integer, _damageroll : Integer)
+    }
+    class LightArmor extends Armor {
+    + <<create>> LightArmor(_name : String,
+     _AC : Integer)
+    }
+    class HeavyArmor extends Armor {
+    + <<create>> HeavyArmor(_name : String,
+     _AC : Integer)
+    }
 
 
 
 
   }
+
+'Links
+
+  Character "1"  o---> "-_class" Entities.Classes.CharacterClass : "> is"
+  Character "1"  o-> "-_race" Entities.Races.Race : "> is"
+  Character "1"  *---> "-_stats" Entities.Statistics : "> has"
+  Character "1"  o---> "-_inventory[*]" Equipment.Equipment : "> has"
+  Character "1"  *--> "-_equippedWeapon" Equipment.Weapon : "> uses"
+  Character "1"  *--> "-_equippedArmor" Equipment.Armor : "> wears"
+
+
+  CharacterClass "1"  o---> "-_startingEquipment[*]" Equipment.Equipment : "> has"
+  CharacterClass "1"  o---> "-_bonusStat" Entities.Statistics : "> has a bonus"
+
+
+  Repo "1"  *-> "-_repo[*]" Equipment.Equipment : "> has"
+
+  Armor "1" *---> "-_bonusStat" Entities.Statistics : "> has a bonus"
+  Weapon "1" *---> "-_bonusStat" Entities.Statistics : "> has a bonus"
+
+
+  Race "1"  o--> "-_bonusStat" Entities.Statistics : "> has a bonus"
  }
 
 @enduml
