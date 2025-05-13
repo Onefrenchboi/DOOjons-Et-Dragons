@@ -2,8 +2,7 @@ package Game.Entities;
 
 import Game.Entities.Races.*;
 import Game.Entities.Classes.*;
-import Game.Entities.Statistics;
-import Game.Equipment.*;
+import Game.Items.*;
 
 import java.util.List;
 

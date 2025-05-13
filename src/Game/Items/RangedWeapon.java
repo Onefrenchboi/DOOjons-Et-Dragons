@@ -1,4 +1,4 @@
-package Game.Equipment;
+package Game.Items;
 
 public class RangedWeapon extends Weapon{
     public RangedWeapon(String name, int range, int damageroll) {

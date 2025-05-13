@@ -1,13 +1,21 @@
 @startuml
-top to bottom direction
+
+left to right direction
 skinparam classfontStyle bold
 skinparam shadowing true
 
+skinparam defaultFontName "Century Gothic"
+
+skinparam roundcorner 20
 
 
+skinparam linetype ortho
 
-package "Game" <<frame>> #lightgrey  {
+
+package "Game" <<frame>> #b3b3b3  {
+
   class Dice #Bisque
+
   class DM #Bisque
   class Dungeon #Bisque {
     - _map : String[][]
@@ -88,7 +96,7 @@ package "Game" <<frame>> #lightgrey  {
 
     }
   }
-  package Equipment #ca82f5{
+  package Items #ca82f5{
     abstract class Equipment #Bisque {
     - _name : String
     + <<create>> Equipment(name : String)
@@ -147,16 +155,16 @@ package "Game" <<frame>> #lightgrey  {
   Character "1"  o---> "-_class" Entities.Classes.CharacterClass : "> is"
   Character "1"  o-> "-_race" Entities.Races.Race : "> is"
   Character "1"  *---> "-_stats" Entities.Statistics : "> has"
-  Character "1"  o---> "-_inventory[*]" Equipment.Equipment : "> has"
-  Character "1"  *--> "-_equippedWeapon" Equipment.Weapon : "> uses"
-  Character "1"  *--> "-_equippedArmor" Equipment.Armor : "> wears"
+  Character "1"  o---> "-_inventory[*]" Items.Equipment : "> has"
+  Character "1"  *--> "-_equippedWeapon" Items.Weapon : "> uses"
+  Character "1"  *--> "-_equippedArmor" Items.Armor : "> wears"
 
 
-  CharacterClass "1"  o---> "-_startingEquipment[*]" Equipment.Equipment : "> has"
+  CharacterClass "1"  o---> "-_startingEquipment[*]" Items.Equipment : "> has"
   CharacterClass "1"  o---> "-_bonusStat" Entities.Statistics : "> has a bonus"
 
 
-  Repo "1"  *-> "-_repo[*]" Equipment.Equipment : "> has"
+  Repo "1"  *-> "-_repo[*]" Items.Equipment : "> has"
 
   Armor "1" *---> "-_bonusStat" Entities.Statistics : "> has a bonus"
   Weapon "1" *---> "-_bonusStat" Entities.Statistics : "> has a bonus"

@@ -1,4 +1,4 @@
-package Game.Equipment;
+package Game.Items;
 
 import Game.Entities.Statistics;
 
