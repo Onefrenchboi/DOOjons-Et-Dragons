@@ -1,7 +1,7 @@
-package Game.Entities.Classes;
+package game.entities.classes;
 
-import Game.Entities.Statistics;
-import Game.Items.Equipment;
+import game.entities.Statistics;
+import game.items.Equipment;
 
 import java.util.List;
 

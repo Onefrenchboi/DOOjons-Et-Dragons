@@ -1,4 +1,4 @@
-package Game.Entities;
+package game.entities;
 
 public class Statistics {
     private int _hp;

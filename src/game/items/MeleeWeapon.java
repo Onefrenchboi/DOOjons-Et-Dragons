@@ -1,6 +1,6 @@
-package Game.Items;
+package game.items;
 
-import Game.Entities.Statistics;
+import game.entities.Statistics;
 
 public class MeleeWeapon extends Weapon{
     public MeleeWeapon(String name, int range, int damageroll) {

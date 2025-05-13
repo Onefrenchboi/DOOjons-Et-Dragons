@@ -1,4 +1,4 @@
-package Game.Items;
+package game.items;
 
 public abstract class Equipment {
     private String _name;

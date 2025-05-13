@@ -1,8 +1,8 @@
-package Game.Entities;
+package game.entities;
 
-import Game.Entities.Races.*;
-import Game.Entities.Classes.*;
-import Game.Items.*;
+import game.entities.races.*;
+import game.entities.classes.*;
+import game.items.*;
 
 import java.util.List;
 

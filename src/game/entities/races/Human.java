@@ -1,6 +1,6 @@
-package Game.Entities.Races;
+package game.entities.races;
 
-import Game.Entities.Statistics;
+import game.entities.Statistics;
 
 public class Human extends Race{
     public Human() {

@@ -1,6 +1,6 @@
-package Game.Entities.Classes;
+package game.entities.classes;
 
-import Game.Entities.Statistics;
+import game.entities.Statistics;
 
 public class Wizard extends CharacterClass{
     public Wizard() {

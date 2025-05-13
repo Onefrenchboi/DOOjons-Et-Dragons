@@ -1,4 +1,4 @@
-import Game.Dungeon;
+import game.Dungeon;
 
 public class Main {
     public static void main(String args[]){
@@ -8,6 +8,5 @@ public class Main {
         Dungeon d = new Dungeon(25,25);
         d.CreateDefaultObstacles();
         d.displayMap();
-
     }
 }
