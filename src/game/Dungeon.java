@@ -81,6 +81,8 @@ public class Dungeon {
 
     }
 
+//TODO : TTENTION C PTET LA MERDE elisabeth a des pb de bornes
+
 
     //todo : faire en sorte que le dm puisse le faire
     public void addObstacle(int x, int y) {

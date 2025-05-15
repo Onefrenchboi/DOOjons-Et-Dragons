@@ -13,7 +13,11 @@ skinparam linetype ortho
 
 package "game" <<frame>> #b3b3b3  {
 
-  class Dice #Bisque
+package utils #palegreen{
+        class Dice #Bisque {
+        + {static} roll(num : int, sides : int) : int
+    }
+  }
 
   class DM #Bisque
   class Dungeon #Bisque {
@@ -35,7 +39,7 @@ package "game" <<frame>> #b3b3b3  {
     package classes #palegreen{
         abstract class CharacterClass #Bisque {
         - _name : String
-        + <<create>> CharacterClass(name : String , bonusStats : Statistics)
+        ~ <<create>> CharacterClass(name : String , bonusStats : Statistics)
         + getStartingEquipment() : Equipment.Equipment[*]
         + getBonusStats() : Statistics
         + getName() : String
@@ -56,7 +60,7 @@ package "game" <<frame>> #b3b3b3  {
     package races #palegreen{
         abstract class Race #Bisque {
         - _name : String
-        + <<create>> Race(name : String , bonusStats : Statistics)
+        ~ <<create>> Race(name : String , bonusStats : Statistics)
         + getBonusStats() : Statistics
         + getName() : String
         }
@@ -73,10 +77,24 @@ package "game" <<frame>> #b3b3b3  {
         + <<create>> Halfling()
         }
     }
-    class Character #Bisque{
-        - _name : String
+
+
+    abstract class Entity #Bisque {
+        -_stats : Statistics
+        - _coordinates : Integer[]
+        ~ <<create>> Entity()
+        + getCoordinates() : Integer[]
+        + getStats() : Statistics
     }
-    class Monster
+
+    class Monster extends Entity {
+    }
+
+    class Character extends Entity {
+        - _name : String
+        + <<create>> Character(name : String, race : Race,
+         characterClass : CharacterClass)
+    }
     class Statistics #Bisque {
         -_hp :  Integer
         -_strength :  Integer
@@ -95,7 +113,7 @@ package "game" <<frame>> #b3b3b3  {
 
     }
   }
-  package items #ca82f5{
+  package items #ca82f5 {
     abstract class Equipment #Bisque {
     - _name : String
     + <<create>> Equipment(name : String)
@@ -146,14 +164,15 @@ package "game" <<frame>> #b3b3b3  {
 
 
 
-
   }
 
 'Links
 
+
+  entities.Entity "1"  *---> "-_stats" entities.Statistics : "> has"
+
   Character "1"  o---> "-_class" entities.classes.CharacterClass : "> is"
   Character "1"  o-> "-_race" entities.races.Race : "> is"
-  Character "1"  *---> "-_stats" entities.Statistics : "> has"
   Character "1"  o---> "-_inventory[*]" items.Equipment : "> has"
   Character "1"  *--> "-_equippedWeapon" items.Weapon : "> uses"
   Character "1"  *--> "-_equippedArmor" items.Armor : "> wears"
