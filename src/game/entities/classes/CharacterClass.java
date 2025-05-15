@@ -11,7 +11,7 @@ public abstract class CharacterClass {
     private Statistics _bonusStats;
 
 
-    public CharacterClass(String name, Statistics bonusStats) {
+    protected CharacterClass(String name, Statistics bonusStats) {
         this._name = name;
         this._bonusStats = bonusStats;
     }

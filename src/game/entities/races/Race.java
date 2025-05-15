@@ -7,7 +7,7 @@ public abstract class Race {
     private Statistics _bonusStats;
 
 
-    public Race(String name, Statistics bonusStats) {
+    protected Race(String name, Statistics bonusStats) {
         this._name = name;
         this._bonusStats = bonusStats;
     }
