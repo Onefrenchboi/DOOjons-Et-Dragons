@@ -2,6 +2,7 @@ package game.entities;
 
 import game.Dungeon;
 import game.items.Weapon;
+import game.utils.Dice;
 
 public class Monster extends Entity {
     private int _number;
@@ -13,10 +14,12 @@ public class Monster extends Entity {
 
     public Monster(String species, int number, Weapon weapon) {
         super(species);
+        this.setHp(Dice.roll(4, 4) + 3);
+        this.setMaxHp(getHp());
         this._number = number;
         this._weapon = weapon;
-
         this.setPseudo(this.getName().length() >= 3 ? this.getName().substring(0, 2) + number : this.getName() + number);
+
     }
 
 
@@ -29,6 +32,6 @@ public class Monster extends Entity {
 
     @Override
     public String toString() {
-        return this.getName() + " #" + _number;
+        return Dungeon.RED + this.getName() + " #" + _number + Dungeon.RESET;
     }
 }

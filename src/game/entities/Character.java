@@ -22,6 +22,9 @@ public class Character extends Entity {
         this.getStats().addStatistics(_race.getBonusStats());
         this.getStats().addStatistics(_class.getBonusStats());
         this.setPseudo(this.getName().length() >= 3 ? this.getName().substring(0, 3) : this.getName());
+
+        this.setMaxHp(this.getHp());
+
     }
 
 
@@ -30,8 +33,7 @@ public class Character extends Entity {
 
     @Override
     public String toString() {
-        return this.getName() + " the " + _class.getName() + " " + _race.getName();
+        return Dungeon.PURPLE + this.getName() + " the " + _class.getName() + " " + _race.getName() + Dungeon.RESET;
     }
-
 
 }
