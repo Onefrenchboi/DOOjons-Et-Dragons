@@ -17,6 +17,6 @@ public abstract class Armor extends Equipment {
 
     @Override
     public String toString() {
-        return get_name() + " (AC: " + _AC + ")";
+        return getName() + " (AC: " + _AC + ")";
     }
 }

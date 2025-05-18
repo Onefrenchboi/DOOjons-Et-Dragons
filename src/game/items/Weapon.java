@@ -10,7 +10,7 @@ public abstract class Weapon extends Equipment{
     private Statistics _bonusStats;
 
 
-    public Weapon(String name, int range, int damageroll, Statistics bonusStats) {
+    protected Weapon(String name, int range, int damageroll, Statistics bonusStats) {
         super(name);
         _range = range;
         _damageroll = damageroll;
@@ -27,6 +27,6 @@ public abstract class Weapon extends Equipment{
 
     @Override
     public String toString() {
-        return get_name() + " (Range: " + getRange() + ", Damage: " + getDamage() + ")";
+        return getName() + " (Range: " + getRange() + ", Damage: " + getDamage() + ")";
     }
 }
