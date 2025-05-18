@@ -19,8 +19,7 @@ public class GameEngine {
     }
 
     public void createGame() {
-        System.out.println("Bienvenue dans DOOnjon et Dragons");
-        System.out.println("----Préparation de la partie----");
+        System.out.println("----Setting up the game----");
 
         _dungeonMaster.createCharacters();
         _dungeonMaster.createMonsters();
@@ -29,7 +28,7 @@ public class GameEngine {
 
         _dungeonMaster.setDungeon();
 
-        System.out.println("----Début de la partie----");
+        System.out.println("----Start of the game----");
     }
 
     public void showInfo(){

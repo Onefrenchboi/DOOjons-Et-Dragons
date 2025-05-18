@@ -54,41 +54,41 @@ public class DM {
 
     public void createCharacters(){
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Combien de joueurs ? (1-4) : ");
+        System.out.println("How many players ? (1-4) : ");
         int nbPlayers = scanner.nextInt();
 
         while (nbPlayers < 1 || nbPlayers > 4) {
-            System.out.println("Nombre de joueurs invalide. Veuillez entrer un nombre entre 1 et 4 : ");
+            System.out.println("Invalid number of players, choose a number between 1 and 4 : ");
             nbPlayers = scanner.nextInt();
         }
 
         for (int i = 0; i < nbPlayers; i++) {
-            System.out.println("Joueur " + (i + 1) + ", entrez votre nom : ");
+            System.out.println("Player " + (i + 1) + ", enter your name : ");
             String name = scanner.next();
 
             Race heroRace = null;
             while (heroRace == null) {
-                System.out.println("Choisissez votre Race (1-Dwarf, 2-Elf, 3-Halfling, 4-Human) : ");
+                System.out.println("Choose your race (1-Dwarf, 2-Elf, 3-Halfling, 4-Human) : ");
                 int raceChoice = scanner.nextInt();
                 switch (raceChoice) {
                     case 1 -> heroRace = new Dwarf();
                     case 2 -> heroRace = new Elf();
                     case 3 -> heroRace = new Halfling();
                     case 4 -> heroRace = new Human();
-                    default -> System.out.println("Choix invalide. Veuillez réessayer.");
+                    default -> System.out.println("Invalid choice. Please try again.");
                 }
             }
 
             CharacterClass heroClass = null;
             while (heroClass == null) {
-                System.out.println("Choisissez votre Classe (1-Cleric, 2-Rogue, 3-Warrior, 4-Wizard) : ");
+                System.out.println("Choose your class (1-Cleric, 2-Rogue, 3-Warrior, 4-Wizard) : ");
                 int classChoice = scanner.nextInt();
                 switch (classChoice) {
                     case 1 -> heroClass = new Cleric();
                     case 2 -> heroClass = new Rogue();
                     case 3 -> heroClass = new Warrior();
                     case 4 -> heroClass = new Wizard();
-                    default -> System.out.println("Choix invalide. Veuillez réessayer.");
+                    default -> System.out.println("Invalid choice. Please try again.");
                 }
             }
 
@@ -100,20 +100,20 @@ public class DM {
     public void createMonsters(){
         Scanner scanner = new Scanner(System.in);
 
-        System.out.println("Dm, veux-tu créer des monstres (Si tu choisis non, une selection par défaut sera appliquée) ? (Y/N)");
+        System.out.println("DM, do you want to create monsters ? (if not, a predetermined selection will be applied) (Y/N)");
         String choice = scanner.next();
         if (choice.equalsIgnoreCase("Y")) {
-            System.out.println("Combien de monstres ? (1-4) : ");
+            System.out.println("How many monsters ? (1-4) : ");
             int nbMonstres = scanner.nextInt();
             Map<String, Integer> monsterCount = new HashMap<>();
             while (nbMonstres < 1 || nbMonstres > 4) {
-                System.out.println("Nombre de monstres invalide. Veuillez entrer un nombre entre 1 et 4 : ");
+                System.out.println("Invalid number of monsters, choose a number between 1 and 4 : ");
                 nbMonstres = scanner.nextInt();
             }
             for (int i = 0; i < nbMonstres; i++) {
-                System.out.println("Entrez la race du monstre : ");
+                System.out.println("Enter the monsters race: ");
                 String species = scanner.next();
-                System.out.println("Entrez la distance à laquelle le monstre peut attaquer et les dégâts : ");
+                System.out.println("Enter the monsters range and damage (x y) : ");
                 int range = scanner.nextInt();
                 int damageroll = scanner.nextInt();
                 Weapon weapon;
@@ -130,7 +130,7 @@ public class DM {
             }
         }
         else {
-            System.out.println("Création de monstres par défaut");
+            System.out.println("Applying default monster selection");
             _entitiesSortedByInitiative.add(new Monster("Fragon", 1, new MeleeWeapon("MonsterMeleeAttack", 1, 4)));
             _entitiesSortedByInitiative.add(new Monster("Fragon", 2, new MeleeWeapon("MonsterMeleeAttack", 1, 6)));
             _entitiesSortedByInitiative.add(new Monster("Bob", 1, new RangedWeapon("MonsterRangedAttack", 12, 8)));
@@ -139,23 +139,23 @@ public class DM {
 
     public void createEquipments(){
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Combien d'equipements ? (1-5) : ");
+        System.out.println("How many items ? (1-5) : ");
         int nbEquipment = scanner.nextInt();
         while (nbEquipment < 1 || nbEquipment > 5) {
-            System.out.println("Nombre d'equipements invalide. Veuillez entrer un nombre entre 1 et 4 : ");
+            System.out.println("Invalid number of items, choose a number between 1 and 5 : ");
             nbEquipment = scanner.nextInt();
         }
 
-        System.out.println("Voici la liste des equipements disponibles : ");
+        System.out.println("Here is the list of available items : ");
         for (Equipment equipment : _equipmentRepo.getEquipments()) {
             int n = _equipmentRepo.getEquipments().indexOf(equipment);
             System.out.println("(" + n + ")" + equipment.toString());
         }
         for (int i = 0; i < nbEquipment; i++) {
-            System.out.println("Entrez le numéro de l'equipement à ajouter : ");
+            System.out.println("Enter the number of the item to add : ");
             int equipment = scanner.nextInt();
             while (equipment < 0 || equipment > _equipmentRepo.getEquipments().size()) {
-                System.out.println("Nombre d'equipements invalide. Veuillez entrer un nombre entre 1 et 4 : ");
+                System.out.println("Invalid number, choose a number between 0 and " + (_equipmentRepo.getEquipments().size() - 1) + " : ");
                 equipment = scanner.nextInt();
             }
             Equipment selectedEquipment = _equipmentRepo.getEquipments().get(equipment);
@@ -166,12 +166,12 @@ public class DM {
     public void createDungeon() {
         Scanner scanner = new Scanner(System.in);
 
-        System.out.println("DM, quelle taille pour le donjon ? ([L]argeur [H]auteur) : ");
+        System.out.println("DM, please enter the size of the dungeon ([W]idth [H]eight) : ");
         int width = scanner.nextInt();
         int height = scanner.nextInt();
         while (width < 15 || width > 26 || height < 15 || height > 26) {
-            System.out.println("La carte doit faire entre 15 et 26 cases de large et de haut.");
-            System.out.println("Veuillez entrer une nouvelle taille : ");
+            System.out.println("The map must be between 15 and 26 squares wide and high");
+            System.out.println("Please enter the size of the dungeon ([W]idth [H}eight) : ");
             width = scanner.nextInt();
             height = scanner.nextInt();
         }
@@ -188,7 +188,7 @@ public class DM {
 
         _entitiesSortedByInitiative.sort((e1, e2) -> initiativeMap.get(e2) - initiativeMap.get(e1));
         //et on les affiche
-        System.out.println("Voici la liste des personnages et monstres : ");
+        System.out.println("Here is the list of players and monsters in the game : ");
         for (Entity entity : _entitiesSortedByInitiative) {
             System.out.println(entity);
             //TODO : fix l'affichage de l'initiative, ptet meme pas le faire parce qu'en soit on a pas beosin de savoir
@@ -196,15 +196,15 @@ public class DM {
 
 
         Scanner scanner = new Scanner(System.in);
-        System.out.println("DM, veux-tu placer les personnages/monstres sur la carte ? (Y/N)");
+        System.out.println("DM, do you want to place the entities manually ? (Y/N)");
         String choice = scanner.next();
         if (choice.equalsIgnoreCase("Y")) {
             for (Entity entity : _entitiesSortedByInitiative) {
-                System.out.println("Entrez la position de " + entity + " (x y) : ");
+                System.out.println("Enter the position of " + entity + " (x y) : ");
                 int x = scanner.nextInt();
                 int y = scanner.nextInt();
                 while (!_dungeon.isValidPosition(x, y, _entitiesPosition, _equipmentPosition)) {
-                    System.out.println("Position invalide. Veuillez entrer une nouvelle position : ");
+                    System.out.println("Invalid position. Please enter a new position : ");
                     x = scanner.nextInt();
                     y = scanner.nextInt();
                 }
@@ -224,15 +224,15 @@ public class DM {
             }
         }
 
-        System.out.println("DM, veux-tu placer les items sur la carte ? (Y/N)");
+        System.out.println("DM, do you want to place the items manually ? (Y/N)");
         choice = scanner.next();
         if (choice.equalsIgnoreCase("Y")) {
             for (Equipment equipment : _equipmentList) {
-                System.out.println("Entrez la position de " + equipment + " (x y) : ");
+                System.out.println("Enter the position of " + equipment + " (x y) : ");
                 int x = scanner.nextInt();
                 int y = scanner.nextInt();
                 while (!_dungeon.isValidPosition(x, y, _entitiesPosition, _equipmentPosition)) {
-                    System.out.println("Position invalide. Veuillez entrer une nouvelle position : ");
+                    System.out.println("Invalid position. Please enter a new position : ");
                     x = scanner.nextInt();
                     y = scanner.nextInt();
                 }
@@ -251,17 +251,17 @@ public class DM {
             }
         }
 
-        System.out.println("DM, veux-tu placer les obstacles sur la carte ? (Y/N)");
+        System.out.println("DM, do you want to place the obstacles manually ? (Y/N)");
         choice = scanner.next();
         if (choice.equalsIgnoreCase("Y")) {
-            System.out.println("Combien ?");
+            System.out.println("How many ?");
             int nbObstacles = scanner.nextInt();
             for (int i = 0; i < nbObstacles; i++) {
-                System.out.println("Entrez la position de l'obstacle " + (i + 1) + " (x y) : ");
+                System.out.println("Enter the position of obstacle " + (i + 1) + " (x y) : ");
                 int x = scanner.nextInt();
                 int y = scanner.nextInt();
                 while (!_dungeon.isValidPosition(x, y, _entitiesPosition, _equipmentPosition)) {
-                    System.out.println("Position invalide. Veuillez entrer une nouvelle position : ");
+                    System.out.println("Invalid position. Please enter a new position : ");
                     x = scanner.nextInt();
                     y = scanner.nextInt();
                 }
