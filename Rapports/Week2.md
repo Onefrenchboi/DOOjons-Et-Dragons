@@ -89,7 +89,7 @@ Ainsi, si, dans le futur, nous avons besoin de rajouter d'autres méthodes utili
 
 ### Ce qu'il reste à implémenter AKA Toujours Ma TODO list du pauvre
 * Le systeme du jeu en lui-même, i.e. le tour par tour, comment gérer les attaques, les déplacements, etc...
-
+* Petits détails à rajouter, comme le fait que 2 pseudo ne puissent pas être identiques, etc...
 
 ## Conclusion
 
