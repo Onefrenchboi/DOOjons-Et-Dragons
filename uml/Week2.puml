@@ -1,0 +1,286 @@
+@startuml
+
+left to right direction
+skinparam classfontStyle bold
+skinparam shadowing true
+
+skinparam defaultFontName "Century Gothic"
+
+skinparam roundcorner 15
+
+skinparam linetype ortho
+
+
+package "game" <<frame>> #b3b3b3  {
+
+package utils #palegreen{
+        class Utils #Bisque {
+        + {static} roll(num : int, sides : int) : int
+    }
+    class Repo  #Bisque {
+        + <<create>> Repo()
+        + initializeEquipment()
+        + addEquipment(equipment : Equipment)
+        + removeEquipment(equipment : Equipment)
+        + getEquipments() : List<Equipment>
+        + toString() : String
+
+        }
+  }
+
+
+
+
+class GameEngine #Bisque {
+    - _gameState : Boolean
+    - _turn : Integer
+    + <<create>> GameEngine()
+    + createGame()
+    + showInfo()
+    + runGame()
+    + endGame()
+    + toString() : String
+  }
+
+  class DM #Bisque {
+
+    + <<create>> DM()
+    + addEntity(entity : Entity, x : Integer, y : Integer)
+    + addEquipment(equipment : Equipment, x : Integer, y : Integer)
+    + removeEquipment(equipment : Equipment)
+    + removeEntity(entity : Entity)
+    + createCharacters()
+    + createMonsters()
+    + createEquipment()
+    + createDungeon()
+    + setDungeon()
+    + showBoard()
+    + getEntitiesSortedByInitiative() : List<Entity>
+    + getDungeon() : Dungeon
+    + getEntitiesPosition() : HashMap<Entity, int[]>
+    + attack(attacker : Entity, target : Entity)
+    + move(Entity : Entity, x : Integer, y : Integer)
+    + equip(Entity : Entity, equipment : Equipment)
+    + pickUp(equipment : Equipment)
+    + toString() : String
+  }
+  class Dungeon #Bisque {
+    - _map : String[][]
+    - _height : Integer
+    - _width : Integer
+    - _obstacles : List<int>
+    + <<create>> Dungeon(height : Integer, width : Integer)
+    + IsValidPosition(x : Integer, y : Integer,
+     entities : HashMap<Entity, int[]>, equipment : HashMap<Equipment, int[]>) : Boolean
+    + addObstacle(x : Integer, y : Integer)
+    + CreateDefaultObstacles()
+    - setObstacles()
+    - setEntities(HashMap<Entity, int[]>)
+    - setEquipment(HashMap<Equipment, int[]>)
+    - displayGrid()
+    + displayMap(HashMap<Entity, int[]>, HashMap<Equipment, int[]>)
+    + getMap() : String[][]
+    + toString() : String
+  }
+
+  package entities #7db87d{
+    package classes #palegreen{
+        abstract class CharacterClass <<abstract>> #Bisque {
+        - _name : String
+        # <<create>> CharacterClass(name : String , bonusStats : Statistics)
+        + getStartingEquipment() : Equipment.Equipment[*]
+        + getBonusStats() : Statistics
+        + getName() : String
+        + toString() : String
+        }
+        class Rogue extends CharacterClass {
+        + <<create>> Rogue()
+        + toString() : String
+        }
+        class Cleric extends CharacterClass {
+        + <<create>> Cleric()
+        + toString() : String
+        }
+        class Warrior extends CharacterClass {
+        + <<create>> Warrior()
+        + toString() : String
+        }
+        class Wizard extends CharacterClass {
+        + <<create>> Wizard()
+        + toString() : String
+        }
+    }
+    package races #palegreen{
+        abstract class Race <<abstract>> #Bisque {
+        - _name : String
+        # <<create>> Race(name : String , bonusStats : Statistics)
+        + getBonusStats() : Statistics
+        + getName() : String
+        + toString() : String
+        }
+        class Human extends Race {
+        + <<create>> Human()
+        + toString() : String
+        }
+        class Elf extends Race {
+        + <<create>> Elf()
+        + toString() : String
+        }
+        class Dwarf extends Race {
+        + <<create>> Dwarf()
+        + toString() : String
+        }
+        class Halfling extends Race {
+        + <<create>> Halfling()
+        + toString() : String
+        }
+    }
+
+
+    abstract class Entity <<abstract>> #Bisque {
+        - _name : String
+        - _pseudo : String
+        - _maxHp : Integer
+        # <<create>> Entity(Name : String)
+        + getStats() : Statistics
+        + getColor() : String
+        + toString() : String
+    }
+
+    class Monster #Bisque extends Entity  {
+        - _number : Integer
+        + <<create>> Monster(species : String, number : Integer,
+         weapon : Weapon)
+        + getColor() : String
+        + toString() : String
+
+    }
+
+    class Character #Bisque extends Entity   {
+        - _name : String
+        + <<create>> Character(name : String, race : Race,
+         characterClass : CharacterClass)
+        + toString() : String
+    }
+    class Statistics #Bisque {
+        -_hp :  Integer
+        -_strength :  Integer
+        -_dexterity :  Integer
+        -_speed :  Integer
+        -_initiative : Integer
+        + <<create>> Statistics()
+        + <<create>> Statistics(hp : Integer, strength : Integer, dexterity : Integer, speed : Integer, initiative : Integer)
+        + addStatistics(s : statistics)
+        + removeStatistics(s : statistics)
+        + getHp() : Integer
+        + getStrength() : Integer
+        + getDexterity() : Integer
+        + getSpeed() : Integer
+        + getInitiative() : Integer
+
+        + toString() : String
+
+    }
+  }
+  package items #ca82f5 {
+    abstract class Equipment <<abstract>>  #Bisque {
+    - _name : String
+    # <<create>> Equipment(name : String)
+    + getName() : String
+    + toString() : String
+    }
+
+    abstract class Weapon <<abstract>> #Bisque extends Equipment  {
+    - _name : String
+    - _range : Integer
+    - _damageroll : Integer
+    - _dicenumb : Integer
+    # <<create>> Weapon(name : String, range : Integer,
+     damageroll : Integer, bonusStat : Statistics)
+     + getRange() : Integer
+     + getDamageRoll() : Integer
+     + toString() : String
+
+    }
+    abstract class Armor <<abstract>> #Bisque extends Equipment{
+    - _name : String
+    - _AC : Integer
+    # <<create>> Armor(name : String, AC : Integer,
+     bonusStat : Statistics)
+     + toString() : String
+    }
+
+    class MeleeWeapon extends Weapon {
+    + <<create>> MeleeWeapon( _name : String,
+    _range : Integer, _damageroll : Integer)
+    + toString() : String
+    }
+    class RangedWeapon extends Weapon {
+    + <<create>> RangedWeapon(_name : String,
+    _range : Integer, _damageroll : Integer)
+    + toString() : String
+    }
+    class WarMeleeWeapon extends Weapon {
+    + <<create>> WarMeleeWeapon(_name : String,
+     _range : Integer, _damageroll : Integer)
+    + toString() : String
+    }
+    class LightArmor extends Armor {
+    + <<create>> LightArmor(_name : String,
+     _AC : Integer)
+    + toString() : String
+    }
+    class HeavyArmor extends Armor {
+    + <<create>> HeavyArmor(_name : String,
+     _AC : Integer)
+    + toString() : String
+    }
+
+
+
+  }
+
+'Links
+
+
+  entities.Entity "1"  *-----> "-_stats" entities.Statistics : "> has"
+
+  Character "1"  o--> "-_class" entities.classes.CharacterClass : "> is"
+  Character "1"  o--> "-_race" entities.races.Race : "> is"
+  Character "1"  o--> "-_inventory[*]" items.Equipment : "> has"
+  Character "1"  *--> "-_equippedWeapon" items.Weapon : "> uses"
+  Character "1"  *--> "-_equippedArmor" items.Armor : "> wears"
+
+
+  CharacterClass "1"  o--> "-_startingEquipment[*]" items.Equipment : "> has"
+  CharacterClass "1"  o---> "-_bonusStat" entities.Statistics : "> has a bonus"
+
+
+  Repo "1"  *--> "-_repo[*]" items.Equipment : "> has"
+
+  Armor "1" *--> "-_bonusStat" entities.Statistics : "> has a bonus"
+  Weapon "1" *--> "-_bonusStat" entities.Statistics : "> has a bonus"
+
+
+  Race "1"  o--> "-_bonusStat" entities.Statistics : "> has a bonus"
+
+
+
+
+  DM "1"  o--> "-_dungeon" Dungeon : "> has"
+  DM "1"  o--> "-_equipmentList[*]" Equipment : "> has"
+  DM "1"  o--> "-_entitiesSortedByInitiative[*]" Entity : "> has"
+  DM "1"  o--> "-_equipmentRepo" Repo : "> has"
+  DM "1" ..> Entity: " <<uses>>"
+  DM "1" ..> Equipment: " <<uses>>"
+
+
+  Monster "1"  o--> "-_weapon" Weapon : "> has"
+
+
+  GameEngine "1"  o--> "-_dungeonMaster" DM : "> has a"
+  GameEngine "1"  o--> "-_currentEntity" Entity : "> has a"
+
+ }
+
+@enduml

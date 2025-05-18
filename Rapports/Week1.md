@@ -25,7 +25,7 @@ Notre code est structuré de cette façon :
 ├── .gitignore
 ├──📁src/
     ├── Main.java
-    ├──📁Game/
+    ├──📁game/
         ├──🧩Dm.java
         ├──🧩Dice.java
         ├──🧩Dungeon.java
@@ -61,7 +61,7 @@ Notre code est structuré de cette façon :
 
 ```
 ---
-Nous avons donc un package **Game** qui contient l'intégralité du projet, dans lequel nous retrouvons tout d'abord les classes *DM*, *Dice*, et *Dungeon*, puis plusieurs packages différents contenant toutes nos classes. 
+Nous avons donc un package **game** qui contient l'intégralité du projet, dans lequel nous retrouvons tout d'abord les classes *DM*, *Dice*, et *Dungeon*, puis plusieurs packages différents contenant toutes nos classes. 
 
 Le package **Entities** contient :
 * Le package **Classes**, contenant quatre classes héritant d'une classe abstraite *CharacterClass*
