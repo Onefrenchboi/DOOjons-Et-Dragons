@@ -46,7 +46,8 @@ public class Repo {
         }
     }
 
-    public List<Equipment> get_repo() {
+
+    public List<Equipment> getEquipments() {
        return _repo;
     }
 

@@ -12,4 +12,8 @@ public abstract class Equipment {
         return _name;
     }
 
+
+    public String toString(){
+        return _name;
+    }
 }

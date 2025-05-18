@@ -21,4 +21,12 @@ public abstract class Weapon extends Equipment{
     public int getRange() {
         return _range;
     }
+    public int getDamage() {
+        return _damageroll;
+    }
+
+    @Override
+    public String toString() {
+        return get_name() + " (Range: " + getRange() + ", Damage: " + getDamage() + ")";
+    }
 }

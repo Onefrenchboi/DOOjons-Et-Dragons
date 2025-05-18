@@ -13,4 +13,10 @@ public abstract class Armor extends Equipment {
         this._AC = AC;
         this._bonusStats = bonusStats;
     }
+
+
+    @Override
+    public String toString() {
+        return get_name() + " (AC: " + _AC + ")";
+    }
 }
