@@ -2,7 +2,7 @@ package game.entities;
 
 
 import game.Dungeon;
-import game.utils.Dice;
+import game.utils.Utils;
 
 public abstract class Entity {
     private String _name;
@@ -15,10 +15,10 @@ public abstract class Entity {
         this._name = name;
         this._stats = new Statistics(
                 0,
-                (Dice.roll(4, 4) + 3),
-                (Dice.roll(4, 4) + 3),
-                (Dice.roll(4, 4) + 3),
-                (Dice.roll(4, 4) + 3));
+                (Utils.roll(4, 4) + 3),
+                (Utils.roll(4, 4) + 3),
+                (Utils.roll(4, 4) + 3),
+                (Utils.roll(4, 4) + 3));
     }
 
     public Statistics getStats() {
@@ -50,6 +50,7 @@ public abstract class Entity {
     public void setHp(int hp) {
         this._stats.addStatistics(new Statistics(hp, 0, 0, 0, 0));
     }
+
     public void setMaxHp(int maxHp) {
         this._maxHp = maxHp;
     }
@@ -57,7 +58,7 @@ public abstract class Entity {
         return _stats.getHp();
     }
 
-    public int get_maxHp() {
+    public int getMaxHp() {
         return _maxHp;
     }
 

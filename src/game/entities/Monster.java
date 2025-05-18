@@ -2,7 +2,7 @@ package game.entities;
 
 import game.Dungeon;
 import game.items.Weapon;
-import game.utils.Dice;
+import game.utils.Utils;
 
 public class Monster extends Entity {
     private int _number;
@@ -14,7 +14,7 @@ public class Monster extends Entity {
 
     public Monster(String species, int number, Weapon weapon) {
         super(species);
-        this.setHp(Dice.roll(4, 4) + 3);
+        this.setHp(Utils.roll(4, 4) + 3);
         this.setMaxHp(getHp());
         this._number = number;
         this._weapon = weapon;
