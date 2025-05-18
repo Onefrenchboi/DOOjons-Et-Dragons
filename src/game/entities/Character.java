@@ -4,7 +4,6 @@ import game.entities.races.*;
 import game.entities.classes.*;
 import game.items.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Character extends Entity {
@@ -25,6 +24,12 @@ public class Character extends Entity {
     }
     public String getName() {
         return _name;
+    }
+
+    @Override
+    public String toString() {
+        return _name.substring(0, 3);
+
     }
 
 

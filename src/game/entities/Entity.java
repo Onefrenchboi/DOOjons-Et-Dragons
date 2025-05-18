@@ -5,11 +5,9 @@ import game.utils.Dice;
 
 public abstract class Entity {
     private Statistics _stats;
-    private int[] _coordinates;
 
 
     protected Entity() {
-        this._coordinates = new int[]{0, 0};
         this._stats = new Statistics(
                 (Dice.roll(4, 4) + 3),
                 (Dice.roll(4, 4) + 3),
@@ -22,8 +20,10 @@ public abstract class Entity {
         return _stats;
     }
 
-    public int[] getcoordinates() {
-        return _coordinates;
-    }
 
+
+
+
+
+    public abstract String toString(); //juste la pour etre overidden donc abstract
 }
