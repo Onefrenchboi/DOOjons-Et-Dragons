@@ -1,9 +1,8 @@
 package game;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import game.entities.Entity;
+
+import java.util.*;
 
 
 public class Dungeon {
@@ -11,6 +10,18 @@ public class Dungeon {
     private int _height;
     private int _width;
     private List<int[]> _obstacles = new ArrayList<>();
+
+    public static final String RESET = "\u001B[0m";
+    public static final String RED = "\u001B[31m";
+    public static final String GREEN = "\u001B[32m";
+    public static final String BLUE = "\u001B[34m";
+    public static final String PURPLE = "\u001B[35m";
+
+    public static final String WHITE_BG = "\u001B[47m";
+
+
+
+
 
     public Dungeon(Integer h, Integer w) {
         if (w >= 15 && w <= 26 && h >= 15 && h <= 26) {
@@ -21,102 +32,83 @@ public class Dungeon {
             _height = 15;
             _width = 15;
         }
-        int lastindexH = _height-1;
-        int lastindexW = _width-1;
-        //+4 to height pour les lignes de tirets et les lettres et la legende
 
-
-
-        //je deviens fou ça fait 2HEURES que je suis bloqué dessus parce que mon cerveau
-        //voulait juste pas comprendre comment ça marchait.
-        //Si un prof (ou elisabeth, c'est plus probable) voit ça, sachez que j'ai perdu ma sanité mentale en faisant ça
-
-        //Première ligne = alphabet
-        _map = new String[_height+4][_width+1];
-        //+4 to height pour les lignes de tirets et les lettres et la legende
-
-
-
-        //je deviens fou ça fait 2HEURES que je suis bloqué dessus parce que mon cerveau
-        //voulait juste pas comprendre comment ça marchait.
-        //Si un prof (ou elisabeth, c'est plus probable) voit ça, sachez que j'ai perdu ma sanité mentale en faisant ça
-
-        //Derniere ligne = alphabet
+        _map = new String[_height + 3][_width + 1];
 
         for (int j = 0; j < _map[0].length; j++) {
             if (j >= 1) {
-                _map[_map.length-1][j] = (char) ('A' + j - 1) + "  ";
+                _map[_map.length - 1][j] = (char) ('A' + j - 1) + "  ";
             } else {
-                _map[_map.length-1][j] = "      ";
+                _map[_map.length - 1][j] = "      ";
             }
         }
 
-        //deuxième et avant-dernière lignes
         for (int j = 0; j < _map[0].length; j++) {
-            _map[0][j] = ""; //remplit première ligne de vide pour eviter les nulls
-            _map[1][j] = "   *";
-            _map[_map.length-2][j] = "   *";
+            _map[0][j] = "   *";
+            _map[_map.length - 2][j] = "   *";
             for (int k = 1; k < _map[0].length; k++) {
-                _map[1][k] = "---"; //on met des tirets (3 par lettres, oui j'ai compté)
-                _map[_map.length-2][k] = "---";
+                _map[0][k] = "---";
+                _map[_map.length - 2][k] = "---";
             }
-            _map[1][_map[0].length-1] = "-----*";
-            _map[_map.length-2][_map[0].length-1] = "-----*";
-
+            _map[0][_map[0].length - 1] = "-----*";
+            _map[_map.length - 2][_map[0].length - 1] = "-----*";
         }
-        //Double boucle pour itérer sur chaque case de la carte
-        for (int i = 2; i < _map.length-2; i++) {
+
+        for (int i = 1; i < _map.length - 2; i++) {
             for (int j = 0; j < _map[i].length; j++) {
                 if (j == 0) {
-                    //num de ligne
-                    _map[i][j] = (i - 1 < 10 ? " " : "") + Integer.toString(i - 1) + " | ";
-                    //ecriture ternaire muehehehe j'adore faire ça c'est trop marrant
+                    _map[i][j] = (i < 10 ? " " : "") + Integer.toString(i) + " | ";
                 } else {
-                    // Contenu de la carte
-                    _map[i][j] = (j == _map[i].length-1 ? " .  |" : " . ");
+                    _map[i][j] = (j == _map[i].length - 1 ? " .  |" : " . ");
                 }
             }
         }
-
-
     }
 
-//TODO : TTENTION C PTET LA MERDE elisabeth a des pb de bornes
 
 
-    //todo : faire en sorte que le dm puisse le faire
+    public boolean isValidPosition(int x, int y) {
+        if (x < 1 || x >= _map.length - 1 || y < 1 || y >= _map[0].length) {
+            return false;
+        }
+        for (int[] obstacle : _obstacles) {
+            if (obstacle[0] == x && obstacle[1] == y) {
+                return false;
+            }
+        }
+        if (_map[x][y] != null && !_map[x][y].trim().equals(".")) { //on verif si c'est autre chose qu'un point, i.e. une entité
+            return false;
+        }
+        return true;
+    }
+
     public void addObstacle(int x, int y) {
-        if (x >= 2 && x < _map.length - 2 && y >= 1 && y < _map[0].length - 1) {
+        if (isValidPosition(x, y)) {
             _obstacles.add(new int[]{x, y});
-        } else {
-            System.out.println("Coordonnées invalides pour ajouter un obstacle.");
         }
     }
 
     public void CreateDefaultObstacles() {
-        for (int group = 0; group < 5; group++) { //Nombre de groupes d'obstacles, ici deux
-            //TODO : maybe rajouter un moyen de choisir cb de trucs faire ? idk
-            //new random
+        for (int group = 0; group < 5; group++) {
             Random r = new Random();
-            int x = r.nextInt(3,_map.length - 3); // Coordonnée x aléatoire
-            int y = r.nextInt(2,_map[0].length - 2); // Coordonnée y aléatoire
+            int x = r.nextInt(2, _map.length - 4);
+            int y = r.nextInt(2, _map[0].length-3);
 
-            for (int i = 0; i < 5; i++) { // 5 obstacles par groupe
+            for (int i = 0; i < 5; i++) {
                 addObstacle(x, y);
 
-                //random direction
                 int direction = (int) (Math.random() * 4);
                 switch (direction) {
-                    case 0: // up
-                        if (x > 3) x--;
+                    case 0:
+                        if (x > 2) x--;
                         break;
-                    case 1: // down
+                    case 1:
                         if (x < _map.length - 4) x++;
                         break;
-                    case 2: // left
+                    case 2:
                         if (y > 2) y--;
                         break;
-                    case 3: // right
+                    case 3:
                         if (y < _map[0].length - 1) y++;
                         break;
                 }
@@ -125,32 +117,19 @@ public class Dungeon {
     }
 
     public void setObstacles() {
-        for (int i = 0; i < _obstacles.size(); i++) {
-            int[] coord = _obstacles.get(i);
+        for (int[] coord : _obstacles) {
             int x = coord[0];
             int y = coord[1];
-            _map[x][y] = " █ ";
+            _map[x][y] = WHITE_BG + "   " + RESET;
         }
     }
 
-    public void setPlayers() {
-        //TODO : rajouter les joueurs
-        //for (int i = 0; i < _players.size(); i++) {
-        //    int[] coord = _players.get(i);
-        //    int x = coord[0];
-        //    int y = coord[1];
-        //    _map[x][y] = "  ";
-        //}
-    }
-
-    public void setMonsters() {
-        //TODO : rajouter les mobs
-        //for (int i = 0; i < _mobs.size(); i++) {
-        //    int[] coord = _mobs.get(i);
-        //    int x = coord[0];
-        //    int y = coord[1];
-        //    _map[x][y] = "  ";
-        //}
+    public void setEntities(HashMap<Entity, int[]> entities) {
+        entities.forEach((entity, coordinates) -> {
+            int x = coordinates[0];
+            int y = coordinates[1];
+            _map[x][y] = entity.getColor() + entity.getPseudo() + RESET;
+        });
     }
 
     public void displayGrid() {
@@ -160,40 +139,15 @@ public class Dungeon {
             }
             System.out.println();
         }
-        System.out.println(Arrays.toString(_map[3]));
     }
 
-
-    public void displayMap() {
+    public void displayMap(HashMap<Entity, int[]> entities) {
         setObstacles();
+        setEntities(entities);
         displayGrid();
     }
+
+    public int[] getSize() {
+        return new int[]{_height, _width};
+    }
 }
-
-
-//
-// ⁅⌘⁆ coffre :D
-/*
-
-//
-     A  B  C  D  E  F  G  H  I  J  K  L  M  N  O
-   *-----------------------------------------------*
- 1 |  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  |
- 2 |  .  .  . || .  .  .  .  .  .  .  .  .  .  .  |
- 3 |  .  .  . ⁅⌘⁆ .  .  .  .  .  .  .  .  .  .  .  |
- 4 |  .  .  . ⁅⊟⁆ .  .  .  .  .  .  .  .  .  .  .  |
- 5 |  .  .  .  █  .  .  .  .  .  .  .  .  .  .  .  |
- 6 |  .  .  .  █  .  .  . [⊟] .  .  .  .  .  .  .  |
- 7 |  .  .  .  █  █  .  .  .  .  .  .  .  .  .  .  |
- 8 |  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  |
- 9 |  .  .  .  Ø  Ø  .  .  .  .  .  .  .  .  .  .  |
-10 |  .  .  .  Ø  Ø  Ø  .  .  .  .  .  .  .  .  .  |
-11 |  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  |
-12 |  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  |
-13 |  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  |
-14 |  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  |
-15 |  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  |
-   *-----------------------------------------------*
-
-*
-* */
