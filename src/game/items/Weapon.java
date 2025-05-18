@@ -16,4 +16,9 @@ public abstract class Weapon extends Equipment{
         _damageroll = damageroll;
         _bonusStats = bonusStats;
     }
+
+
+    public int getRange() {
+        return _range;
+    }
 }

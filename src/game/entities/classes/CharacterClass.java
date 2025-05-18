@@ -28,4 +28,5 @@ public abstract class CharacterClass {
         return _name;
     }
 
+
 }
