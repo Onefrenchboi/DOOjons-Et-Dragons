@@ -1,6 +1,7 @@
 package game;
 
 import game.entities.Entity;
+import game.items.Equipment;
 
 import java.util.*;
 
@@ -16,7 +17,6 @@ public class Dungeon {
     public static final String GREEN = "\u001B[32m";
     public static final String BLUE = "\u001B[34m";
     public static final String PURPLE = "\u001B[35m";
-
     public static final String WHITE_BG = "\u001B[47m";
 
 
@@ -67,12 +67,22 @@ public class Dungeon {
 
 
 
-    public boolean isValidPosition(int x, int y) {
+    public boolean isValidPosition(int x, int y, HashMap<Entity, int[]> entities, HashMap<Equipment, int[]> equipments) {
         if (x < 1 || x >= _map.length - 1 || y < 1 || y >= _map[0].length) {
             return false;
         }
         for (int[] obstacle : _obstacles) {
             if (obstacle[0] == x && obstacle[1] == y) {
+                return false;
+            }
+        }
+        for (Map.Entry<Entity, int[]> entry : entities.entrySet()) {
+            if (entry.getValue()[0] == x && entry.getValue()[1] == y) {
+                return false;
+            }
+        }
+        for (Map.Entry<Equipment, int[]> entry : equipments.entrySet()) {
+            if (entry.getValue()[0] == x && entry.getValue()[1] == y) {
                 return false;
             }
         }
@@ -83,7 +93,7 @@ public class Dungeon {
     }
 
     public void addObstacle(int x, int y) {
-        if (isValidPosition(x, y)) {
+        if (x >= 1 && x < _map.length - 1 && y >= 1 && y < _map[0].length) {
             _obstacles.add(new int[]{x, y});
         }
     }
@@ -116,34 +126,42 @@ public class Dungeon {
         }
     }
 
-    public void setObstacles() {
+    private void setObstacles() {
         for (int[] coord : _obstacles) {
             int x = coord[0];
             int y = coord[1];
             _map[x][y] = WHITE_BG + "   " + RESET;
         }
     }
-
-    public void setEntities(HashMap<Entity, int[]> entities) {
+    private void setEntities(HashMap<Entity, int[]> entities) {
         entities.forEach((entity, coordinates) -> {
             int x = coordinates[0];
             int y = coordinates[1];
             _map[x][y] = entity.getColor() + entity.getPseudo() + RESET;
         });
     }
+    private void setEquipments(HashMap<Equipment, int[]> equipments) {
+        equipments.forEach((equipment, coordinates) -> {
+            int x = coordinates[0];
+            int y = coordinates[1];
+            _map[x][y] = BLUE + "[⌘]" + RESET;
+        });
+    }
 
-    public void displayGrid() {
+    private void displayGrid() {
         for (int i = 0; i < _map.length; i++) {
             for (int j = 0; j < _map[i].length; j++) {
                 System.out.print(_map[i][j]);
             }
             System.out.println();
         }
+        System.out.println( WHITE_BG + "   " + RESET + " : Obstacles ||" + BLUE + " [⌘]" + RESET + " : Equipements || " + PURPLE + " [*]" + RESET + " : Entities ||" + RED + " [#]" + RESET + " : Monsters");
     }
 
-    public void displayMap(HashMap<Entity, int[]> entities) {
+    public void displayMap(HashMap<Entity, int[]> entities, HashMap<Equipment, int[]> equipments) {
         setObstacles();
         setEntities(entities);
+        setEquipments(equipments);
         displayGrid();
     }
 
