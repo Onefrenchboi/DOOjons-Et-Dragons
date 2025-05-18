@@ -2,8 +2,7 @@ package game.utils;
 
 import java.util.Random;
 
-public class Dice {
-
+public class Utils {
     private static final Random random = new Random();
 
     public static int roll(int num, int sides) {
@@ -13,5 +12,4 @@ public class Dice {
         }
         return total;
     }
-
 }
