@@ -21,17 +21,18 @@ public class Repo {
         addEquipment(new HeavyArmor("Plate Armor", 12));
 
         // Common Melee Weapons
-        addEquipment(new MeleeWeapon("Stick", 1, 6));
-        addEquipment(new MeleeWeapon("Mace", 1, 6));
+        addEquipment(new MeleeWeapon("Stick", 1, 1,6));
+        addEquipment(new MeleeWeapon("Mace", 1, 1,6));
 
         // War Melee Weapons
-        addEquipment(new MeleeWeapon("Longsword", 1, 8));
-        addEquipment(new MeleeWeapon("Rapier", 1, 8));
+        addEquipment(new WarMeleeWeapon("Longsword", 1, 1,8));
+        addEquipment(new WarMeleeWeapon("Rapier", 1,1, 8));
+        addEquipment(new WarMeleeWeapon("Two-handed sword", 2,2, 6));
 
         // Ranged Weapons
-        addEquipment(new RangedWeapon("Light crossbow", 16, 8));
-        addEquipment(new RangedWeapon("Sling", 6, 4));
-        addEquipment(new RangedWeapon("Shortbow", 16, 6));
+        addEquipment(new RangedWeapon("Light crossbow", 16, 1,8));
+        addEquipment(new RangedWeapon("Sling", 6, 1,4));
+        addEquipment(new RangedWeapon("Shortbow", 16, 1,6));
     }
 
     public void addEquipment(Equipment e) {

@@ -113,14 +113,16 @@ public class DM {
             for (int i = 0; i < nbMonstres; i++) {
                 System.out.println("Enter the monsters race: ");
                 String species = scanner.next();
-                System.out.println("Enter the monsters range and damage (x y) : ");
+                //todo : make this more readable
+                System.out.println("Enter the monsters range, and damage (x y z) : ");
                 int range = scanner.nextInt();
+                int dicenum = scanner.nextInt();
                 int damageroll = scanner.nextInt();
                 Weapon weapon;
                 if (range == 1) {
-                    weapon = new MeleeWeapon("MonsterMeleeAttack", range, damageroll);
+                    weapon = new MeleeWeapon("MonsterMeleeAttack", range, dicenum ,damageroll);
                 } else {
-                    weapon = new RangedWeapon("MonsterRangedAttack", range, damageroll);
+                    weapon = new RangedWeapon("MonsterRangedAttack", range, dicenum, damageroll);
                 }
                 int number = monsterCount.getOrDefault(species, 0) + 1;
                 monsterCount.put(species, number);
@@ -131,9 +133,9 @@ public class DM {
         }
         else {
             System.out.println("Applying default monster selection");
-            _entitiesSortedByInitiative.add(new Monster("Fragon", 1, new MeleeWeapon("MonsterMeleeAttack", 1, 4)));
-            _entitiesSortedByInitiative.add(new Monster("Fragon", 2, new MeleeWeapon("MonsterMeleeAttack", 1, 6)));
-            _entitiesSortedByInitiative.add(new Monster("Bob", 1, new RangedWeapon("MonsterRangedAttack", 12, 8)));
+            _entitiesSortedByInitiative.add(new Monster("Fragon", 1, new MeleeWeapon("MonsterMeleeAttack", 1, 1,6)));
+            _entitiesSortedByInitiative.add(new Monster("Fragon", 2, new MeleeWeapon("MonsterMeleeAttack", 1, 1,6)));
+            _entitiesSortedByInitiative.add(new Monster("Bob", 1, new RangedWeapon("MonsterRangedAttack", 12, 1,8)));
         }
     }
 

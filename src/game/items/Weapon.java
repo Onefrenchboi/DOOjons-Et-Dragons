@@ -6,13 +6,14 @@ public abstract class Weapon extends Equipment{
     private String _name;
     private int _range;
     private int _damageroll; //represents the dice to roll for damage
-    // private int _dicenum; //represents the number of dice to roll for damage //TODO : implement this
+    private int _dicenum; //represents the number of dice to roll for damage
     private Statistics _bonusStats;
 
 
-    protected Weapon(String name, int range, int damageroll, Statistics bonusStats) {
+    protected Weapon(String name, int range, int dicenum, int damageroll, Statistics bonusStats) {
         super(name);
         _range = range;
+        _dicenum = dicenum;
         _damageroll = damageroll;
         _bonusStats = bonusStats;
     }
@@ -21,8 +22,8 @@ public abstract class Weapon extends Equipment{
     public int getRange() {
         return _range;
     }
-    public int getDamage() {
-        return _damageroll;
+    public String getDamage() {
+        return _dicenum + "d" + _damageroll;
     }
 
     @Override
