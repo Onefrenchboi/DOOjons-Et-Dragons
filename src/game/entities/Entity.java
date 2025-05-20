@@ -67,7 +67,7 @@ public abstract class Entity {
     }
 
     public String getColor() {
-        return Dungeon.PURPLE;
+        return Utils.PURPLE;
     }
 
     public boolean isAlive() {

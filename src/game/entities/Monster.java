@@ -26,12 +26,12 @@ public class Monster extends Entity {
 
     @Override
     public String getColor() {
-        return Dungeon.RED;
+        return Utils.RED;
     }
 
 
     @Override
     public String toString() {
-        return Dungeon.RED + this.getName() + " #" + _number + Dungeon.RESET;
+        return Utils.RED + this.getName() + " #" + _number + Utils.RESET;
     }
 }

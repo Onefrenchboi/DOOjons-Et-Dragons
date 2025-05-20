@@ -2,6 +2,7 @@ package game;
 
 import game.entities.Entity;
 import game.items.Equipment;
+import game.utils.Utils;
 
 import java.util.*;
 
@@ -12,12 +13,6 @@ public class Dungeon {
     private int _width;
     private List<int[]> _obstacles = new ArrayList<>();
 
-    public static final String RESET = "\u001B[0m";
-    public static final String RED = "\u001B[31m";
-    public static final String GREEN = "\u001B[32m";
-    public static final String BLUE = "\u001B[34m";
-    public static final String PURPLE = "\u001B[35m";
-    public static final String WHITE_BG = "\u001B[47m";
 
 
 
@@ -130,32 +125,32 @@ public class Dungeon {
         for (int[] coord : _obstacles) {
             int x = coord[0];
             int y = coord[1];
-            _map[x][y] = WHITE_BG + "   " + RESET;
+            _map[x][y] = Utils.WHITE_BG + "   " + Utils.RESET;
         }
     }
     private void setEntities(HashMap<Entity, int[]> entities) {
         entities.forEach((entity, coordinates) -> {
             int x = coordinates[0];
             int y = coordinates[1];
-            _map[x][y] = entity.getColor() + entity.getPseudo() + RESET;
+            _map[x][y] = entity.getColor() + entity.getPseudo() + Utils.RESET;
         });
     }
     private void setEquipments(HashMap<Equipment, int[]> equipments) {
         equipments.forEach((equipment, coordinates) -> {
             int x = coordinates[0];
             int y = coordinates[1];
-            _map[x][y] = BLUE + "[⌘]" + RESET;
+            _map[x][y] = Utils.BLUE + "[⌘]" + Utils.RESET;
         });
     }
 
     private void displayGrid() {
-        for (int i = 0; i < _map.length; i++) {
-            for (int j = 0; j < _map[i].length; j++) {
-                System.out.print(_map[i][j]);
+        for (String[] strings : _map) {
+            for (String string : strings) {
+                System.out.print(string);
             }
             System.out.println();
         }
-        System.out.println( WHITE_BG + "   " + RESET + " : Obstacles ||" + BLUE + " [⌘]" + RESET + " : Equipements || " + PURPLE + " [*]" + RESET + " : Entities ||" + RED + " [#]" + RESET + " : Monsters");
+        System.out.println( Utils.WHITE_BG + "   " + Utils.RESET + " : Obstacles ||" + Utils.BLUE + " [⌘]" + Utils.RESET + " : Equipements || " + Utils.PURPLE + " [*]" + Utils.RESET + " : Entities ||" + Utils.RED + " [#]" + Utils.RESET + " : Monsters");
     }
 
     public void displayMap(HashMap<Entity, int[]> entities, HashMap<Equipment, int[]> equipments) {
