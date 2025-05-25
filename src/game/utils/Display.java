@@ -57,14 +57,14 @@ public class Display {
         if (currentEntity.isMonster()){
             System.out.println("  - Let the DM comment the previous action (dm <text>)");
             System.out.println("  - Comment the previous action (com <text>)");
-            System.out.println("  - Attack (att <Case>)");
-            System.out.println("  - Move (move <Case>)");
+            System.out.println("  - Attack (att <position>)");
+            System.out.println("  - Move (move <position>)");
 
         }else {
             System.out.println("  - Let the DM comment the previous action (dm <text>)");
             System.out.println("  - Comment the previous action (com <text>)");
-            System.out.println("  - Attack (att <Case>)");
-            System.out.println("  - Move (move <Case>)");
+            System.out.println("  - Attack (att <position>)");
+            System.out.println("  - Move (move <position>)");
             System.out.println("  - Show inventory to equip an item (equ show)");
             System.out.println("  - Pick up an item (pick <item number>)");
 

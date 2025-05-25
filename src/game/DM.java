@@ -301,7 +301,13 @@ public class DM {
                 case "dm" -> Display.display("ekuip");//equip(_currentEntity);
                 default -> Display.displayError("Invalid choice. Please try again.");
             }
+
+            Display.display("Press Any Key to continue...");
+            //c pour attendre que le joueur presse
+            scanner.nextLine();
+            scanner.nextLine();
             Display.displayMap(_dungeon);
+            Display.displayEntityInfo(_currentEntity);
         }
 
         Display.displayClear();

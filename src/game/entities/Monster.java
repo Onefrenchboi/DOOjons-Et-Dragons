@@ -64,10 +64,11 @@ public class Monster extends Entity {
     }
 
     public String getInfo() {
-        return "    HP ❤ : " + this.getHp() + "/" + this.getMaxHp() + "\n" +
+        return  "   HP ❤ : " + this.getHp() + "/" + this.getMaxHp() + "\n" +
+                "   Range : " + this.getEquippedWeapon().getRange() + "\n" +
                 "   STR ✪ : " + this.getStats().getStrength() + "\n" +
                 "   DEX ➔ : " + this.getStats().getDexterity() + "\n" +
-                "   SPD ⚡ : " + this.getStats().getSpeed();
+                "   SPD ⚡ : " + this.getStats().getSpeed() + " (You can move " + this.getStats().getSpeed()/3 + " spaces per turn).";
     }
 
     @Override

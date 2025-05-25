@@ -48,7 +48,7 @@ public class Character extends Entity {
         StringBuilder inventoryDisplay = new StringBuilder();
         for (Equipment equipment : _inventory) {
             int n = _inventory.indexOf(equipment);
-            inventoryDisplay.append("[" + n + "] ").append(equipment.getName()).append(" | ");
+            inventoryDisplay.append("[" + n + "] ").append(equipment.toString()).append(" | ");
         }
         return inventoryDisplay.toString();
     }
@@ -59,23 +59,39 @@ public class Character extends Entity {
 
     @Override
     public void equipWeapon(Equipment equipment){
-        this.setEquippedWeapon((Weapon) equipment);
+        if (this.getEquippedWeapon()==null){
+            this.setEquippedWeapon((Weapon) equipment);
+            this._inventory.remove(equipment);
+        }
+        else {
+            this ._inventory.add(this.getEquippedWeapon());
+            this.setEquippedWeapon((Weapon) equipment);
+            this._inventory.remove(equipment);
+        }
     }
 
     @Override
     public void equipArmor(Equipment equipment){
-        this.setEquippedArmor((Armor) equipment);
+        if (this.getEquippedArmor()==null){
+            this.setEquippedArmor((Armor) equipment);
+            this._inventory.remove(equipment);
+        }
+        else {
+            this ._inventory.add(this.getEquippedArmor());
+            this.setEquippedArmor((Armor) equipment);
+            this._inventory.remove(equipment);
+        }
     }
 
 
     public String getInfo(){
         return  "   HP ❤ : " + this.getHp() + "/" + this.getMaxHp() + "\n" +
                 "   Armor ⊙ : " + (this.getEquippedArmor() != null ? this.getEquippedArmor().getName() : "None") + "\n" +
-                "   Weapon ⚔ : " + (this.getEquippedWeapon() != null ? this.getEquippedWeapon().getName() : "None") + "\n" +
+                "   Weapon ⚔ : " + (this.getEquippedWeapon() != null ? this.getEquippedWeapon().toString() : "None") + "\n" +
                 "   Inventory ◼ : " + this.displayInventory() + "\n" +
                 "   STR ✪ : " + this.getStats().getStrength() + "\n" +
                 "   DEX ➔ : " + this.getStats().getDexterity() + "\n" +
-                "   SPD ⚡ : " + this.getStats().getSpeed();
+                "   SPD ⚡ : " + this.getStats().getSpeed() + "(You can move " + this.getStats().getSpeed()/3 + " spaces per turn).";
     }
     @Override
     public String toString() {

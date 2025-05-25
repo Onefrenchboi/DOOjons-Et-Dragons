@@ -206,7 +206,6 @@ public class Dungeon {
             System.out.println();
         }
         Display.display( GameUtils.WHITE_BG + "   " + GameUtils.RESET + " : Obstacles ||" + GameUtils.BLUE + " [⌘]" + GameUtils.RESET + " : Equipements || " + GameUtils.PURPLE + " [*]" + GameUtils.RESET + " : Entities ||" + GameUtils.RED + " [#]" + GameUtils.RESET + " : Monsters");
-        System.out.println("-------------------------------");
     }
 
 
@@ -303,10 +302,8 @@ public class Dungeon {
             Display.displayError("Too far.");
             return;
         }
-
         moveEntity(entity, x, y);
         Display.display(entity.getPseudo() + " moved to " + pos + ".");
-
     }
 
     public void moveEntity(Entity entity, int x, int y) {
