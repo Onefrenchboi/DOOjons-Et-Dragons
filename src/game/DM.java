@@ -9,6 +9,8 @@ import game.items.*;
 import game.utils.Display;
 import game.utils.Repo;
 import game.utils.Dice;
+
+import static game.utils.Dice.parsePosition;
 import static game.utils.Dice.scanner;
 
 
@@ -175,13 +177,17 @@ public class DM {
         String choice = scanner.next();
         if (choice.equalsIgnoreCase("Y")) {
             for (Entity entity : _entitiesSortedByInitiative) {
-                Display.display("Enter the position of " + entity.toString() + " (x y) : ");
-                int x = scanner.nextInt();
-                int y = scanner.nextInt();
+                Display.display("Enter the position of " + entity.toString() + " ([A-Z]x) : ");
+                String position = scanner.next();
+                int[] pos = parsePosition(position);
+                int x = pos[0];
+                int y = pos[1];
                 while (!_dungeon.isValidPosition(x, y)) {
                     Display.displayError("Invalid position. Please enter a new position : ");
-                    x = scanner.nextInt();
-                    y = scanner.nextInt();
+                    position = scanner.next();
+                    pos = parsePosition(position);
+                    x = pos[0];
+                    y = pos[1];
                 }
                 _dungeon.addEntity(x, y, entity);
             }
@@ -195,13 +201,17 @@ public class DM {
         choice = scanner.next();
         if (choice.equalsIgnoreCase("Y")) {
             for (Equipment equipment : _equipmentList) {
-                Display.display("Enter the position of " + equipment + " (x y) : ");
-                int x = scanner.nextInt();
-                int y = scanner.nextInt();
+                Display.display("Enter the position of " + equipment + " ([A-Z]x) : ");
+                String position = scanner.next();
+                int[] pos = parsePosition(position);
+                int x = pos[0];
+                int y = pos[1];
                 while (!_dungeon.isValidPosition(x, y)) {
                     Display.displayError("Invalid position. Please enter a new position : ");
-                    x = scanner.nextInt();
-                    y = scanner.nextInt();
+                    position = scanner.next();
+                    pos = parsePosition(position);
+                    x = pos[0];
+                    y = pos[1];
                 }
                 _dungeon.addEquipment(x, y, equipment);
             }
@@ -216,13 +226,17 @@ public class DM {
             Display.display("How many ?");
             int nbObstacles = scanner.nextInt();
             for (int i = 0; i < nbObstacles; i++) {
-                Display.display("Enter the position of obstacle " + (i + 1) + " (x y) : ");
-                int x = scanner.nextInt();
-                int y = scanner.nextInt();
+                Display.display("Enter the position of obstacle " + (i + 1) + " ([A-Z]x) : ");
+                String position = scanner.next();
+                int[] pos = parsePosition(position);
+                int x = pos[0];
+                int y = pos[1];
                 while (!_dungeon.isValidPosition(x, y)) {
                     Display.displayError("Invalid position. Please enter a new position : ");
-                    x = scanner.nextInt();
-                    y = scanner.nextInt();
+                    position = scanner.next();
+                    pos = parsePosition(position);
+                    x = pos[0];
+                    y = pos[1];
                 }
                 _dungeon.addObstacle(x, y);
             }
@@ -251,9 +265,8 @@ public class DM {
     public void play(){
         while (_winCondition){
             turn();
-
-
         }
+
 
     }
 
@@ -262,6 +275,9 @@ public class DM {
         _turn++;
         _currentEntity = _entitiesSortedByInitiative.get(0);
         Display.displayInfo(this);
+        Display.displayMap(_dungeon);
+        Display.displayEntityInfo(_currentEntity);
+        //Display.displayTurnInfo();
 
     }
 

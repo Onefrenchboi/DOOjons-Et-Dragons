@@ -40,6 +40,7 @@ public abstract class Entity {
     }
 
 
+    public abstract String getInfo();
 
 
     public int getInitiative() {
@@ -76,4 +77,5 @@ public abstract class Entity {
             return false;
         }
     }
+
 }

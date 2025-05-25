@@ -3,6 +3,7 @@ package game;
 import game.entities.Entity;
 import game.items.Equipment;
 import game.utils.Dice;
+import game.utils.Display;
 
 import javax.swing.text.Position;
 import java.util.*;
@@ -52,7 +53,7 @@ public class Dungeon {
         for (int i = 1; i < _map.length - 2; i++) {
             for (int j = 0; j < _map[i].length; j++) {
                 if (j == 0) {
-                    _map[i][j] = (i < 10 ? " " : "") + Integer.toString(i) + " | ";
+                    _map[i][j] = (i < 10 ? " " : "") + i + " | ";
                 } else {
                     _map[i][j] = (j == _map[i].length - 1 ? " .  |" : " . ");
                 }
@@ -85,8 +86,6 @@ public class Dungeon {
         }
         return true;
     }
-
-
 
     //? Methods to add everything to the lists and hashmaps, manually or randomly
     public void addEntity(int x, int y, Entity entity) {
@@ -161,14 +160,23 @@ public class Dungeon {
         for (int[] coord : _positions.getObstacles()) {
             int x = coord[0];
             int y = coord[1];
-            _map[x][y] = Dice.WHITE_BG + "   " + Dice.RESET;
+            if (y == _map[0].length - 1) {
+                _map[x][y] = Dice.WHITE_BG + "   " + Dice.RESET + " |";
+            } else {
+                _map[x][y] = Dice.WHITE_BG + "   " + Dice.RESET;
+            }
         }
     }
     private void setEntities() {
         _positions.getEntitiesPosition().forEach((entity, coordinates) -> {
             int x = coordinates[0];
             int y = coordinates[1];
-            _map[x][y] = entity.getColor() + entity.getPseudo() + Dice.RESET;
+            if (y == _map[0].length - 1) {
+                _map[x][y] = entity.getColor() + entity.getPseudo() + Dice.RESET + " |";
+            } else {
+                _map[x][y] = entity.getColor() + entity.getPseudo() + Dice.RESET;
+            }
+
         });
     }
     private void setEquipments() {
@@ -195,7 +203,8 @@ public class Dungeon {
             }
             System.out.println();
         }
-        System.out.println( Dice.WHITE_BG + "   " + Dice.RESET + " : Obstacles ||" + Dice.BLUE + " [⌘]" + Dice.RESET + " : Equipements || " + Dice.PURPLE + " [*]" + Dice.RESET + " : Entities ||" + Dice.RED + " [#]" + Dice.RESET + " : Monsters");
+        Display.display( Dice.WHITE_BG + "   " + Dice.RESET + " : Obstacles ||" + Dice.BLUE + " [⌘]" + Dice.RESET + " : Equipements || " + Dice.PURPLE + " [*]" + Dice.RESET + " : Entities ||" + Dice.RED + " [#]" + Dice.RESET + " : Monsters");
+        Display.display("\n");
     }
 
 

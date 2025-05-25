@@ -28,9 +28,15 @@ public class Monster extends Entity {
         return Dice.RED;
     }
 
+    public String getInfo() {
+        return "    HP ❤ : " + this.getHp() + "/" + this.getMaxHp() + "\n" +
+                "   STR ✪ : " + this.getStats().getStrength() + "\n" +
+                "   DEX ➔ : " + this.getStats().getDexterity() + "\n" +
+                "   SPD ⚡ : " + this.getStats().getSpeed() + "\n";
+    }
 
     @Override
     public String toString() {
-        return Dice.RED + this.getName() + " #" + _number + Dice.RESET;
+        return Dice.RED + super.getName() + " #" + _number + Dice.RESET;
     }
 }

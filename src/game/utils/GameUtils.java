@@ -3,7 +3,7 @@ package game.utils;
 import java.util.Random;
 import java.util.Scanner;
 
-public class Dice {
+public class GameUtils {
 
 
     public static final String RESET = "\u001B[0m";
@@ -22,5 +22,16 @@ public class Dice {
             total += random.nextInt(sides) + 1;
         }
         return total;
+    }
+
+
+    public static int[] parsePosition(String position) {
+        char column = position.charAt(0);
+        String rowPart = position.substring(1);
+
+        int x = Integer.parseInt(rowPart);
+        int y = Character.toUpperCase(column) - 'A' + 1;
+
+        return new int[]{x, y};
     }
 }
