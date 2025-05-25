@@ -2,7 +2,7 @@ package game.utils;
 
 import java.util.Random;
 
-public class Utils {
+public class Dice {
 
 
     public static final String RESET = "\u001B[0m";

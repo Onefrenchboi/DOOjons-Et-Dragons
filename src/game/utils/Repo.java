@@ -6,7 +6,7 @@ import java.util.List;
 
 public class Repo {
     private List<Equipment> _repo;
-
+//todo : rename
     public Repo() {
         _repo = new java.util.ArrayList<>();
     }

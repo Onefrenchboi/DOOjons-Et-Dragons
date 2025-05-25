@@ -1,9 +1,8 @@
 package game.entities;
-import game.Dungeon;
 import game.entities.races.*;
 import game.entities.classes.*;
 import game.items.*;
-import game.utils.Utils;
+import game.utils.Dice;
 
 import java.util.List;
 
@@ -29,7 +28,7 @@ public class Character extends Entity {
 
     @Override
     public String toString() {
-        return Utils.PURPLE + this.getName() + " the " + _class.getName() + " " + _race.getName() + Utils.RESET;
+        return Dice.PURPLE + this.getName() + " the " + _class.getName() + " " + _race.getName() + Dice.RESET;
     }
 
 }
