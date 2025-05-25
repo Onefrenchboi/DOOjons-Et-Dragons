@@ -21,12 +21,15 @@ public class DM {
     private List<Equipment> _equipmentList;
     private Repo _equipmentRepo;
     private Entity _currentEntity;
+    private int _turn;
+    private boolean _winCondition;
 
     public DM() {
         _entitiesSortedByInitiative = new ArrayList<>();
         _equipmentList = new ArrayList<>();
         _equipmentRepo= new Repo();
         _equipmentRepo.initializeEquipment();
+        _turn = 0;
     }
 
 
@@ -35,7 +38,7 @@ public class DM {
         Display.display("How many players ? (1-4) : ");
         int nbPlayers = scanner.nextInt();
         while (nbPlayers < 1 || nbPlayers > 4) {
-            Display.display("Invalid number of players, choose a number between 1 and 4 : ");
+            Display.displayError("Invalid number of players, choose a number between 1 and 4 : ");
             nbPlayers = scanner.nextInt();
         }
 
@@ -52,7 +55,7 @@ public class DM {
                     case 2 -> heroRace = new Elf();
                     case 3 -> heroRace = new Halfling();
                     case 4 -> heroRace = new Human();
-                    default -> Display.display("Invalid choice. Please try again.");
+                    default -> Display.displayError("Invalid choice. Please try again.");
                 }
             }
 
@@ -65,7 +68,7 @@ public class DM {
                     case 2 -> heroClass = new Rogue();
                     case 3 -> heroClass = new Warrior();
                     case 4 -> heroClass = new Wizard();
-                    default -> Display.display("Invalid choice. Please try again.");
+                    default -> Display.displayError("Invalid choice. Please try again.");
                 }
             }
 
@@ -83,7 +86,7 @@ public class DM {
             int nbMonstres = scanner.nextInt();
             Map<String, Integer> monsterCount = new HashMap<>();
             while (nbMonstres < 1 || nbMonstres > 4) {
-                Display.display("Invalid number of monsters, choose a number between 1 and 4 : ");
+                Display.displayError("Invalid number of monsters, choose a number between 1 and 4 : ");
                 nbMonstres = scanner.nextInt();
             }
             for (int i = 0; i < nbMonstres; i++) {
@@ -119,7 +122,7 @@ public class DM {
         Display.display("How many items ? (1-5) : ");
         int nbEquipment = scanner.nextInt();
         while (nbEquipment < 1 || nbEquipment > 5) {
-            Display.display("Invalid number of items, choose a number between 1 and 5 : ");
+            Display.displayError("Invalid number of items, choose a number between 1 and 5 : ");
             nbEquipment = scanner.nextInt();
         }
 
@@ -132,26 +135,26 @@ public class DM {
             Display.display("Enter the number of the item to add : ");
             int equipment = scanner.nextInt();
             while (equipment < 0 || equipment > _equipmentRepo.getEquipments().size()) {
-                Display.display("Invalid number, choose a number between 0 and " + (_equipmentRepo.getEquipments().size() - 1) + " : ");
+                Display.displayError("Invalid number, choose a number between 0 and " + (_equipmentRepo.getEquipments().size() - 1) + " : ");
                 equipment = scanner.nextInt();
             }
             Equipment selectedEquipment = _equipmentRepo.getEquipments().get(equipment);
             _equipmentList.add(selectedEquipment);
         }
     }
-    public void createDungeon() {
+    public void createDungeon(int number) {
         Scanner scanner = new Scanner(System.in);
 
         Display.display("DM, please enter the size of the dungeon ([W]idth [H]eight) : ");
         int width = scanner.nextInt();
         int height = scanner.nextInt();
         while (width < 15 || width > 26 || height < 15 || height > 26) {
-            Display.display("The map must be between 15 and 26 squares wide and high");
+            Display.displayError("The map must be between 15 and 26 squares wide and high");
             Display.display("Please enter the size of the dungeon ([W]idth [H}eight) : ");
             width = scanner.nextInt();
             height = scanner.nextInt();
         }
-        _dungeon = new Dungeon(width, height);
+        _dungeon = new Dungeon(width, height, number);
     }
 
     public void setDungeon() {
@@ -176,7 +179,7 @@ public class DM {
                 int x = scanner.nextInt();
                 int y = scanner.nextInt();
                 while (!_dungeon.isValidPosition(x, y)) {
-                    Display.display("Invalid position. Please enter a new position : ");
+                    Display.displayError("Invalid position. Please enter a new position : ");
                     x = scanner.nextInt();
                     y = scanner.nextInt();
                 }
@@ -196,7 +199,7 @@ public class DM {
                 int x = scanner.nextInt();
                 int y = scanner.nextInt();
                 while (!_dungeon.isValidPosition(x, y)) {
-                    Display.display("Invalid position. Please enter a new position : ");
+                    Display.displayError("Invalid position. Please enter a new position : ");
                     x = scanner.nextInt();
                     y = scanner.nextInt();
                 }
@@ -217,7 +220,7 @@ public class DM {
                 int x = scanner.nextInt();
                 int y = scanner.nextInt();
                 while (!_dungeon.isValidPosition(x, y)) {
-                    Display.display("Invalid position. Please enter a new position : ");
+                    Display.displayError("Invalid position. Please enter a new position : ");
                     x = scanner.nextInt();
                     y = scanner.nextInt();
                 }
@@ -231,10 +234,36 @@ public class DM {
 
 
     public void showBoard() {
-        _dungeon.displayMap();
+        _dungeon.updateMap();
+    }
+
+    public void createGame() {
+        Display.display("----Setting up the game----");
+        createCharacters();
+        createMonsters();
+        createEquipments();
+        createDungeon(1);
+        setDungeon();
+        Display.display("----Start of the game----");
     }
 
 
+    public void play(){
+        while (_winCondition){
+            turn();
+
+
+        }
+
+    }
+
+
+    public void turn(){
+        _turn++;
+        _currentEntity = _entitiesSortedByInitiative.get(0);
+        Display.displayInfo(this);
+
+    }
 
     public void attack(Entity attacker, Entity target) {
 
@@ -259,5 +288,13 @@ public class DM {
         return _dungeon;
     }
 
-
+    public int getTurn(){
+        return _turn;
+    }
+    public Entity getCurrentEntity() {
+        return _currentEntity;
+    }
+    public int getDungeonNumber() {
+        return _dungeon.getDungeonNumber();
+    }
 }

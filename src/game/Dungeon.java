@@ -4,6 +4,7 @@ import game.entities.Entity;
 import game.items.Equipment;
 import game.utils.Dice;
 
+import javax.swing.text.Position;
 import java.util.*;
 
 
@@ -12,9 +13,10 @@ public class Dungeon {
     private int _height;
     private int _width;
     private Positions _positions;
+    private int _number;
 
     //?Constructeur de la classe Dungeon
-    public Dungeon(int h, int w) {
+    public Dungeon(int h, int w, int number) {
         if (w >= 15 && w <= 26 && h >= 15 && h <= 26) {
             _height = h;
             _width = w;
@@ -24,6 +26,7 @@ public class Dungeon {
             _width = 15;
         }
 
+        _number = number;
         _map = new String[_height + 3][_width + 1];
         _positions = new Positions();
 
@@ -85,6 +88,7 @@ public class Dungeon {
 
 
 
+    //? Methods to add everything to the lists and hashmaps, manually or randomly
     public void addEntity(int x, int y, Entity entity) {
         if (isValidPosition(x, y)) {
             _positions.addEntity(entity, new int[]{x, y});
@@ -152,7 +156,8 @@ public class Dungeon {
 
 
 
-    private void setObstacles()     {
+    //? Methods to set everything on the map
+    private void setObstacles() {
         for (int[] coord : _positions.getObstacles()) {
             int x = coord[0];
             int y = coord[1];
@@ -175,6 +180,13 @@ public class Dungeon {
     }
 
 
+    //? Method to update the map (duh)
+    public void updateMap() {
+        setObstacles();
+        setEntities();
+        setEquipments();
+        displayGrid();
+    }
 
     private void displayGrid() {
         for (String[] strings : _map) {
@@ -185,14 +197,13 @@ public class Dungeon {
         }
         System.out.println( Dice.WHITE_BG + "   " + Dice.RESET + " : Obstacles ||" + Dice.BLUE + " [⌘]" + Dice.RESET + " : Equipements || " + Dice.PURPLE + " [*]" + Dice.RESET + " : Entities ||" + Dice.RED + " [#]" + Dice.RESET + " : Monsters");
     }
-    public void displayMap() {
-        setObstacles();
-        setEntities();
-        setEquipments();
-        displayGrid();
-    }
 
-    public int[] getSize() {
-        return new int[]{_height, _width};
+
+    //? Getters
+    public Positions getPosition(){
+        return _positions;
+    }
+    public int getDungeonNumber(){
+        return _number;
     }
 }
