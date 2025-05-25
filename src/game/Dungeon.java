@@ -308,7 +308,7 @@ public class Dungeon {
         moveEntity(entity, x, y);
         Display.display(entity.getPseudo() + " moved to " + pos + ".");
     }
-    public void pickUp(Entity entity, Equipment equipment) {
+    public void pickUp(Entity entity,String pos) {
     }
 
     public void moveEntity(Entity entity, int x, int y) {
@@ -326,9 +326,6 @@ public class Dungeon {
 
 
     //? Getters
-    public Positions getPosition(){
-        return _positions;
-    }
     public int getDungeonNumber(){
         return _number;
     }
@@ -350,15 +347,5 @@ public class Dungeon {
     public int getNumber() {
         return _number;
     }
-
-    public void kill(String actionChoice) {
-        int[] position = parsePosition(actionChoice);
-        int x = position[0];
-        int y = position[1];
-
-
-        Entity target = getEntityAtPosition(x, y);
-
-        target.removeHp(1000);
-    }
 }
+

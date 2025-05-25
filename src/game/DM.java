@@ -17,14 +17,14 @@ import static game.utils.GameUtils.scanner;
 import java.util.*;
 
 
-public class DM {
-    private Dungeon _dungeon;
-    private List<Entity> _entitiesSortedByInitiative;
-    private List<Equipment> _equipmentList;
-    private Repo _equipmentRepo;
-    private Entity _currentEntity;
-    private int _turn;
-    private boolean _winCondition;
+    public class DM {
+        private Dungeon _dungeon;
+        private List<Entity> _entitiesSortedByInitiative;
+        private List<Equipment> _equipmentList;
+        private Repo _equipmentRepo;
+        private Entity _currentEntity;
+        private int _turn;
+        private boolean _winCondition;
 
     public DM() {
         _entitiesSortedByInitiative = new ArrayList<>();
@@ -374,12 +374,6 @@ public class DM {
     public List<Entity> getEntitiesSortedByInitiative() {
         return _entitiesSortedByInitiative;
     }
-
-    public Dungeon getDungeon() {
-        return _dungeon;
-    }
-
-
     public int getTurn(){
         return _turn;
     }
