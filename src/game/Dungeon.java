@@ -308,6 +308,8 @@ public class Dungeon {
         moveEntity(entity, x, y);
         Display.display(entity.getPseudo() + " moved to " + pos + ".");
     }
+    public void pickUp(Entity entity, Equipment equipment) {
+    }
 
     public void moveEntity(Entity entity, int x, int y) {
         if (isValidPosition(x, y)) {
@@ -347,5 +349,16 @@ public class Dungeon {
 
     public int getNumber() {
         return _number;
+    }
+
+    public void kill(String actionChoice) {
+        int[] position = parsePosition(actionChoice);
+        int x = position[0];
+        int y = position[1];
+
+
+        Entity target = getEntityAtPosition(x, y);
+
+        target.removeHp(1000);
     }
 }

@@ -91,7 +91,7 @@ public class Character extends Entity {
                 "   Inventory ◼ : " + this.displayInventory() + "\n" +
                 "   STR ✪ : " + this.getStats().getStrength() + "\n" +
                 "   DEX ➔ : " + this.getStats().getDexterity() + "\n" +
-                "   SPD ⚡ : " + this.getStats().getSpeed() + "(You can move " + this.getStats().getSpeed()/3 + " spaces per turn).";
+                "   SPD ⚡ : " + this.getStats().getSpeed() + " (You can move " + this.getStats().getSpeed()/3 + " spaces per turn).";
     }
     @Override
     public String toString() {

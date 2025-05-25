@@ -30,7 +30,6 @@ public class DM {
         _entitiesSortedByInitiative = new ArrayList<>();
         _equipmentList = new ArrayList<>();
         _equipmentRepo= new Repo();
-        _turn = 1;
         _winCondition= false;
     }
 
@@ -159,8 +158,8 @@ public class DM {
         }
         _dungeon = new Dungeon(width, height, number);
     }
-
     public void setDungeon() {
+        _turn = 1;
         //On sort les monstres et personnages par initiative
         Map<Entity, Integer> initiativeMap = new HashMap<>();
         for (Entity entity : _entitiesSortedByInitiative) {
@@ -247,11 +246,6 @@ public class DM {
         }
     }
 
-
-    public void showBoard() {
-        _dungeon.updateMap();
-    }
-
     public void createGame() {
         Display.display("----Setting up the game----");
         createCharacters();
@@ -263,23 +257,50 @@ public class DM {
     }
 
     private void nextDungeon(List<Entity> entitiesSortedByInitiative) {
+        int newDungeonNumber = _dungeon.getNumber()+1;
+        if (newDungeonNumber > 3) {
+            return;
+        }
+        Display.display("You managed to kill all the monsters on this floor, Well done !");
+        Display.display("Healing players...");
+        for (Entity entity : entitiesSortedByInitiative) {
+            if (entity.isPlayer()) {
+                entity.setHp(entity.getMaxHp()- entity.getHp());
+            }
+        }
+        Display.display("All players healed :D");
+        Display.display("And now....");
         Display.display("----Onto the next Dungeon !----");
         createMonsters();
         createEquipments();
-        createDungeon(this._dungeon.getNumber()+1);
+        createDungeon(newDungeonNumber);
         setDungeon();
-        Display.display("----Start of the game----");
     }
 
-
     public void play() {
-        while (!_winCondition && _dungeon.getNumber() < 3) {
+        while (!_winCondition && _dungeon.getNumber() <= 3) {
             for (int currentEntityIndex = 0; currentEntityIndex < _entitiesSortedByInitiative.size(); ) {
                 _currentEntity = _entitiesSortedByInitiative.get(currentEntityIndex);
+                if (!_currentEntity.isAlive()) {
+                    _entitiesSortedByInitiative.remove(currentEntityIndex);
+                    continue;
+                }
                 turn(currentEntityIndex);
                 currentEntityIndex++;
             }
             _turn++;
+            if (allMonstersDead() && _dungeon.getNumber() < 3) {
+                nextDungeon(_entitiesSortedByInitiative);
+            } else if (allMonstersDead() && _dungeon.getNumber() == 3) {
+                _winCondition = true;
+            }
+            if (allPlayersDead()){
+                Display.displayError("You just lost the Game.");
+                return;
+            }
+        }
+        if (_winCondition) {
+            Display.displaySuccess("Congratulations, you have completed the game!");
         }
     }
 
@@ -287,20 +308,12 @@ public class DM {
 
 
     public void turn(int currentEntityNum){
-        _currentEntity = _entitiesSortedByInitiative.get(currentEntityNum);
         Display.displayInfo(this);
-        Display.displayMap(_dungeon);
-        Display.displayEntityInfo(_currentEntity);
+        _currentEntity = _entitiesSortedByInitiative.get(currentEntityNum);
         for (int action = 3 ; action > 0; action--) {
+            Display.displayMap(_dungeon);
+            Display.displayEntityInfo(_currentEntity);
 
-            //remove all dead monsters
-            _entitiesSortedByInitiative.removeIf(entity -> entity.getHp() <= 0 && entity.isMonster());
-            //check if won
-            if (allMonstersDead()){
-                Display.displaySuccess("All monsters are dead! You win!");
-                _winCondition = true;
-                nextDungeon(_entitiesSortedByInitiative);
-            }
             Display.displayActionMenu(_currentEntity, action);
             String choice = scanner.next();
             String actionChoice = scanner.next();
@@ -309,7 +322,6 @@ public class DM {
                 case "att" -> _dungeon.attack(_currentEntity, actionChoice);
                 case "equ" -> _dungeon.equip(_currentEntity);
                 case "move" -> _dungeon.move(_currentEntity, actionChoice);
-
 
 
 
@@ -325,13 +337,25 @@ public class DM {
             //c pour attendre que le joueur presse
             scanner.nextLine();
             scanner.nextLine();
-            Display.displayMap(_dungeon);
-            Display.displayEntityInfo(_currentEntity);
+            //remove all dead monsters
+            _entitiesSortedByInitiative.removeIf(entity -> entity.getHp() <= 0 && entity.isMonster());
+            //check if won
+            if (allMonstersDead()){
+                return;
+            }
         }
 
         Display.displayClear();
     }
 
+    private boolean allPlayersDead() {
+        for (Entity entity : _entitiesSortedByInitiative) {
+            if (entity.isPlayer() && entity.getHp() > 0) {
+                return false;
+            }
+        }
+        return true;
+    }
 
 
     private boolean allMonstersDead() {
@@ -344,8 +368,6 @@ public class DM {
     }
 
 
-    public void pickUp(Entity entity, Equipment equipment) {
-    }
 
 
 
@@ -376,33 +398,7 @@ public class DM {
 
 
 
-    public void setupTestScenario() {
-        // Create a small dungeon
-        _dungeon = new Dungeon(5, 5, 1);
 
-        // Create a player
-        Character player = new Character("TestPlayer", new Human(), new Warrior());
-        _entitiesSortedByInitiative.add(player);
-
-        // Create weak monsters
-        Monster a = new Monster("Fragon", 1, new MeleeWeapon("MonsterMeleeAttack", 1, 1,6),10);
-        a.setHp(1);
-
-        _entitiesSortedByInitiative.add(a);
-
-        // Add entities to the dungeon
-        _dungeon.addEntity(2, 2, player);
-        _dungeon.addEntity(2, 3, a);
-
-
-        Map<Entity, Integer> initiativeMap = new HashMap<>();
-        for (Entity entity : _entitiesSortedByInitiative) {
-            initiativeMap.put(entity, entity.getInitiative() + GameUtils.roll(1, 20));
-        }
-        _entitiesSortedByInitiative.sort((e1, e2) -> initiativeMap.get(e2) - initiativeMap.get(e1));
-
-
-    }
 
 
 

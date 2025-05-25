@@ -6,7 +6,6 @@ import java.util.List;
 
 public class Repo {
     private static List<Equipment> _repo;
-//todo : rename
     public Repo() {
         _repo = new java.util.ArrayList<>();
         // Light Armors
