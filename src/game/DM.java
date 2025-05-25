@@ -263,19 +263,24 @@ public class DM {
     }
 
 
-    public void play(){
+    public void play() {
         int currentEntityIndex = 0;
-        while (_winCondition){
-            while (currentEntityIndex < _entitiesSortedByInitiative.size()) {
+        while (_winCondition) {
+            for (currentEntityIndex = 0; currentEntityIndex < _entitiesSortedByInitiative.size(); ) {
+                _currentEntity = _entitiesSortedByInitiative.get(currentEntityIndex);
+                if (!_currentEntity.isAlive()) {
+                    _entitiesSortedByInitiative.remove(currentEntityIndex);
+                    continue;
+                }
                 turn(currentEntityIndex);
                 currentEntityIndex++;
             }
-            currentEntityIndex=0;
             _turn++;
         }
-
-
     }
+
+
+
     public void turn(int currentEntityNum){
         _currentEntity = _entitiesSortedByInitiative.get(currentEntityNum);
         Display.displayInfo(this);
@@ -328,6 +333,7 @@ public class DM {
         return _dungeon;
     }
 
+
     public int getTurn(){
         return _turn;
     }
@@ -337,4 +343,17 @@ public class DM {
     public int getDungeonNumber() {
         return _dungeon.getDungeonNumber();
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

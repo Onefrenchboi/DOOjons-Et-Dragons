@@ -248,16 +248,19 @@ public class Dungeon {
             int damage = attacker.getEquippedWeapon().damage();
             Display.display("You did " + damage + " damage !");
             target.removeHp(damage);
+            if (!target.isAlive()) {
+                Display.display(target.getName() + " has been defeated!");
+                target.setHp(0);
+                _positions.removeEntity(target);
+                _map[x][y] = " . ";
+                return;
+            }
             Display.display(target.getName() + " has " + target.getHp() + " HP left.");
         } else {
             Display.displayError("You missed " + target.getName() + "!");
-            return;
         }
 
-        if (!target.isAlive()) {
-            Display.display(target.getName() + " has been defeated!");
-            _positions.removeEntity(target); // Remove the target from the dungeon
-        }
+
 
     }
     public void equip(Entity entity) {
