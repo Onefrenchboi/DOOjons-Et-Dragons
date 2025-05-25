@@ -17,8 +17,15 @@ public class Monster extends Entity {
         this.setMaxHp(getHp());
         this._number = number;
         this._weapon = weapon;
-        this.setPseudo(this.getName().length() >= 3 ? this.getName().substring(0, 2) + number : this.getName() + number);
 
+        //? Handling du pseudo pour garder l'alignement de la map
+        if (species.length() == 1) {
+            this.setPseudo(species + "#" + number +);
+        } else if (species.length() == 2) {
+            this.setPseudo(species + number);
+        } else {
+            this.setPseudo(species.substring(0, 2) + number);
+        }
     }
 
 
