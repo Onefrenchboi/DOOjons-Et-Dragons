@@ -1,11 +1,12 @@
-import game.GameEngine;
+import game.DM;
 
 public class Main {
     public static void main(String args[]){
 
-        GameEngine gameEngine = new GameEngine();
+        DM dm = new DM();
 
-        gameEngine.createGame();
-        gameEngine.showInfo();
+        dm.createGame();
+        dm.play();
+
     }
 }

@@ -55,4 +55,5 @@ public class Statistics {
     public int getInitiative() {
         return _initiative;
     }
+
 }

@@ -16,7 +16,15 @@ public abstract class Armor extends Equipment {
 
 
     @Override
+    public boolean isArmor() {
+        return true;
+    }
+    @Override
     public String toString() {
         return getName() + " (AC: " + _AC + ")";
+    }
+
+    public int getAC() {
+        return _AC;
     }
 }

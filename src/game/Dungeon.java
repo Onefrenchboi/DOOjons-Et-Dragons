@@ -2,28 +2,24 @@ package game;
 
 import game.entities.Entity;
 import game.items.Equipment;
+import game.utils.GameUtils;
+import game.utils.Display;
 
 import java.util.*;
+
+import static game.utils.GameUtils.parsePosition;
+import static game.utils.GameUtils.scanner;
 
 
 public class Dungeon {
     private String[][] _map;
     private int _height;
     private int _width;
-    private List<int[]> _obstacles = new ArrayList<>();
+    private Positions _positions;
+    private int _number;
 
-    public static final String RESET = "\u001B[0m";
-    public static final String RED = "\u001B[31m";
-    public static final String GREEN = "\u001B[32m";
-    public static final String BLUE = "\u001B[34m";
-    public static final String PURPLE = "\u001B[35m";
-    public static final String WHITE_BG = "\u001B[47m";
-
-
-
-
-
-    public Dungeon(Integer h, Integer w) {
+    //?Constructeur de la classe Dungeon
+    public Dungeon(int h, int w, int number) {
         if (w >= 15 && w <= 26 && h >= 15 && h <= 26) {
             _height = h;
             _width = w;
@@ -33,7 +29,9 @@ public class Dungeon {
             _width = 15;
         }
 
+        _number = number;
         _map = new String[_height + 3][_width + 1];
+        _positions = new Positions();
 
         for (int j = 0; j < _map[0].length; j++) {
             if (j >= 1) {
@@ -57,7 +55,7 @@ public class Dungeon {
         for (int i = 1; i < _map.length - 2; i++) {
             for (int j = 0; j < _map[i].length; j++) {
                 if (j == 0) {
-                    _map[i][j] = (i < 10 ? " " : "") + Integer.toString(i) + " | ";
+                    _map[i][j] = (i < 10 ? " " : "") + i + " | ";
                 } else {
                     _map[i][j] = (j == _map[i].length - 1 ? " .  |" : " . ");
                 }
@@ -65,40 +63,71 @@ public class Dungeon {
         }
     }
 
-
-
-    public boolean isValidPosition(int x, int y, HashMap<Entity, int[]> entities, HashMap<Equipment, int[]> equipments) {
+    public boolean isValidPosition(int x, int y) {
+        //verif bounds map
         if (x < 1 || x >= _map.length - 1 || y < 1 || y >= _map[0].length) {
             return false;
         }
-        for (int[] obstacle : _obstacles) {
+        //verif obstacles
+        for (int[] obstacle : _positions.getObstacles()) {
             if (obstacle[0] == x && obstacle[1] == y) {
                 return false;
             }
         }
-        for (Map.Entry<Entity, int[]> entry : entities.entrySet()) {
-            if (entry.getValue()[0] == x && entry.getValue()[1] == y) {
+        //verif entities
+        for (Map.Entry<Entity, int[]> entity : _positions.getEntitiesPosition().entrySet()) {
+            if (entity.getValue()[0] == x && entity.getValue()[1] == y) {
                 return false;
             }
         }
-        for (Map.Entry<Equipment, int[]> entry : equipments.entrySet()) {
-            if (entry.getValue()[0] == x && entry.getValue()[1] == y) {
+        //verif equipments
+        for (Map.Entry<Equipment, int[]> eqipment : _positions.getEquipmentPosition().entrySet()) {
+            if (eqipment.getValue()[0] == x && eqipment.getValue()[1] == y) {
                 return false;
             }
-        }
-        if (_map[x][y] != null && !_map[x][y].trim().equals(".")) { //on verif si c'est autre chose qu'un point, i.e. une entité
-            return false;
         }
         return true;
     }
 
-    public void addObstacle(int x, int y) {
-        if (x >= 1 && x < _map.length - 1 && y >= 1 && y < _map[0].length) {
-            _obstacles.add(new int[]{x, y});
+    //? Methods to add everything to the lists and hashmaps, manually or randomly
+    public void addEntity(int x, int y, Entity entity) {
+        if (isValidPosition(x, y)) {
+            _positions.addEntity(entity, new int[]{x, y});
         }
     }
-
-    public void CreateDefaultObstacles() {
+    public void randomSetEntity(List<Entity> entities) {
+        for (Entity entity : entities) {
+            int x = GameUtils.roll(1, _height-2);
+            int y = GameUtils.roll(1, _width-1);
+            while (!isValidPosition(x, y)) {
+                x = GameUtils.roll(1, _height-2);
+                y = GameUtils.roll(1, _width-1);
+            }
+            addEntity(x, y, entity);
+        }
+    }
+    public void addEquipment(int x, int y, Equipment equipment) {
+        if (isValidPosition(x, y)) {
+            _positions.addEquipment(equipment ,new int[]{x, y});
+        }
+    }
+    public void randomSetEquipment(List<Equipment> equipments) {
+        for (Equipment equipment : equipments) {
+            int x = GameUtils.roll(1, _height-2);
+            int y = GameUtils.roll(1, _width-1);
+            while (!isValidPosition(x, y)) {
+                x = GameUtils.roll(1, _height-2);
+                y = GameUtils.roll(1, _width-1);
+            }
+            addEquipment(x, y, equipment);
+        }
+    }
+    public void addObstacle(int x, int y) {
+        if (isValidPosition(x, y)) {
+            _positions.addObstacle(new int[]{x, y});
+        }
+    }
+    public void randomSetObstacles() {
         for (int group = 0; group < 5; group++) {
             Random r = new Random();
             int x = r.nextInt(2, _map.length - 4);
@@ -126,46 +155,197 @@ public class Dungeon {
         }
     }
 
+
+
+    //? Methods to set everything on the map
     private void setObstacles() {
-        for (int[] coord : _obstacles) {
+        for (int[] coord : _positions.getObstacles()) {
             int x = coord[0];
             int y = coord[1];
-            _map[x][y] = WHITE_BG + "   " + RESET;
-        }
-    }
-    private void setEntities(HashMap<Entity, int[]> entities) {
-        entities.forEach((entity, coordinates) -> {
-            int x = coordinates[0];
-            int y = coordinates[1];
-            _map[x][y] = entity.getColor() + entity.getPseudo() + RESET;
-        });
-    }
-    private void setEquipments(HashMap<Equipment, int[]> equipments) {
-        equipments.forEach((equipment, coordinates) -> {
-            int x = coordinates[0];
-            int y = coordinates[1];
-            _map[x][y] = BLUE + "[⌘]" + RESET;
-        });
-    }
-
-    private void displayGrid() {
-        for (int i = 0; i < _map.length; i++) {
-            for (int j = 0; j < _map[i].length; j++) {
-                System.out.print(_map[i][j]);
+            if (y == _map[0].length - 1) {
+                _map[x][y] = GameUtils.WHITE_BG + "   " + GameUtils.RESET + " |";
+            } else {
+                _map[x][y] = GameUtils.WHITE_BG + "   " + GameUtils.RESET;
             }
-            System.out.println();
         }
-        System.out.println( WHITE_BG + "   " + RESET + " : Obstacles ||" + BLUE + " [⌘]" + RESET + " : Equipements || " + PURPLE + " [*]" + RESET + " : Entities ||" + RED + " [#]" + RESET + " : Monsters");
+    }
+    private void setEntities() {
+        _positions.getEntitiesPosition().forEach((entity, coordinates) -> {
+            int x = coordinates[0];
+            int y = coordinates[1];
+            if (y == _map[0].length - 1) {
+                _map[x][y] = entity.getColor() + entity.getPseudo() + GameUtils.RESET + " |";
+            } else {
+                _map[x][y] = entity.getColor() + entity.getPseudo() + GameUtils.RESET;
+            }
+
+        });
+    }
+    private void setEquipments() {
+        _positions.getEquipmentPosition().forEach((equipment, coordinates) -> {
+            int x = coordinates[0];
+            int y = coordinates[1];
+            _map[x][y] = GameUtils.BLUE + "[⌘]" + GameUtils.RESET;
+        });
     }
 
-    public void displayMap(HashMap<Entity, int[]> entities, HashMap<Equipment, int[]> equipments) {
+
+    //? Method to update the map (duh)
+    public void updateMap() {
         setObstacles();
-        setEntities(entities);
-        setEquipments(equipments);
+        setEntities();
+        setEquipments();
         displayGrid();
     }
 
-    public int[] getSize() {
-        return new int[]{_height, _width};
+    private void displayGrid() {
+        for (String[] strings : _map) {
+            for (String string : strings) {
+                System.out.print(string);
+            }
+            System.out.println();
+        }
+        Display.display( GameUtils.WHITE_BG + "   " + GameUtils.RESET + " : Obstacles ||" + GameUtils.BLUE + " [⌘]" + GameUtils.RESET + " : Equipements || " + GameUtils.PURPLE + " [*]" + GameUtils.RESET + " : Entities ||" + GameUtils.RED + " [#]" + GameUtils.RESET + " : Monsters");
+    }
+
+
+
+
+
+
+    public void attack(Entity attacker, String pos) {
+        int[] position = parsePosition(pos);
+        int x = position[0];
+        int y = position[1];
+
+        Entity target = getEntityAtPosition(x, y);
+        if (target == null) {
+            Display.displayError("No entity at this position.");
+            return;
+        }
+
+        if (!attacker.canAttack(target)) {
+            Display.displayError("You cannot attack this entity.");
+            return;
+        }
+        // Check if the attacker is too far from the target
+        if (_positions.distanceBetween(attacker, position) > attacker.getEquippedWeapon().getRange()) {
+            Display.displayError("You are too far from " + target.getName() + " to attack it.");
+            return;
+        }
+        int attackRoll = GameUtils.roll(1, 20);
+        Display.display("You rolled a " + attackRoll);
+        if (attacker.getEquippedWeapon().getRange() == 1) {
+            attackRoll += attacker.getStats().getStrength();
+            Display.display("Your attack roll is " + attackRoll + " (Strength bonus applied [+"+ attacker.getStats().getStrength() +"])");
+        } else {
+            attackRoll += attacker.getStats().getDexterity();
+            Display.display("Your attack roll is " + attackRoll + " (Dexterity bonus applied [+"+ attacker.getStats().getDexterity() +"])");
+        }
+
+        if (attackRoll > target.getAC()){
+            Display.display("You hit " + target.getName() + "!");
+            int damage = attacker.getEquippedWeapon().damage();
+            Display.display("You did " + damage + " damage !");
+            target.removeHp(damage);
+            if (!target.isAlive()) {
+                Display.display(target.getName() + " has been defeated!");
+                target.setHp(0);
+                _positions.removeEntity(target);
+                _map[x][y] = " . ";
+                return;
+            }
+            Display.display(target.getName() + " has " + target.getHp() + " HP left.");
+        } else {
+            Display.displayError("You missed " + target.getName() + "!");
+        }
+
+
+
+    }
+    public void equip(Entity entity) {
+        if (entity.isPlayer()){
+            Display.display("Choose an item to equip from your inventory : ");
+            String inventory = entity.displayInventory();
+            if (inventory.equals("Inventory is empty.")) {
+                Display.displayError("You have no items to equip.");
+                return;
+            }
+            Display.display(inventory);
+            int choice = scanner.nextInt();
+            while (choice < 0 || choice >= entity.getInventory().size()) {
+                Display.displayError("Invalid choice. Please choose a valid item number.");
+                choice = scanner.nextInt();
+            }
+            Equipment equipment = entity.getInventory().get(choice);
+            if (equipment.isArmor()) {
+                entity.equipArmor(equipment);
+                Display.display("You equipped " + equipment.getName() + ".");
+            } else if (equipment.isWeapon()) {
+                entity.equipWeapon(equipment);
+                Display.display("You equipped " + equipment.getName() + ".");
+            }
+        }
+    }
+    public void move(Entity entity, String pos) {
+        int[] position = parsePosition(pos);
+        int x = position[0];
+        int y = position[1];
+
+        if (!isValidPosition(x, y)) {
+            Display.displayError("Invalid position. Please enter a new position : ");
+            return;
+        }
+
+        if (getEntityAtPosition(x, y) != null) {
+            Display.displayError("There is already an entity at this position.");
+            return;
+        }
+        if (_positions.distanceBetween(entity, position) > entity.getStats().getSpeed()/3) {
+            Display.displayError("Too far.");
+            return;
+        }
+        moveEntity(entity, x, y);
+        Display.display(entity.getPseudo() + " moved to " + pos + ".");
+    }
+    public void pickUp(Entity entity,String pos) {
+    }
+
+    public void moveEntity(Entity entity, int x, int y) {
+        if (isValidPosition(x, y)) {
+            int[] oldPosition = _positions.getEntitiesPosition().get(entity);
+            if (oldPosition != null) {
+                _positions.getEntitiesPosition().remove(entity);
+                _positions.addEntity(entity, new int[]{x, y});
+                _map[oldPosition[0]][oldPosition[1]] = " . ";
+            }
+        } else {
+            Display.displayError("Invalid position for entity movement.");
+        }
+    }
+
+
+    //? Getters
+    public int getDungeonNumber(){
+        return _number;
+    }
+
+    public Entity getEntityAtPosition(int x, int y) {
+        for (Map.Entry<Entity, int[]> entry : _positions.getEntitiesPosition().entrySet()) {
+            int[] position = entry.getValue();
+            if (position[0] == x && position[1] == y) {
+                return entry.getKey();
+            }
+        }
+        return null;
+    }
+
+    public Positions getPositions() {
+        return _positions;
+    }
+
+    public int getNumber() {
+        return _number;
     }
 }
+
