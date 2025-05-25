@@ -2,7 +2,7 @@ package game.entities;
 import game.entities.races.*;
 import game.entities.classes.*;
 import game.items.*;
-import game.utils.Dice;
+import game.utils.GameUtils;
 import game.utils.Display;
 
 import java.util.ArrayList;
@@ -58,7 +58,7 @@ public class Character extends Entity {
     }
     @Override
     public String toString() {
-        return Dice.PURPLE + super.getName() + " the " + _class.getName() + " " + _race.getName() + Dice.RESET;
+        return GameUtils.PURPLE + super.getName() + " the " + _class.getName() + " " + _race.getName() + GameUtils.RESET;
     }
 
 }

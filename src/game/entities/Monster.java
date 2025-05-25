@@ -1,7 +1,7 @@
 package game.entities;
 
 import game.items.Weapon;
-import game.utils.Dice;
+import game.utils.GameUtils;
 
 public class Monster extends Entity {
     private int _number;
@@ -13,7 +13,7 @@ public class Monster extends Entity {
 
     public Monster(String species, int number, Weapon weapon) {
         super(species);
-        this.setHp(Dice.roll(4, 4) + 3);
+        this.setHp(GameUtils.roll(4, 4) + 3);
         this.setMaxHp(getHp());
         this._number = number;
         this._weapon = weapon;
@@ -25,7 +25,7 @@ public class Monster extends Entity {
 
     @Override
     public String getColor() {
-        return Dice.RED;
+        return GameUtils.RED;
     }
 
     public String getInfo() {
@@ -37,6 +37,6 @@ public class Monster extends Entity {
 
     @Override
     public String toString() {
-        return Dice.RED + super.getName() + " #" + _number + Dice.RESET;
+        return GameUtils.RED + super.getName() + " #" + _number + GameUtils.RESET;
     }
 }

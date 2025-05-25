@@ -2,10 +2,9 @@ package game;
 
 import game.entities.Entity;
 import game.items.Equipment;
-import game.utils.Dice;
+import game.utils.GameUtils;
 import game.utils.Display;
 
-import javax.swing.text.Position;
 import java.util.*;
 
 
@@ -95,11 +94,11 @@ public class Dungeon {
     }
     public void randomSetEntity(List<Entity> entities) {
         for (Entity entity : entities) {
-            int x = Dice.roll(1, _height-2);
-            int y = Dice.roll(1, _width-1);
+            int x = GameUtils.roll(1, _height-2);
+            int y = GameUtils.roll(1, _width-1);
             while (!isValidPosition(x, y)) {
-                x = Dice.roll(1, _height-2);
-                y = Dice.roll(1, _width-1);
+                x = GameUtils.roll(1, _height-2);
+                y = GameUtils.roll(1, _width-1);
             }
             addEntity(x, y, entity);
         }
@@ -111,11 +110,11 @@ public class Dungeon {
     }
     public void randomSetEquipment(List<Equipment> equipments) {
         for (Equipment equipment : equipments) {
-            int x = Dice.roll(1, _height-2);
-            int y = Dice.roll(1, _width-1);
+            int x = GameUtils.roll(1, _height-2);
+            int y = GameUtils.roll(1, _width-1);
             while (!isValidPosition(x, y)) {
-                x = Dice.roll(1, _height-2);
-                y = Dice.roll(1, _width-1);
+                x = GameUtils.roll(1, _height-2);
+                y = GameUtils.roll(1, _width-1);
             }
             addEquipment(x, y, equipment);
         }
@@ -161,9 +160,9 @@ public class Dungeon {
             int x = coord[0];
             int y = coord[1];
             if (y == _map[0].length - 1) {
-                _map[x][y] = Dice.WHITE_BG + "   " + Dice.RESET + " |";
+                _map[x][y] = GameUtils.WHITE_BG + "   " + GameUtils.RESET + " |";
             } else {
-                _map[x][y] = Dice.WHITE_BG + "   " + Dice.RESET;
+                _map[x][y] = GameUtils.WHITE_BG + "   " + GameUtils.RESET;
             }
         }
     }
@@ -172,9 +171,9 @@ public class Dungeon {
             int x = coordinates[0];
             int y = coordinates[1];
             if (y == _map[0].length - 1) {
-                _map[x][y] = entity.getColor() + entity.getPseudo() + Dice.RESET + " |";
+                _map[x][y] = entity.getColor() + entity.getPseudo() + GameUtils.RESET + " |";
             } else {
-                _map[x][y] = entity.getColor() + entity.getPseudo() + Dice.RESET;
+                _map[x][y] = entity.getColor() + entity.getPseudo() + GameUtils.RESET;
             }
 
         });
@@ -183,7 +182,7 @@ public class Dungeon {
         _positions.getEquipmentPosition().forEach((equipment, coordinates) -> {
             int x = coordinates[0];
             int y = coordinates[1];
-            _map[x][y] = Dice.BLUE + "[⌘]" + Dice.RESET;
+            _map[x][y] = GameUtils.BLUE + "[⌘]" + GameUtils.RESET;
         });
     }
 
@@ -203,7 +202,7 @@ public class Dungeon {
             }
             System.out.println();
         }
-        Display.display( Dice.WHITE_BG + "   " + Dice.RESET + " : Obstacles ||" + Dice.BLUE + " [⌘]" + Dice.RESET + " : Equipements || " + Dice.PURPLE + " [*]" + Dice.RESET + " : Entities ||" + Dice.RED + " [#]" + Dice.RESET + " : Monsters");
+        Display.display( GameUtils.WHITE_BG + "   " + GameUtils.RESET + " : Obstacles ||" + GameUtils.BLUE + " [⌘]" + GameUtils.RESET + " : Equipements || " + GameUtils.PURPLE + " [*]" + GameUtils.RESET + " : Entities ||" + GameUtils.RED + " [#]" + GameUtils.RESET + " : Monsters");
         Display.display("\n");
     }
 

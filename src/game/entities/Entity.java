@@ -1,7 +1,7 @@
 package game.entities;
 
 
-import game.utils.Dice;
+import game.utils.GameUtils;
 
 public abstract class Entity {
     private String _name;
@@ -14,10 +14,10 @@ public abstract class Entity {
         this._name = name;
         this._stats = new Statistics(
                 0,
-                (Dice.roll(4, 4) + 3),
-                (Dice.roll(4, 4) + 3),
-                (Dice.roll(4, 4) + 3),
-                (Dice.roll(4, 4) + 3));
+                (GameUtils.roll(4, 4) + 3),
+                (GameUtils.roll(4, 4) + 3),
+                (GameUtils.roll(4, 4) + 3),
+                (GameUtils.roll(4, 4) + 3));
     }
 
     public Statistics getStats() {
@@ -67,7 +67,7 @@ public abstract class Entity {
     }
 
     public String getColor() {
-        return Dice.PURPLE;
+        return GameUtils.PURPLE;
     }
 
     public boolean isAlive() {

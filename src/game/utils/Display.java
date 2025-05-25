@@ -4,7 +4,7 @@ import game.DM;
 import game.Dungeon;
 import game.entities.Entity;
 
-import static game.utils.Dice.*;
+import static game.utils.GameUtils.*;
 
 
 public class Display {

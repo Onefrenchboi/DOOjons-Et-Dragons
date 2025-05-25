@@ -8,10 +8,10 @@ import game.entities.Character;
 import game.items.*;
 import game.utils.Display;
 import game.utils.Repo;
-import game.utils.Dice;
+import game.utils.GameUtils;
 
-import static game.utils.Dice.parsePosition;
-import static game.utils.Dice.scanner;
+import static game.utils.GameUtils.parsePosition;
+import static game.utils.GameUtils.scanner;
 
 
 import java.util.*;
@@ -163,7 +163,7 @@ public class DM {
         //On sort les monstres et personnages par initiative
         Map<Entity, Integer> initiativeMap = new HashMap<>();
         for (Entity entity : _entitiesSortedByInitiative) {
-            initiativeMap.put(entity, entity.getInitiative() + Dice.roll(1, 20));
+            initiativeMap.put(entity, entity.getInitiative() + GameUtils.roll(1, 20));
         }
 
         _entitiesSortedByInitiative.sort((e1, e2) -> initiativeMap.get(e2) - initiativeMap.get(e1));
