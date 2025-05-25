@@ -30,8 +30,8 @@ public class DM {
         _entitiesSortedByInitiative = new ArrayList<>();
         _equipmentList = new ArrayList<>();
         _equipmentRepo= new Repo();
-        _equipmentRepo.initializeEquipment();
-        _turn = 0;
+        _turn = 1;
+        _winCondition= true;
     }
 
 
@@ -94,8 +94,7 @@ public class DM {
             for (int i = 0; i < nbMonstres; i++) {
                 Display.display("Enter the monsters race: ");
                 String species = scanner.next();
-                //todo : make this more readable
-                Display.display("Enter the monsters range, and damage (x y z) : ");
+                Display.display("Enter the monster's attack range, number of dice, and dice value (e.g., 1 2 6 for range 1, 2d6 damage): ");
                 int range = scanner.nextInt();
                 int dicenum = scanner.nextInt();
                 int damageroll = scanner.nextInt();
@@ -263,22 +262,43 @@ public class DM {
 
 
     public void play(){
+        int currentEntityIndex = 0;
         while (_winCondition){
-            turn();
+            while (currentEntityIndex < _entitiesSortedByInitiative.size()) {
+                turn(currentEntityIndex);
+                currentEntityIndex++;
+            }
+            currentEntityIndex=0;
+            _turn++;
         }
 
 
     }
 
 
-    public void turn(){
-        _turn++;
-        _currentEntity = _entitiesSortedByInitiative.get(0);
+    public void turn(int currentEntityNum){
+        _currentEntity = _entitiesSortedByInitiative.get(currentEntityNum);
         Display.displayInfo(this);
         Display.displayMap(_dungeon);
         Display.displayEntityInfo(_currentEntity);
-        //Display.displayTurnInfo();
+        for (int action = 3 ; action > 0; action--) {
+            Display.displayActionMenu(_currentEntity, action);
+            String choice = scanner.next();
+            String actionChoice = scanner.next();
+            Display.display("You chose: " + choice + " " + actionChoice);
+            switch (choice) {
+                case "att" -> Display.display("atak");//attack(_currentEntity, _dungeon.getEntityAtPosition(_currentEntity.getX(), _currentEntity.getY()));
+                case "move" -> Display.display("muv");//move(_currentEntity, _currentEntity.getX() + 1, _currentEntity.getY());
+                case "pick" -> Display.display("pikup");//pickUp(_currentEntity, _dungeon.getEquipmentAtPosition(_currentEntity.getX(), _currentEntity.getY()));
+                case "equip" -> Display.display("ekuip");//equip(_currentEntity);
+                case "com" -> Display.display("ekuip");//equip(_currentEntity);
+                case "dm" -> Display.display("ekuip");//equip(_currentEntity);
+                default -> Display.displayError("Invalid choice. Please try again.");
+            }
+        }
 
+        //on fait sortir, puis rerentrer, dcp c'est plus trié tsais
+        Display.displayClear();
     }
 
     public void attack(Entity attacker, Entity target) {

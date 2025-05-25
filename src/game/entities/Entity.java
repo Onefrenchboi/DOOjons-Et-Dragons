@@ -26,6 +26,14 @@ public abstract class Entity {
 
 
 
+    //!popopo le instanceof du pauvre
+    public boolean isPlayer() {
+        return false; // par defaut, les entites ne sont pas des joueurs
+    }
+    public boolean isMonster() {
+        return false; // par defaut, les entites ne sont pas des monstres
+    }
+
 
 
 

@@ -46,14 +46,29 @@ public class Display {
         dungeon.updateMap();
     }
 
-    public static void displayTurnInfo(Entity currentEntity, int actions) {
-        System.out.println(currentEntity.getName() + ", you have " + actions + " actions left this turn.");
+    public static void displayClear() {
+        System.out.print("\n".repeat(50));
+    }
+
+    public static void displayActionMenu(Entity currentEntity, int actions) {
+        System.out.println("-------------------------------");
+        System.out.println(currentEntity.toString() + ", you have " + actions + " actions left this turn.");
         System.out.println("Possible actions:");
-        System.out.println("  - Let the DM comment the previous action (dm <text>)");
-        System.out.println("  - Comment the previous action (com <text>)");
-        System.out.println("  - Attack (att <Case>)");
-        System.out.println("  - Move (dep <Case>)");
-        System.out.println("  - Equip an item (equ <item number>)");
-        System.out.println();
+        if (currentEntity.isMonster()){
+            System.out.println("  - Let the DM comment the previous action (dm <text>)");
+            System.out.println("  - Comment the previous action (com <text>)");
+            System.out.println("  - Attack (att <Case>)");
+            System.out.println("  - Move (move <Case>)");
+
+        }else {
+            System.out.println("  - Let the DM comment the previous action (dm <text>)");
+            System.out.println("  - Comment the previous action (com <text>)");
+            System.out.println("  - Attack (att <Case>)");
+            System.out.println("  - Move (move <Case>)");
+            System.out.println("  - Equip an item (equ <item number>)");
+            System.out.println("  - Pick up an item (pick <item number>)");
+
+        }
+        System.out.println("-------------------------------");
     }
 }

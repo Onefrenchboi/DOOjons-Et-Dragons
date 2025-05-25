@@ -23,6 +23,12 @@ public class Monster extends Entity {
 
 
 
+
+    @Override
+    public boolean isMonster() {
+        return true;
+    }
+
     @Override
     public String getColor() {
         return GameUtils.RED;
@@ -32,7 +38,7 @@ public class Monster extends Entity {
         return "    HP ❤ : " + this.getHp() + "/" + this.getMaxHp() + "\n" +
                 "   STR ✪ : " + this.getStats().getStrength() + "\n" +
                 "   DEX ➔ : " + this.getStats().getDexterity() + "\n" +
-                "   SPD ⚡ : " + this.getStats().getSpeed() + "\n";
+                "   SPD ⚡ : " + this.getStats().getSpeed();
     }
 
     @Override

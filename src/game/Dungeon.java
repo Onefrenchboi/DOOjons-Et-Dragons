@@ -203,7 +203,7 @@ public class Dungeon {
             System.out.println();
         }
         Display.display( GameUtils.WHITE_BG + "   " + GameUtils.RESET + " : Obstacles ||" + GameUtils.BLUE + " [⌘]" + GameUtils.RESET + " : Equipements || " + GameUtils.PURPLE + " [*]" + GameUtils.RESET + " : Entities ||" + GameUtils.RED + " [#]" + GameUtils.RESET + " : Monsters");
-        Display.display("\n");
+        System.out.println("-------------------------------");
     }
 
 

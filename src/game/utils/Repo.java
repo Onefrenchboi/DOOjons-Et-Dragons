@@ -5,13 +5,10 @@ import game.items.*;
 import java.util.List;
 
 public class Repo {
-    private List<Equipment> _repo;
+    private static List<Equipment> _repo;
 //todo : rename
     public Repo() {
         _repo = new java.util.ArrayList<>();
-    }
-
-    public void initializeEquipment() {
         // Light Armors
         addEquipment(new LightArmor("Scale armor", 9));
         addEquipment(new LightArmor("Half-plate", 10));
@@ -33,7 +30,9 @@ public class Repo {
         addEquipment(new RangedWeapon("Light crossbow", 16, 1,8));
         addEquipment(new RangedWeapon("Sling", 6, 1,4));
         addEquipment(new RangedWeapon("Shortbow", 16, 1,6));
+
     }
+
 
     public void addEquipment(Equipment e) {
         if (e != null && !_repo.contains(e)) {
@@ -54,13 +53,13 @@ public class Repo {
        return _repo;
     }
 
-//    public Equipment getEquipmentByName(String equipment) {
-//        for (Equipment e : _repo) {
-//            if (e.get_name().equals(equipment)) {
-//                return e;
-//            }
-//        }
-//        return null;
-//    }
+    public static Equipment getEquipmentByName(String equipment) {
+        for (Equipment e : _repo) {
+            if (e.getName().equals(equipment)) {
+                return e;
+            }
+        }
+        return null;
+    }
 
 }

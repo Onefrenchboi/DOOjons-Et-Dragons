@@ -11,9 +11,10 @@ public abstract class CharacterClass {
     private Statistics _bonusStats;
 
 
-    protected CharacterClass(String name, Statistics bonusStats) {
+    protected CharacterClass(String name, Statistics bonusStats, List<Equipment> startingEquipment) {
         this._name = name;
         this._bonusStats = bonusStats;
+        this._startingEquipment = startingEquipment;
     }
 
     public List<Equipment> getStartingEquipment() {

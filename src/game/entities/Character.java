@@ -19,7 +19,7 @@ public class Character extends Entity {
         super(name);
         this._race = race;
         this._class = charclass;
-        this._inventory = new ArrayList<Equipment>();
+        this._inventory = new ArrayList<>(charclass.getStartingEquipment());
 
         this.getStats().addStatistics(_race.getBonusStats());
         this.getStats().addStatistics(_class.getBonusStats());
@@ -37,28 +37,34 @@ public class Character extends Entity {
 
     }
 
+    @Override
+    public boolean isPlayer() {
+        return true;
+    }
+
+    public String displayInventory() {
+        if (_inventory == null || _inventory.isEmpty()) {
+            return "Inventory is empty.";
+        }
+        StringBuilder inventoryDisplay = new StringBuilder();
+        for (Equipment equipment : _inventory) {
+            int n = _inventory.indexOf(equipment);
+            inventoryDisplay.append("[" + n + "] ").append(equipment.getName()).append(" | ");
+        }
+        return inventoryDisplay.toString();
+    }
 
     public String getInfo(){
         return  "   HP ❤ : " + this.getHp() + "/" + this.getMaxHp() + "\n" +
                 "   Armor ⊙ : " + (this._equippedArmor != null ? this._equippedArmor.getName() : "None") + "\n" +
                 "   Weapon ⚔ : " + (this._equippedWeapon != null ? this._equippedWeapon.getName() : "None") + "\n" +
-                "   Inventory ◼ : " + this.getInventory() + "\n" +
+                "   Inventory ◼ : " + this.displayInventory() + "\n" +
                 "   STR ✪ : " + this.getStats().getStrength() + "\n" +
                 "   DEX ➔ : " + this.getStats().getDexterity() + "\n" +
-                "   SPD ⚡ : " + this.getStats().getSpeed() + "\n";
-
-    }
-
-    public List<Equipment> getInventory() {
-        for (Equipment equipment : _inventory) {
-            int n = _inventory.indexOf(equipment);
-            Display.display("[" + n + "]" + equipment.toString());
-        }
-        return _inventory;
+                "   SPD ⚡ : " + this.getStats().getSpeed();
     }
     @Override
     public String toString() {
         return GameUtils.PURPLE + super.getName() + " the " + _class.getName() + " " + _race.getName() + GameUtils.RESET;
     }
-
 }

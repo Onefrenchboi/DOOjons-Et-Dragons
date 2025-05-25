@@ -4,18 +4,18 @@ left to right direction
 skinparam classfontStyle bold
 skinparam shadowing true
 
+skinparam linetype ortho
 skinparam defaultFontName "Century Gothic"
 
 skinparam roundcorner 15
 
-skinparam linetype ortho
 
 
 package "game" <<frame>> #b3b3b3  {
 
 package utils #palegreen{
-        class Utils #Bisque {
-        + {static} roll(num : int, sides : int) : int
+        class Dice #Bisque {
+        + {static} roll(num : Integer, sides : Integer) : Integer
     }
     class Repo  #Bisque {
         + <<create>> Repo()
@@ -29,7 +29,18 @@ package utils #palegreen{
   }
 
 
+'  class Positions #Bisque {
+'    - _entitiesPosition : HashMap<Entity, int[]>
+'    - _equipmentPosition : HashMap<Equipment, int[]>
+'    - _obstacles : List<int>
+'    + <<create>> Positions()
+'    + toString() : String
+'  }
 
+  class Display #Bisque {
+    + {static} display(stuff : String)
+
+  }
 
 class GameEngine #Bisque {
     - _gameState : Boolean
@@ -182,6 +193,8 @@ class GameEngine #Bisque {
 
     }
   }
+
+
   package items #ca82f5 {
     abstract class Equipment <<abstract>>  #Bisque {
     - _name : String
@@ -235,47 +248,46 @@ class GameEngine #Bisque {
      _AC : Integer)
     + toString() : String
     }
-
-
-
   }
+
+
 
 'Links
 
 
   entities.Entity "1"  *-----> "-_stats" entities.Statistics : "> has"
 
-  Character "1"  o--> "-_class" entities.classes.CharacterClass : "> is"
-  Character "1"  o--> "-_race" entities.races.Race : "> is"
-  Character "1"  o--> "-_inventory[*]" items.Equipment : "> has"
-  Character "1"  *--> "-_equippedWeapon" items.Weapon : "> uses"
-  Character "1"  *--> "-_equippedArmor" items.Armor : "> wears"
+  entities.Character "1"  o--> "-_class" entities.classes.CharacterClass : "> is"
+  entities.Character "1"  o--> "-_race" entities.races.Race : "> is"
+  entities.Character "1"  o--> "-_inventory[*]" items.Equipment : "> has"
+  entities.Character "1"  *--> "-_equippedWeapon" items.Weapon : "> uses"
+  entities.Character "1"  *--> "-_equippedArmor" items.Armor : "> wears"
 
 
-  CharacterClass "1"  o--> "-_startingEquipment[*]" items.Equipment : "> has"
-  CharacterClass "1"  o---> "-_bonusStat" entities.Statistics : "> has a bonus"
+  entities.classes.CharacterClass "1"  o--> "-_startingEquipment[*]" items.Equipment : "> has"
+  entities.classes.CharacterClass "1"  o-down--> "-_bonusStat" entities.Statistics : "> has a bonus"
 
 
-  Repo "1"  *--> "-_repo[*]" items.Equipment : "> has"
+  utils.Repo "1"  *--> "-_repo[*]" items.Equipment : "> has"
 
-  Armor "1" *--> "-_bonusStat" entities.Statistics : "> has a bonus"
-  Weapon "1" *--> "-_bonusStat" entities.Statistics : "> has a bonus"
+  items.Armor "1" *--> "-_bonusStat" entities.Statistics : "> has a bonus"
+  items.Weapon "1" *--> "-_bonusStat" entities.Statistics : "> has a bonus"
 
 
-  Race "1"  o--> "-_bonusStat" entities.Statistics : "> has a bonus"
+  entities.races.Race "1"  o-down-> "-_bonusStat" entities.Statistics : "> has a bonus"
 
 
 
 
   DM "1"  o--> "-_dungeon" Dungeon : "> has"
-  DM "1"  o--> "-_equipmentList[*]" Equipment : "> has"
-  DM "1"  o--> "-_entitiesSortedByInitiative[*]" Entity : "> has"
-  DM "1"  o--> "-_equipmentRepo" Repo : "> has"
-  DM "1" ..> Entity: " <<uses>>"
-  DM "1" ..> Equipment: " <<uses>>"
+  DM "1"  o--> "-_equipmentList[*]" items.Equipment : "> has"
+  DM "1"  o--> "-_entitiesSortedByInitiative[*]" entities.Entity : "> has"
+  DM "1"  o--> "-_equipmentRepo" utils.Repo : "> has"
+  DM "1" ..> entities.Entity: " <<uses>>"
+  DM "1" ..> items.Equipment: " <<uses>>"
 
 
-  Monster "1"  o--> "-_weapon" Weapon : "> has"
+  entities.Monster "1"  o--> "-_weapon" Weapon : "> has"
 
 
   GameEngine "1"  o--> "-_dungeonMaster" DM : "> has a"
