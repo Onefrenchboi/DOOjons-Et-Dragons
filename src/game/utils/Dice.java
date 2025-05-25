@@ -1,6 +1,7 @@
 package game.utils;
 
 import java.util.Random;
+import java.util.Scanner;
 
 public class Dice {
 
@@ -11,7 +12,8 @@ public class Dice {
     public static final String BLUE = "\u001B[34m";
     public static final String PURPLE = "\u001B[35m";
     public static final String WHITE_BG = "\u001B[47m";
-    private static final Random random = new Random();
+    public static final Random random = new Random();
+    public static final Scanner scanner = new Scanner(System.in);
 
     public static int roll(int num, int sides) {
         int total = 0;

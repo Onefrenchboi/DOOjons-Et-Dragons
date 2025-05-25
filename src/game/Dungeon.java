@@ -2,7 +2,7 @@ package game;
 
 import game.entities.Entity;
 import game.items.Equipment;
-import game.utils.Utils;
+import game.utils.Dice;
 
 import java.util.*;
 
@@ -11,14 +11,10 @@ public class Dungeon {
     private String[][] _map;
     private int _height;
     private int _width;
-    private List<int[]> _obstacles = new ArrayList<>();
+    private Positions _positions;
 
-
-
-
-
-
-    public Dungeon(Integer h, Integer w) {
+    //?Constructeur de la classe Dungeon
+    public Dungeon(int h, int w) {
         if (w >= 15 && w <= 26 && h >= 15 && h <= 26) {
             _height = h;
             _width = w;
@@ -29,6 +25,7 @@ public class Dungeon {
         }
 
         _map = new String[_height + 3][_width + 1];
+        _positions = new Positions();
 
         for (int j = 0; j < _map[0].length; j++) {
             if (j >= 1) {
@@ -60,40 +57,72 @@ public class Dungeon {
         }
     }
 
-
-
-    public boolean isValidPosition(int x, int y, HashMap<Entity, int[]> entities, HashMap<Equipment, int[]> equipments) {
+    public boolean isValidPosition(int x, int y) {
+        //verif bounds map
         if (x < 1 || x >= _map.length - 1 || y < 1 || y >= _map[0].length) {
             return false;
         }
-        for (int[] obstacle : _obstacles) {
+        //verif obstacles
+        for (int[] obstacle : _positions.getObstacles()) {
             if (obstacle[0] == x && obstacle[1] == y) {
                 return false;
             }
         }
-        for (Map.Entry<Entity, int[]> entry : entities.entrySet()) {
-            if (entry.getValue()[0] == x && entry.getValue()[1] == y) {
+        //verif entities
+        for (Map.Entry<Entity, int[]> entity : _positions.getEntitiesPosition().entrySet()) {
+            if (entity.getValue()[0] == x && entity.getValue()[1] == y) {
                 return false;
             }
         }
-        for (Map.Entry<Equipment, int[]> entry : equipments.entrySet()) {
-            if (entry.getValue()[0] == x && entry.getValue()[1] == y) {
+        //verif equipments
+        for (Map.Entry<Equipment, int[]> eqipment : _positions.getEquipmentPosition().entrySet()) {
+            if (eqipment.getValue()[0] == x && eqipment.getValue()[1] == y) {
                 return false;
             }
-        }
-        if (_map[x][y] != null && !_map[x][y].trim().equals(".")) { //on verif si c'est autre chose qu'un point, i.e. une entité
-            return false;
         }
         return true;
     }
 
-    public void addObstacle(int x, int y) {
-        if (x >= 1 && x < _map.length - 1 && y >= 1 && y < _map[0].length) {
-            _obstacles.add(new int[]{x, y});
+
+
+    public void addEntity(int x, int y, Entity entity) {
+        if (isValidPosition(x, y)) {
+            _positions.addEntity(entity, new int[]{x, y});
         }
     }
-
-    public void CreateDefaultObstacles() {
+    public void randomSetEntity(List<Entity> entities) {
+        for (Entity entity : entities) {
+            int x = Dice.roll(1, _height-2);
+            int y = Dice.roll(1, _width-1);
+            while (!isValidPosition(x, y)) {
+                x = Dice.roll(1, _height-2);
+                y = Dice.roll(1, _width-1);
+            }
+            addEntity(x, y, entity);
+        }
+    }
+    public void addEquipment(int x, int y, Equipment equipment) {
+        if (isValidPosition(x, y)) {
+            _positions.addEquipment(equipment ,new int[]{x, y});
+        }
+    }
+    public void randomSetEquipment(List<Equipment> equipments) {
+        for (Equipment equipment : equipments) {
+            int x = Dice.roll(1, _height-2);
+            int y = Dice.roll(1, _width-1);
+            while (!isValidPosition(x, y)) {
+                x = Dice.roll(1, _height-2);
+                y = Dice.roll(1, _width-1);
+            }
+            addEquipment(x, y, equipment);
+        }
+    }
+    public void addObstacle(int x, int y) {
+        if (isValidPosition(x, y)) {
+            _positions.addObstacle(new int[]{x, y});
+        }
+    }
+    public void randomSetObstacles() {
         for (int group = 0; group < 5; group++) {
             Random r = new Random();
             int x = r.nextInt(2, _map.length - 4);
@@ -121,27 +150,31 @@ public class Dungeon {
         }
     }
 
-    private void setObstacles() {
-        for (int[] coord : _obstacles) {
+
+
+    private void setObstacles()     {
+        for (int[] coord : _positions.getObstacles()) {
             int x = coord[0];
             int y = coord[1];
-            _map[x][y] = Utils.WHITE_BG + "   " + Utils.RESET;
+            _map[x][y] = Dice.WHITE_BG + "   " + Dice.RESET;
         }
     }
-    private void setEntities(HashMap<Entity, int[]> entities) {
-        entities.forEach((entity, coordinates) -> {
+    private void setEntities() {
+        _positions.getEntitiesPosition().forEach((entity, coordinates) -> {
             int x = coordinates[0];
             int y = coordinates[1];
-            _map[x][y] = entity.getColor() + entity.getPseudo() + Utils.RESET;
+            _map[x][y] = entity.getColor() + entity.getPseudo() + Dice.RESET;
         });
     }
-    private void setEquipments(HashMap<Equipment, int[]> equipments) {
-        equipments.forEach((equipment, coordinates) -> {
+    private void setEquipments() {
+        _positions.getEquipmentPosition().forEach((equipment, coordinates) -> {
             int x = coordinates[0];
             int y = coordinates[1];
-            _map[x][y] = Utils.BLUE + "[⌘]" + Utils.RESET;
+            _map[x][y] = Dice.BLUE + "[⌘]" + Dice.RESET;
         });
     }
+
+
 
     private void displayGrid() {
         for (String[] strings : _map) {
@@ -150,13 +183,12 @@ public class Dungeon {
             }
             System.out.println();
         }
-        System.out.println( Utils.WHITE_BG + "   " + Utils.RESET + " : Obstacles ||" + Utils.BLUE + " [⌘]" + Utils.RESET + " : Equipements || " + Utils.PURPLE + " [*]" + Utils.RESET + " : Entities ||" + Utils.RED + " [#]" + Utils.RESET + " : Monsters");
+        System.out.println( Dice.WHITE_BG + "   " + Dice.RESET + " : Obstacles ||" + Dice.BLUE + " [⌘]" + Dice.RESET + " : Equipements || " + Dice.PURPLE + " [*]" + Dice.RESET + " : Entities ||" + Dice.RED + " [#]" + Dice.RESET + " : Monsters");
     }
-
-    public void displayMap(HashMap<Entity, int[]> entities, HashMap<Equipment, int[]> equipments) {
+    public void displayMap() {
         setObstacles();
-        setEntities(entities);
-        setEquipments(equipments);
+        setEntities();
+        setEquipments();
         displayGrid();
     }
 
