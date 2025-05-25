@@ -7,6 +7,9 @@ import game.utils.Display;
 
 import java.util.*;
 
+import static game.utils.GameUtils.parsePosition;
+import static game.utils.GameUtils.scanner;
+
 
 public class Dungeon {
     private String[][] _map;
@@ -207,6 +210,119 @@ public class Dungeon {
     }
 
 
+
+
+
+
+    public void attack(Entity attacker, String pos) {
+        int[] position = parsePosition(pos);
+        int x = position[0];
+        int y = position[1];
+
+        Entity target = getEntityAtPosition(x, y);
+        if (target == null) {
+            Display.displayError("No entity at this position.");
+            return;
+        }
+
+        if (!attacker.canAttack(target)) {
+            Display.displayError("You cannot attack this entity.");
+            return;
+        }
+        // Check if the attacker is too far from the target
+        if (_positions.distanceBetween(attacker, position) > attacker.getEquippedWeapon().getRange()) {
+            Display.displayError("You are too far from " + target.getName() + " to attack it.");
+            return;
+        }
+        int attackRoll = GameUtils.roll(1, 20);
+        Display.display("You rolled a " + attackRoll);
+        if (attacker.getEquippedWeapon().getRange() == 1) {
+            attackRoll += attacker.getStats().getStrength();
+            Display.display("Your attack roll is " + attackRoll + " (Strength bonus applied [+"+ attacker.getStats().getStrength() +"])");
+        } else {
+            attackRoll += attacker.getStats().getDexterity();
+            Display.display("Your attack roll is " + attackRoll + " (Dexterity bonus applied [+"+ attacker.getStats().getDexterity() +"])");
+        }
+
+        if (attackRoll > target.getAC()){
+            Display.display("You hit " + target.getName() + "!");
+            int damage = attacker.getEquippedWeapon().damage();
+            Display.display("You did " + damage + " damage !");
+            target.removeHp(damage);
+            Display.display(target.getName() + " has " + target.getHp() + " HP left.");
+        } else {
+            Display.displayError("You missed " + target.getName() + "!");
+            return;
+        }
+
+        if (!target.isAlive()) {
+            Display.display(target.getName() + " has been defeated!");
+            _positions.removeEntity(target); // Remove the target from the dungeon
+        }
+
+    }
+    public void equip(Entity entity) {
+        if (entity.isPlayer()){
+            Display.display("Choose an item to equip from your inventory : ");
+            String inventory = entity.displayInventory();
+            if (inventory.equals("Inventory is empty.")) {
+                Display.displayError("You have no items to equip.");
+                return;
+            }
+            Display.display(inventory);
+            int choice = scanner.nextInt();
+            while (choice < 0 || choice >= entity.getInventory().size()) {
+                Display.displayError("Invalid choice. Please choose a valid item number.");
+                choice = scanner.nextInt();
+            }
+            Equipment equipment = entity.getInventory().get(choice);
+            if (equipment.isArmor()) {
+                entity.equipArmor(equipment);
+                Display.display("You equipped " + equipment.getName() + ".");
+            } else if (equipment.isWeapon()) {
+                entity.equipWeapon(equipment);
+                Display.display("You equipped " + equipment.getName() + ".");
+            }
+        }
+    }
+    public void move(Entity entity, String pos) {
+        int[] position = parsePosition(pos);
+        int x = position[0];
+        int y = position[1];
+
+        if (!isValidPosition(x, y)) {
+            Display.displayError("Invalid position. Please enter a new position : ");
+            return;
+        }
+
+        if (getEntityAtPosition(x, y) != null) {
+            Display.displayError("There is already an entity at this position.");
+            return;
+        }
+        if (_positions.distanceBetween(entity, position) > entity.getStats().getSpeed()/3) {
+            Display.displayError("Too far.");
+            return;
+        }
+
+        moveEntity(entity, x, y);
+        Display.display(entity.getPseudo() + " moved to " + pos + ".");
+
+    }
+
+    public void moveEntity(Entity entity, int x, int y) {
+        if (isValidPosition(x, y)) {
+            int[] oldPosition = _positions.getEntitiesPosition().get(entity);
+            if (oldPosition != null) {
+                _positions.getEntitiesPosition().remove(entity);
+                _positions.addEntity(entity, new int[]{x, y});
+                _map[oldPosition[0]][oldPosition[1]] = " . ";
+            }
+        } else {
+            Display.displayError("Invalid position for entity movement.");
+        }
+    }
+
+
     //? Getters
     public Positions getPosition(){
         return _positions;
@@ -228,4 +344,5 @@ public class Dungeon {
     public Positions getPositions() {
         return _positions;
     }
+
 }

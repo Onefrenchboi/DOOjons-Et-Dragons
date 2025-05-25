@@ -49,17 +49,16 @@ public class Positions {
 
 
 
-    public boolean canReach(Entity entity, int[] targetPosition) {
+    public int distanceBetween(Entity entity, int[] targetPosition) {
         int[] entityPosition = _entitiesPosition.get(entity);
-        if (entityPosition == null) {
-            return false;
-        }
 
         int dx = Math.abs(entityPosition[0] - targetPosition[0]);
         int dy = Math.abs(entityPosition[1] - targetPosition[1]);
 
-        return Math.max(dx, dy) <= 1;
+        return Math.max(dx, dy);
     }
+
+
 
     public int[] getEntityPosition(Entity entity) {
         return _entitiesPosition.get(entity);
