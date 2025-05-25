@@ -65,7 +65,7 @@ public class Display {
             System.out.println("  - Comment the previous action (com <text>)");
             System.out.println("  - Attack (att <Case>)");
             System.out.println("  - Move (move <Case>)");
-            System.out.println("  - Equip an item (equ <item number>)");
+            System.out.println("  - Show inventory to equip an item (equ show)");
             System.out.println("  - Pick up an item (pick <item number>)");
 
         }

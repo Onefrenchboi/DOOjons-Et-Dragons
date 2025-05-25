@@ -1,5 +1,8 @@
 package game.utils;
 
+import game.Dungeon;
+import game.entities.Entity;
+
 import java.util.Random;
 import java.util.Scanner;
 

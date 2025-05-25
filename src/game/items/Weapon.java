@@ -1,6 +1,7 @@
 package game.items;
 
 import game.entities.Statistics;
+import game.utils.GameUtils;
 
 public abstract class Weapon extends Equipment{
     private int _range;
@@ -26,7 +27,15 @@ public abstract class Weapon extends Equipment{
     }
 
     @Override
+    public boolean isWeapon() {
+        return true;
+    }
+    @Override
     public String toString() {
         return getName() + " (Range: " + getRange() + ", Damage: " + getDamage() + ")";
+    }
+
+    public int damage() {
+        return GameUtils.roll(_dicenum, _damageroll);
     }
 }

@@ -22,7 +22,7 @@ public class Positions {
 
 
 
-    //? methods pour add entities et tt le tralala t'as compris
+    //? methods pour add et remove entities et tt le tralala t'as compris
     public void addEntity(Entity entity, int[] position) {
         _entitiesPosition.put(entity, position);
     }
@@ -31,6 +31,9 @@ public class Positions {
     }
     public void addObstacle(int[] position) {
         _obstacles.add(position);
+    }
+    public void removeEntity(Entity target) {
+        _entitiesPosition.remove(target);
     }
 
     //? Getters
@@ -44,4 +47,21 @@ public class Positions {
         return _obstacles;
     }
 
+
+
+    public boolean canReach(Entity entity, int[] targetPosition) {
+        int[] entityPosition = _entitiesPosition.get(entity);
+        if (entityPosition == null) {
+            return false;
+        }
+
+        int dx = Math.abs(entityPosition[0] - targetPosition[0]);
+        int dy = Math.abs(entityPosition[1] - targetPosition[1]);
+
+        return Math.max(dx, dy) <= 1;
+    }
+
+    public int[] getEntityPosition(Entity entity) {
+        return _entitiesPosition.get(entity);
+    }
 }

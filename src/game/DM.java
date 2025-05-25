@@ -92,9 +92,11 @@ public class DM {
                 nbMonstres = scanner.nextInt();
             }
             for (int i = 0; i < nbMonstres; i++) {
-                Display.display("Enter the monsters race: ");
+                Display.display("Enter the monsters race : ");
                 String species = scanner.next();
-                Display.display("Enter the monster's attack range, number of dice, and dice value (e.g., 1 2 6 for range 1, 2d6 damage): ");
+                Display.display("Enter the monsters armor class : ");
+                int AC = scanner.nextInt();
+                Display.display("Enter the monster's attack range, number of dice, and dice value (e.g., 1 2 6 for range 1, 2d6 damage) : ");
                 int range = scanner.nextInt();
                 int dicenum = scanner.nextInt();
                 int damageroll = scanner.nextInt();
@@ -107,15 +109,15 @@ public class DM {
                 int number = monsterCount.getOrDefault(species, 0) + 1;
                 monsterCount.put(species, number);
 
-                Monster monster = new Monster(species, number, weapon);
+                Monster monster = new Monster(species, number, weapon, AC);
                 _entitiesSortedByInitiative.add(monster);
             }
         }
         else {
             System.out.println("Applying default monster selection");
-            _entitiesSortedByInitiative.add(new Monster("Fragon", 1, new MeleeWeapon("MonsterMeleeAttack", 1, 1,6)));
-            _entitiesSortedByInitiative.add(new Monster("Fragon", 2, new MeleeWeapon("MonsterMeleeAttack", 1, 1,6)));
-            _entitiesSortedByInitiative.add(new Monster("Bob", 1, new RangedWeapon("MonsterRangedAttack", 12, 1,4)));
+            _entitiesSortedByInitiative.add(new Monster("Fragon", 1, new MeleeWeapon("MonsterMeleeAttack", 1, 1,6),10));
+            _entitiesSortedByInitiative.add(new Monster("Fragon", 2, new MeleeWeapon("MonsterMeleeAttack", 1, 1,6),10));
+            _entitiesSortedByInitiative.add(new Monster("Bob", 1, new RangedWeapon("MonsterRangedAttack", 12, 1,4),10));
         }
     }
     public void createEquipments(){
@@ -274,8 +276,6 @@ public class DM {
 
 
     }
-
-
     public void turn(int currentEntityNum){
         _currentEntity = _entitiesSortedByInitiative.get(currentEntityNum);
         Display.displayInfo(this);
@@ -287,21 +287,64 @@ public class DM {
             String actionChoice = scanner.next();
             Display.display("You chose: " + choice + " " + actionChoice);
             switch (choice) {
-                case "att" -> Display.display("atak");//attack(_currentEntity, _dungeon.getEntityAtPosition(_currentEntity.getX(), _currentEntity.getY()));
+                case "att" -> attack(_currentEntity, actionChoice);
+                case "equ" -> equip(_currentEntity);
+
+
+
+
+
                 case "move" -> Display.display("muv");//move(_currentEntity, _currentEntity.getX() + 1, _currentEntity.getY());
                 case "pick" -> Display.display("pikup");//pickUp(_currentEntity, _dungeon.getEquipmentAtPosition(_currentEntity.getX(), _currentEntity.getY()));
-                case "equip" -> Display.display("ekuip");//equip(_currentEntity);
+
                 case "com" -> Display.display("ekuip");//equip(_currentEntity);
                 case "dm" -> Display.display("ekuip");//equip(_currentEntity);
                 default -> Display.displayError("Invalid choice. Please try again.");
             }
         }
 
-        //on fait sortir, puis rerentrer, dcp c'est plus trié tsais
         Display.displayClear();
     }
 
-    public void attack(Entity attacker, Entity target) {
+    public void attack(Entity attacker, String pos) {
+        int[] position = parsePosition(pos);
+        int x = position[0];
+        int y = position[1];
+
+        Entity target = _dungeon.getEntityAtPosition(x, y);
+        if (target == null) {
+            Display.displayError("No entity at this position.");
+            return;
+        }
+
+        if (!attacker.canAttack(target) && _dungeon.getPositions().canReach(attacker, position)) {
+            Display.displayError("You cannot attack this entity.");
+            return;
+        }
+        int attackRoll = GameUtils.roll(1, 20);
+        Display.display("You rolled a " + attackRoll);
+        if (attacker.getEquippedWeapon().getRange() == 1) {
+            attackRoll += attacker.getStats().getStrength();
+            Display.display("Your attack roll is " + attackRoll + " (Strength bonus applied [+"+ attacker.getStats().getStrength() +"])");
+        } else {
+            attackRoll += attacker.getStats().getDexterity();
+            Display.display("Your attack roll is " + attackRoll + " (Dexterity bonus applied [+"+ attacker.getStats().getDexterity() +"])");
+        }
+
+        if (attackRoll > target.getAC()){
+            Display.display("You hit " + target.getName() + "!");
+            int damage = attacker.getEquippedWeapon().damage();
+            Display.display("You did " + damage + " damage !");
+            target.removeHp(damage);
+        } else {
+            Display.displayError("You missed " + target.getName() + "!");
+            return;
+        }
+
+        if (!target.isAlive()) {
+            Display.display(target.getName() + " has been defeated!");
+            _dungeon.getPosition().removeEntity(target); // Remove the target from the dungeon
+        }
 
     }
 
@@ -312,7 +355,28 @@ public class DM {
     }
 
     public void equip(Entity entity) {
-
+        if (entity.isPlayer()){
+            Display.display("Choose an item to equip from your inventory : ");
+            String inventory = entity.displayInventory();
+            if (inventory.equals("Inventory is empty.")) {
+                Display.displayError("You have no items to equip.");
+                return;
+            }
+            Display.display(inventory);
+            int choice = scanner.nextInt();
+            while (choice < 0 || choice >= entity.getInventory().size()) {
+                Display.displayError("Invalid choice. Please choose a valid item number.");
+                choice = scanner.nextInt();
+            }
+            Equipment equipment = entity.getInventory().get(choice);
+            if (equipment.isArmor()) {
+                entity.equipArmor(equipment);
+                Display.display("You equipped " + equipment.getName() + ".");
+            } else if (equipment.isWeapon()) {
+                entity.equipWeapon(equipment);
+                Display.display("You equipped " + equipment.getName() + ".");
+            }
+        }
     }
 
 

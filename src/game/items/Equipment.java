@@ -16,4 +16,13 @@ public abstract class Equipment {
     public String toString(){
         return _name;
     }
+
+
+    //!encore un instanceof du pauvre
+    public boolean isWeapon() {
+        return false;
+    }
+    public boolean isArmor() {
+        return false;
+    }
 }

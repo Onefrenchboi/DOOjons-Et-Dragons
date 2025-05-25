@@ -214,4 +214,18 @@ public class Dungeon {
     public int getDungeonNumber(){
         return _number;
     }
+
+    public Entity getEntityAtPosition(int x, int y) {
+        for (Map.Entry<Entity, int[]> entry : _positions.getEntitiesPosition().entrySet()) {
+            int[] position = entry.getValue();
+            if (position[0] == x && position[1] == y) {
+                return entry.getKey();
+            }
+        }
+        return null;
+    }
+
+    public Positions getPositions() {
+        return _positions;
+    }
 }

@@ -12,8 +12,6 @@ public class Character extends Entity {
     private Race _race;
     private CharacterClass _class;
     private List<Equipment> _inventory;
-    private Weapon _equippedWeapon;
-    private Armor _equippedArmor;
 
     public Character(String name, Race race, CharacterClass charclass) {
         super(name);
@@ -37,6 +35,7 @@ public class Character extends Entity {
 
     }
 
+
     @Override
     public boolean isPlayer() {
         return true;
@@ -54,10 +53,25 @@ public class Character extends Entity {
         return inventoryDisplay.toString();
     }
 
+    public List<Equipment> getInventory() {
+        return _inventory;
+    }
+
+    @Override
+    public void equipWeapon(Equipment equipment){
+        this.setEquippedWeapon((Weapon) equipment);
+    }
+
+    @Override
+    public void equipArmor(Equipment equipment){
+        this.setEquippedArmor((Armor) equipment);
+    }
+
+
     public String getInfo(){
         return  "   HP ❤ : " + this.getHp() + "/" + this.getMaxHp() + "\n" +
-                "   Armor ⊙ : " + (this._equippedArmor != null ? this._equippedArmor.getName() : "None") + "\n" +
-                "   Weapon ⚔ : " + (this._equippedWeapon != null ? this._equippedWeapon.getName() : "None") + "\n" +
+                "   Armor ⊙ : " + (this.getEquippedArmor() != null ? this.getEquippedArmor().getName() : "None") + "\n" +
+                "   Weapon ⚔ : " + (this.getEquippedWeapon() != null ? this.getEquippedWeapon().getName() : "None") + "\n" +
                 "   Inventory ◼ : " + this.displayInventory() + "\n" +
                 "   STR ✪ : " + this.getStats().getStrength() + "\n" +
                 "   DEX ➔ : " + this.getStats().getDexterity() + "\n" +
