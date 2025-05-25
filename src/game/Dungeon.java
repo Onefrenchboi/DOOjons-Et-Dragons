@@ -345,4 +345,7 @@ public class Dungeon {
         return _positions;
     }
 
+    public int getNumber() {
+        return _number;
+    }
 }
