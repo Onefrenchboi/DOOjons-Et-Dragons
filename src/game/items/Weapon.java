@@ -6,8 +6,7 @@ import game.utils.GameUtils;
 public abstract class Weapon extends Equipment{
     private int _range;
     private int _damageroll; //represents the dice to roll for damage
-    private int _dicenum; //represents the number of dice to roll for damage
-    private Statistics _bonusStats;
+    private int _dicenum; //represents the number o
 
 
     protected Weapon(String name, int range, int dicenum, int damageroll, Statistics bonusStats) {
@@ -15,7 +14,7 @@ public abstract class Weapon extends Equipment{
         _range = range;
         _dicenum = dicenum;
         _damageroll = damageroll;
-        _bonusStats = bonusStats;
+        this.setBonusStats(bonusStats);
     }
 
 

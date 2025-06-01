@@ -308,8 +308,8 @@ package utils #palegreen{
   utils.Repo "1"  o--> "-_repo[*]" Equipment : "> has"
 
 
-  Positions "1"  o..* "_entitiesPosition" entities.Entity : "> positions [int[]]"
-  Positions "1"  o..* "_equipmentPosition" Equipment : "> positions [int[]]"
+  Positions "1"  o..* "_entitiesPosition" entities.Entity : "> uses"
+  Positions "1"  o..* "_equipmentPosition" Equipment : "> uses"
 
 
   DM "1"  o--> "-_dungeon" Dungeon : "> contains"

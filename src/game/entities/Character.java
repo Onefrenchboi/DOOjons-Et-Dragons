@@ -61,9 +61,12 @@ public class Character extends Entity {
     public void equipWeapon(Equipment equipment){
         if (this.getEquippedWeapon()==null){
             this.setEquippedWeapon((Weapon) equipment);
+            this.getStats().addStatistics(equipment.getBonusStats());
             this._inventory.remove(equipment);
         }
         else {
+            this.getStats().removeStatistics(this.getEquippedWeapon().getBonusStats()); //remove stats de l'arme d'avant
+            this.getStats().addStatistics(equipment.getBonusStats()); //add les stats de la nouvelle arme
             this ._inventory.add(this.getEquippedWeapon());
             this.setEquippedWeapon((Weapon) equipment);
             this._inventory.remove(equipment);
@@ -74,9 +77,12 @@ public class Character extends Entity {
     public void equipArmor(Equipment equipment){
         if (this.getEquippedArmor()==null){
             this.setEquippedArmor((Armor) equipment);
+            this.getStats().addStatistics(equipment.getBonusStats());
             this._inventory.remove(equipment);
         }
         else {
+            this.getStats().removeStatistics(this.getEquippedWeapon().getBonusStats()); //remove stats de l'arme d'avant
+            this.getStats().addStatistics(equipment.getBonusStats()); //add les stats de la nouvelle arme
             this ._inventory.add(this.getEquippedArmor());
             this.setEquippedArmor((Armor) equipment);
             this._inventory.remove(equipment);

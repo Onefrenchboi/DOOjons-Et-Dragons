@@ -343,6 +343,9 @@ import java.util.*;
             if (allMonstersDead()){
                 return;
             }
+            if (allPlayersDead()){
+                return;
+            }
         }
 
         Display.displayClear();
@@ -370,8 +373,7 @@ import java.util.*;
 
 
 
-
-    public List<Entity> getEntitiesSortedByInitiative() {
+        public List<Entity> getEntitiesSortedByInitiative() {
         return _entitiesSortedByInitiative;
     }
     public int getTurn(){
@@ -383,17 +385,6 @@ import java.util.*;
     public int getDungeonNumber() {
         return _dungeon.getDungeonNumber();
     }
-
-
-
-
-
-
-
-
-
-
-
 
 
 
