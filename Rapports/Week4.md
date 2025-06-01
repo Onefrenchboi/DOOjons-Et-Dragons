@@ -77,6 +77,7 @@ Par rapport à la semaine dernière, notre structure de code n'a pas changé.
 * Les sorts (non-implémenté pour l'instant, mais la logique est déjà préparée dans nos têtes.)
 * Quelques actions du DM et des joueurs sont à implémenter.
 * Test unitaires
+* UML pas forcément à jour, nous devons y retoucher.
 
 ## Conclusion
 
