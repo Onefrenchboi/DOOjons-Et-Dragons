@@ -244,6 +244,31 @@ import java.util.*;
         else {//place les obstacles aléatoirement
             _dungeon.randomSetObstacles();
         }
+        for (Entity entity : _entitiesSortedByInitiative) {
+            if (entity.isPlayer()) {
+                Display.display(entity.getName() + ", choose an item to equip from your inventory : ");
+                String inventory = entity.displayInventory();
+                if (inventory.equals("Inventory is empty.")) {
+                    Display.displayError("You have no items to equip.");
+                    return;
+                }
+                Display.display(inventory);
+                int choice2 = scanner.nextInt();
+                while (choice2 < 0 || choice2 >= entity.getInventory().size()) {
+                    Display.displayError("Invalid choice. Please choose a valid item number.");
+                    choice2 = scanner.nextInt();
+                }
+                Equipment equipment = entity.getInventory().get(choice2);
+                if (equipment.isArmor()) {
+                    entity.equipArmor(equipment);
+                    Display.display("You equipped " + equipment.getName() + ".");
+                } else if (equipment.isWeapon()) {
+                    entity.equipWeapon(equipment);
+                    Display.display("You equipped " + equipment.getName() + ".");
+                }
+
+            }
+        }
     }
 
     public void createGame() {
