@@ -334,6 +334,19 @@ public class Dungeon {
         _map[x][y] = " . ";
         Display.display(entity.getPseudo() + " picked up " + equipment.getName() + ".");
     }
+    public void comment(Entity entity){
+        Display.display("You can comment on the game by typing your message below:");
+        if (scanner.hasNextLine()) {
+            scanner.nextLine();
+        }
+        String comment = scanner.nextLine();
+        if (comment.isEmpty()) {
+            Display.displayError("Comment cannot be empty.");
+            comment(entity);
+        }
+        Display.display(entity.getName() + " : " + comment);
+
+    }
 
     public void moveEntity(Entity entity, int x, int y) {
         if (isValidPosition(x, y)) {

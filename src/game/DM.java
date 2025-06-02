@@ -348,22 +348,22 @@ import java.util.*;
                 case "equ" -> _dungeon.equip(_currentEntity);
                 case "move" -> _dungeon.move(_currentEntity, actionChoice);
                 case "pick" -> _dungeon.pickUp(_currentEntity,actionChoice);
-
-                case "com" -> Display.display("ekuip");//equip(_currentEntity);
+                case "com" -> _dungeon.comment(_currentEntity);
                 case "dm" -> Display.display("ekuip");//equip(_currentEntity);
                 default -> Display.displayError("Invalid choice. Please try again.");
             }
 
-            Display.display("Press Any Key to continue...");
             //c pour attendre que le joueur presse
+            Display.display("Press Any Key to continue...");
             scanner.nextLine();
-            scanner.nextLine();
+
             //remove all dead monsters
             _entitiesSortedByInitiative.removeIf(entity -> entity.getHp() <= 0 && entity.isMonster());
-            //check if won
+            //check if won (i.e. all monsters are dead)
             if (allMonstersDead()){
                 return;
             }
+            //check if lost (i.e. all players are dead)
             if (allPlayersDead()){
                 return;
             }
