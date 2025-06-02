@@ -10,14 +10,13 @@ import game.utils.Display;
 import game.utils.Repo;
 import game.utils.GameUtils;
 
-import static game.utils.GameUtils.parsePosition;
-import static game.utils.GameUtils.scanner;
-
 
 import java.util.*;
 
+import static game.utils.GameUtils.*;
 
-    public class DM {
+
+public class DM {
         private Dungeon _dungeon;
         private List<Entity> _entitiesSortedByInitiative;
         private List<Equipment> _equipmentList;
@@ -35,76 +34,80 @@ import java.util.*;
 
 
     //? Functions to create everything
-    public void createCharacters(){
-        Display.display("How many players ? (1-4) : ");
-        int nbPlayers = scanner.nextInt();
-        while (nbPlayers < 1 || nbPlayers > 4) {
-            Display.displayError("Invalid number of players, choose a number between 1 and 4 : ");
-            nbPlayers = scanner.nextInt();
-        }
+    public void createCharacters() {
+        int nbPlayers = askValidInt("How many players ? (1-4) : ", 1, 4);
 
+        String name = "Z";
+        Race heroRace = null;
+        CharacterClass heroClass = null;
         for (int i = 0; i < nbPlayers; i++) {
             Display.display("Player " + (i + 1) + ", enter your name : ");
-            String name = scanner.next();
+            name = scanner.next();
 
-            Race heroRace = null;
             while (heroRace == null) {
-                Display.display("Choose your race (1-Dwarf, 2-Elf, 3-Halfling, 4-Human) : ");
-                int raceChoice = scanner.nextInt();
+                int raceChoice = askValidInt("Choose your race (1-Dwarf, 2-Elf, 3-Halfling, 4-Human): ", 1, 4);
                 switch (raceChoice) {
                     case 1 -> heroRace = new Dwarf();
                     case 2 -> heroRace = new Elf();
                     case 3 -> heroRace = new Halfling();
                     case 4 -> heroRace = new Human();
-                    default -> Display.displayError("Invalid choice. Please try again.");
-                }
+                    default -> Display.displayError("Invalid choice. Please enter a number between 1 and 4.");
+                };
             }
 
-            CharacterClass heroClass = null;
             while (heroClass == null) {
-                Display.display("Choose your class (1-Cleric, 2-Rogue, 3-Warrior, 4-Wizard) : ");
-                int classChoice = scanner.nextInt();
-                switch (classChoice) {
+                int raceChoice = askValidInt("Choose your class (1-Cleric, 2-Rogue, 3-Warrior, 4-Wizard) : ", 1, 4);
+                switch (raceChoice) {
                     case 1 -> heroClass = new Cleric();
                     case 2 -> heroClass = new Rogue();
                     case 3 -> heroClass = new Warrior();
                     case 4 -> heroClass = new Wizard();
-                    default -> Display.displayError("Invalid choice. Please try again.");
+                    default -> Display.displayError("Invalid choice. Please enter a number between 1 and 4.");
                 }
             }
-
-            Character hero = new Character(name, heroRace, heroClass);
-            _entitiesSortedByInitiative.add(hero);
         }
+        Character hero = new Character(name, heroRace, heroClass);
+        _entitiesSortedByInitiative.add(hero);
     }
     public void createMonsters(){
-        Scanner scanner = new Scanner(System.in);
-
         Display.display("DM, do you want to create monsters ? (if not, a predetermined selection will be applied) (Y/N)");
         String choice = scanner.next();
         if (choice.equalsIgnoreCase("Y")) {
-            Display.display("How many monsters ? (1-4) : ");
-            int nbMonstres = scanner.nextInt();
+            int nbMonstres = askValidInt("How many monsters ? (1-4) : ", 1, 4);
+
             Map<String, Integer> monsterCount = new HashMap<>();
-            while (nbMonstres < 1 || nbMonstres > 4) {
-                Display.displayError("Invalid number of monsters, choose a number between 1 and 4 : ");
-                nbMonstres = scanner.nextInt();
-            }
             for (int i = 0; i < nbMonstres; i++) {
-                Display.display("Enter the monsters race : ");
+                Display.display("Enter the monster's race : ");
                 String species = scanner.next();
-                Display.display("Enter the monsters armor class : ");
-                int AC = scanner.nextInt();
-                Display.display("Enter the monster's attack range, number of dice, and dice value (e.g., 1 2 6 for range 1, 2d6 damage) : ");
-                int range = scanner.nextInt();
-                int dicenum = scanner.nextInt();
-                int damageroll = scanner.nextInt();
+                int AC = -1;
+                while (AC < 0) {
+                    AC = askValidInt("Enter the monster's armor class : ",0, 99);
+                }
+                int range = -1, dicenum = -1, damageroll = -1;
+                boolean validAttackInput = false;
+                while (!validAttackInput) {
+                    Display.display("Enter the monster's attack range, number of dice, and dice value (e.g., 1 2 6 for range 1, 2d6 damage) : ");
+                    try {
+                        range = scanner.nextInt();
+                        dicenum = scanner.nextInt();
+                        damageroll = scanner.nextInt();
+                        if (range < 1 || dicenum < 1 || damageroll < 1) {
+                            Display.displayError("All values must be positive numbers.");
+                        } else {
+                            validAttackInput = true;
+                        }
+                    } catch (InputMismatchException e) {
+                        Display.displayError("Invalid input, please enter three numbers.");
+                        scanner.nextLine(); //pr clear le mauvais input
+                    }
+                }
                 Weapon weapon;
                 if (range == 1) {
-                    weapon = new MeleeWeapon("MonsterMeleeAttack", range, dicenum ,damageroll);
+                    weapon = new MeleeWeapon("MonsterMeleeAttack", range, dicenum, damageroll);
                 } else {
                     weapon = new RangedWeapon("MonsterRangedAttack", range, dicenum, damageroll);
                 }
+
                 int number = monsterCount.getOrDefault(species, 0) + 1;
                 monsterCount.put(species, number);
 
@@ -119,43 +122,22 @@ import java.util.*;
             _entitiesSortedByInitiative.add(new Monster("Bob", 1, new RangedWeapon("MonsterRangedAttack", 12, 1,4),10));
         }
     }
-    public void createEquipments(){
-        Scanner scanner = new Scanner(System.in);
-        Display.display("How many items ? (1-5) : ");
-        int nbEquipment = scanner.nextInt();
-        while (nbEquipment < 1 || nbEquipment > 5) {
-            Display.displayError("Invalid number of items, choose a number between 1 and 5 : ");
-            nbEquipment = scanner.nextInt();
-        }
-
-        Display.display("Here is the list of available items : ");
+    public void createEquipments() {
+        int nbEquipment = askValidInt("How many items? (1-5): ", 1, 5);
+        Display.display("Here is the list of available items:");
         for (Equipment equipment : _equipmentRepo.getEquipments()) {
             int n = _equipmentRepo.getEquipments().indexOf(equipment);
-            Display.display("(" + n + ")" + equipment.toString());
+            Display.display("(" + n + ") " + equipment.toString());
         }
         for (int i = 0; i < nbEquipment; i++) {
-            Display.display("Enter the number of the item to add : ");
-            int equipment = scanner.nextInt();
-            while (equipment < 0 || equipment > _equipmentRepo.getEquipments().size()) {
-                Display.displayError("Invalid number, choose a number between 0 and " + (_equipmentRepo.getEquipments().size() - 1) + " : ");
-                equipment = scanner.nextInt();
-            }
-            Equipment selectedEquipment = _equipmentRepo.getEquipments().get(equipment);
+            int equipmentIndex = askValidInt("Enter the number of the item to add:", 0, _equipmentRepo.getEquipments().size()-1);
+            Equipment selectedEquipment = _equipmentRepo.getEquipments().get(equipmentIndex);
             _equipmentList.add(selectedEquipment);
         }
     }
     public void createDungeon(int number) {
-        Scanner scanner = new Scanner(System.in);
-
-        Display.display("DM, please enter the size of the dungeon ([W]idth [H]eight) : ");
-        int width = scanner.nextInt();
-        int height = scanner.nextInt();
-        while (width < 15 || width > 26 || height < 15 || height > 26) {
-            Display.displayError("The map must be between 15 and 26 squares wide and high");
-            Display.display("Please enter the size of the dungeon ([W]idth [H}eight) : ");
-            width = scanner.nextInt();
-            height = scanner.nextInt();
-        }
+        int width = askValidInt("DM, please enter dungeon width (15-26): ", 15, 26);
+        int height = askValidInt("DM, please enter dungeon height (15-26): ", 15, 26);
         _dungeon = new Dungeon(width, height, number);
     }
     public void setDungeon() {
@@ -177,18 +159,9 @@ import java.util.*;
         String choice = scanner.next();
         if (choice.equalsIgnoreCase("Y")) {
             for (Entity entity : _entitiesSortedByInitiative) {
-                Display.display("Enter the position of " + entity.toString() + " ([A-Z]x) : ");
-                String position = scanner.next();
-                int[] pos = parsePosition(position);
+                int[] pos = askValidPosition("Enter the position of " + entity.getName() + " ([A-Z]x) : ", _dungeon);
                 int x = pos[0];
                 int y = pos[1];
-                while (!_dungeon.isValidPosition(x, y)) {
-                    Display.displayError("Invalid position. Please enter a new position : ");
-                    position = scanner.next();
-                    pos = parsePosition(position);
-                    x = pos[0];
-                    y = pos[1];
-                }
                 _dungeon.addEntity(x, y, entity);
             }
         }
@@ -201,18 +174,9 @@ import java.util.*;
         choice = scanner.next();
         if (choice.equalsIgnoreCase("Y")) {
             for (Equipment equipment : _equipmentList) {
-                Display.display("Enter the position of " + equipment + " ([A-Z]x) : ");
-                String position = scanner.next();
-                int[] pos = parsePosition(position);
+                int[] pos = askValidPosition("Enter the position of " + equipment + " ([A-Z]x) : ", _dungeon);
                 int x = pos[0];
                 int y = pos[1];
-                while (!_dungeon.isValidPosition(x, y)) {
-                    Display.displayError("Invalid position. Please enter a new position : ");
-                    position = scanner.next();
-                    pos = parsePosition(position);
-                    x = pos[0];
-                    y = pos[1];
-                }
                 _dungeon.addEquipment(x, y, equipment);
             }
         }
@@ -226,18 +190,9 @@ import java.util.*;
             Display.display("How many ?");
             int nbObstacles = scanner.nextInt();
             for (int i = 0; i < nbObstacles; i++) {
-                Display.display("Enter the position of obstacle " + (i + 1) + " ([A-Z]x) : ");
-                String position = scanner.next();
-                int[] pos = parsePosition(position);
+                int[] pos = askValidPosition("Enter the position of obstacle " + (i + 1) + " ([A-Z]x) : ", _dungeon);
                 int x = pos[0];
                 int y = pos[1];
-                while (!_dungeon.isValidPosition(x, y)) {
-                    Display.displayError("Invalid position. Please enter a new position : ");
-                    position = scanner.next();
-                    pos = parsePosition(position);
-                    x = pos[0];
-                    y = pos[1];
-                }
                 _dungeon.addObstacle(x, y);
             }
         }
