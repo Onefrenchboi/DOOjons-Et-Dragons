@@ -347,11 +347,7 @@ import java.util.*;
                 case "att" -> _dungeon.attack(_currentEntity, actionChoice);
                 case "equ" -> _dungeon.equip(_currentEntity);
                 case "move" -> _dungeon.move(_currentEntity, actionChoice);
-
-
-
-
-                case "pick" -> Display.display("pikup");//pickUp(_currentEntity, _dungeon.getEquipmentAtPosition(_currentEntity.getX(), _currentEntity.getY()));
+                case "pick" -> _dungeon.pickUp(_currentEntity,actionChoice);
 
                 case "com" -> Display.display("ekuip");//equip(_currentEntity);
                 case "dm" -> Display.display("ekuip");//equip(_currentEntity);

@@ -35,6 +35,9 @@ public class Positions {
     public void removeEntity(Entity target) {
         _entitiesPosition.remove(target);
     }
+    public void removeEquipment(Equipment target) {
+        _equipmentPosition.remove(target);
+    }
 
     //? Getters
     public HashMap<Entity, int[]> getEntitiesPosition() {

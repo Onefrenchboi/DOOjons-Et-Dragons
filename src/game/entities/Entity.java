@@ -133,4 +133,6 @@ public abstract class Entity {
     public abstract void equipArmor(Equipment equipment);
 
     public abstract void equipWeapon(Equipment equipment);
+
+
 }

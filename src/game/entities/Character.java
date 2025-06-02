@@ -36,6 +36,10 @@ public class Character extends Entity {
     }
 
 
+    public void addToInventory(Equipment equipment) {
+        _inventory.add(equipment);
+    }
+
     @Override
     public boolean isPlayer() {
         return true;

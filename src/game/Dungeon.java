@@ -309,6 +309,30 @@ public class Dungeon {
         Display.display(entity.getPseudo() + " moved to " + pos + ".");
     }
     public void pickUp(Entity entity,String pos) {
+        int[] position = parsePosition(pos);
+        int x = position[0];
+        int y = position[1];
+
+        Equipment equipment = getEquipmentAtPosition(x, y);
+        if (equipment == null) {
+            Display.displayError("No equipment at this position.");
+            return;
+        }
+
+        if (entity.isMonster()) {
+            Display.displayError("You cannot pick up this equipment.");
+            return;
+        }
+
+        if (_positions.distanceBetween(entity, position) > entity.getStats().getSpeed()/3) {
+            Display.displayError("Too far.");
+            return;
+        }
+
+        ((game.entities.Character) entity).addToInventory(equipment);
+        _positions.removeEquipment(equipment);
+        _map[x][y] = " . ";
+        Display.display(entity.getPseudo() + " picked up " + equipment.getName() + ".");
     }
 
     public void moveEntity(Entity entity, int x, int y) {
@@ -332,6 +356,15 @@ public class Dungeon {
 
     public Entity getEntityAtPosition(int x, int y) {
         for (Map.Entry<Entity, int[]> entry : _positions.getEntitiesPosition().entrySet()) {
+            int[] position = entry.getValue();
+            if (position[0] == x && position[1] == y) {
+                return entry.getKey();
+            }
+        }
+        return null;
+    }
+    public Equipment getEquipmentAtPosition(int x, int y) {
+        for (Map.Entry<Equipment, int[]> entry : _positions.getEquipmentPosition().entrySet()) {
             int[] position = entry.getValue();
             if (position[0] == x && position[1] == y) {
                 return entry.getKey();
