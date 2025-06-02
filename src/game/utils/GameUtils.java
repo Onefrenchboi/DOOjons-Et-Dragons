@@ -3,6 +3,7 @@ package game.utils;
 import game.Dungeon;
 import game.entities.Entity;
 
+import java.util.InputMismatchException;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -36,5 +37,45 @@ public class GameUtils {
         int y = Character.toUpperCase(column) - 'A' + 1;
 
         return new int[]{x, y};
+    }
+
+    public static int askValidInt(String prompt, int min, int max) {
+        int value = -1;
+        while (true) {
+            Display.display(prompt);
+            try {
+                value = scanner.nextInt();
+                if (value < min || value > max) {
+                    Display.displayError("Please enter a number between " + min + " and " + max + ".");
+                } else {
+                    break;
+                }
+            } catch (InputMismatchException e) {
+                Display.displayError("Invalid input. Please enter a number.");
+                scanner.nextLine(); // clear invalid input
+            }
+        }
+        return value;
+    }
+
+    public static int[] askValidPosition(String prompt, Dungeon dungeon) {
+        int[] pos;
+        while (true) {
+            Display.display(prompt);
+            String positionInput = scanner.next();
+            try {
+                pos = parsePosition(positionInput);
+                int x = pos[0];
+                int y = pos[1];
+                if (dungeon.isValidPosition(x, y)) {
+                    break;
+                } else {
+                    Display.displayError("Invalid position on the map. Please try again.");
+                }
+            } catch (Exception e) {
+                Display.displayError("Invalid format. Please enter a position like A3 or B7.");
+            }
+        }
+        return pos;
     }
 }
