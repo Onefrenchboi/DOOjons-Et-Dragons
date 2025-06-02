@@ -306,10 +306,6 @@ import java.util.*;
         while (!_winCondition && _dungeon.getNumber() <= 3) {
             for (int currentEntityIndex = 0; currentEntityIndex < _entitiesSortedByInitiative.size(); ) {
                 _currentEntity = _entitiesSortedByInitiative.get(currentEntityIndex);
-                if (!_currentEntity.isAlive()) {
-                    _entitiesSortedByInitiative.remove(currentEntityIndex);
-                    continue;
-                }
                 turn(currentEntityIndex);
                 currentEntityIndex++;
             }
@@ -333,8 +329,13 @@ import java.util.*;
 
 
     public void turn(int currentEntityNum){
-        Display.displayInfo(this);
         _currentEntity = _entitiesSortedByInitiative.get(currentEntityNum);
+        Display.displayInfo(this);
+        if (!_currentEntity.isAlive() && _currentEntity.isPlayer()) {
+            Display.display("This player is dead. Skipping their turn...");
+            turn(currentEntityNum + 1);
+            return;
+        }
         for (int action = 3 ; action > 0;) {
             Display.displayMap(_dungeon);
             Display.displayEntityInfo(_currentEntity);
@@ -343,13 +344,13 @@ import java.util.*;
             String choice = scanner.next();
             Display.display("You chose: " + choice);
             switch (choice) {
-                case "att" -> {
+                case "att"  ->{
                     String actionChoice = scanner.next();
                     _dungeon.attack(_currentEntity, actionChoice);
                     action--;
                     scanner.nextLine();
                 }
-                case "equ" -> {
+                case "equ"  ->{
                     _dungeon.equip(_currentEntity);
                     action--;
                     scanner.nextLine();
@@ -366,7 +367,7 @@ import java.util.*;
                     action--;
                     scanner.nextLine();
                 }
-                case "com" ->{
+                case "com"  ->{
                     String actionChoice = scanner.nextLine();
                     _dungeon.comment(_currentEntity, actionChoice);
                 }
@@ -374,13 +375,21 @@ import java.util.*;
                     Display.display("... ok ?");
                     action--;
                 }
-                case "dm" -> dmActions();
                 default -> Display.displayError("Invalid choice. Please try again.");
             }
 
             //c pour attendre que le joueur presse
             Display.display("Press Any Key to continue...");
             scanner.nextLine();
+
+            //dm actions
+            Display.display("Dm, would you like to intervene ? (Y/N)");
+            String dmChoice = scanner.nextLine();
+            if (dmChoice.equalsIgnoreCase("Y")) {
+                dmActions();
+            }
+
+
 
             //remove all dead monsters
             _entitiesSortedByInitiative.removeIf(entity -> entity.getHp() <= 0 && entity.isMonster());
@@ -390,6 +399,10 @@ import java.util.*;
             }
             //check if lost (i.e. all players are dead)
             if (allPlayersDead()){
+                return;
+            }
+            if (!_currentEntity.isAlive()) {
+                Display.display("The current entity is dead. Skipping to the next turn...");
                 return;
             }
         }
@@ -420,8 +433,65 @@ import java.util.*;
 
     private void dmActions(){
         Display.displayDmActions();
+        String choice = scanner.next();
+        switch (choice){
+            case "com" -> {
+                String comment = scanner.nextLine();
+                Display.display("The DM says : " + comment);
+            }
+            case "move" -> {
+                String entityPos = scanner.next();
+                String newPos = scanner.next();
+                int[] entitypos = parsePosition(entityPos);
+                int[] newpos = parsePosition(newPos);
+                int x = entitypos[0];
+                int y = entitypos[1];
+                Entity entity = _dungeon.getEntityAtPosition(x,y);
+                x = newpos[0];
+                y = newpos[1];
+                while (!_dungeon.isValidPosition(x, y)) {
+                    Display.displayError("Invalid position. Please enter a new position : ");
+                    String position = scanner.nextLine();
+                    newpos = parsePosition(position);
+                    x = newpos[0];
+                    y = newpos[1];
+                }
+                _dungeon.moveEntity(entity, x, y);
 
+            }
+            case "add" -> {
+                String position = scanner.nextLine();
+                String[] parts = position.trim().split("\\s+");
+                String posStr = parts[parts.length - 1];
+                int[] pos = parsePosition(posStr);
+                int x = pos[0];
+                int y = pos[1];
+                while (!_dungeon.isValidPosition(x, y)) {
+                    Display.displayError("Invalid position. Please enter a new position : ");
+                    position = scanner.nextLine();
+                    pos = parsePosition(position);
+                    x = pos[0];
+                    y = pos[1];
+                }
+                _dungeon.addObstacle(x, y);
+                Display.display("Added obstacle successfully.");
+            }
+            case "hurt" -> {
+                String target = scanner.next();
+                int dices = scanner.nextInt();
+                int faces = scanner.nextInt();
+                _dungeon.hurtEntity(target, dices, faces);
+            }
+            case "display" -> {
+                Display.displayMap(_dungeon);
+            }
+            case "stop" -> {
+                return;
+            }
+        }
+        dmActions();
     }
+
 
 
         public List<Entity> getEntitiesSortedByInitiative() {

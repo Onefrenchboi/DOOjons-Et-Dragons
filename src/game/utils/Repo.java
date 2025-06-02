@@ -29,7 +29,6 @@ public class Repo {
         addEquipment(new RangedWeapon("Light crossbow", 16, 1,8));
         addEquipment(new RangedWeapon("Sling", 6, 1,4));
         addEquipment(new RangedWeapon("Shortbow", 16, 1,6));
-
     }
 
 

@@ -250,7 +250,7 @@ public class Dungeon {
             target.removeHp(damage);
             if (!target.isAlive()) {
                 Display.display(target.getName() + " has been defeated!");
-                target.setHp(0);
+                target.setHp(target.getHp());
                 _positions.removeEntity(target);
                 _map[x][y] = " . ";
                 return;
@@ -349,6 +349,30 @@ public class Dungeon {
         } else {
             Display.displayError("Invalid position for entity movement.");
         }
+        Display.display("Moved " + entity.toString() + " successfully.");
+    }
+    public void hurtEntity(String pos, int dices, int faces){
+        int[] position = parsePosition(pos);
+        int x = position[0];
+        int y = position[1];
+
+        Entity target = getEntityAtPosition(x, y);
+        if (target == null) {
+            Display.displayError("No entity at this position.");
+            return;
+        }
+        int damage = GameUtils.roll(dices, faces); // Example damage calculation
+        target.removeHp(damage);
+        Display.display(target.getName() + " has been hurt for " + damage + " damage.");
+
+        if (!target.isAlive()) {
+            Display.display(target.getName() + " has been defeated!");
+            target.setHp(-target.getHp());
+            _positions.removeEntity(target);
+            _map[x][y] = " . ";
+        }
+
+
     }
 
 
