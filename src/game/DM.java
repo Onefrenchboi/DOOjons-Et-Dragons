@@ -335,21 +335,46 @@ import java.util.*;
     public void turn(int currentEntityNum){
         Display.displayInfo(this);
         _currentEntity = _entitiesSortedByInitiative.get(currentEntityNum);
-        for (int action = 3 ; action > 0; action--) {
+        for (int action = 3 ; action > 0;) {
             Display.displayMap(_dungeon);
             Display.displayEntityInfo(_currentEntity);
 
             Display.displayActionMenu(_currentEntity, action);
             String choice = scanner.next();
-            String actionChoice = scanner.next();
-            Display.display("You chose: " + choice + " " + actionChoice);
+            Display.display("You chose: " + choice);
             switch (choice) {
-                case "att" -> _dungeon.attack(_currentEntity, actionChoice);
-                case "equ" -> _dungeon.equip(_currentEntity);
-                case "move" -> _dungeon.move(_currentEntity, actionChoice);
-                case "pick" -> _dungeon.pickUp(_currentEntity,actionChoice);
-                case "com" -> _dungeon.comment(_currentEntity);
-                case "dm" -> Display.display("ekuip");//equip(_currentEntity);
+                case "att" -> {
+                    String actionChoice = scanner.next();
+                    _dungeon.attack(_currentEntity, actionChoice);
+                    action--;
+                    scanner.nextLine();
+                }
+                case "equ" -> {
+                    _dungeon.equip(_currentEntity);
+                    action--;
+                    scanner.nextLine();
+                }
+                case "move" ->{
+                    String actionChoice = scanner.next();
+                    _dungeon.move(_currentEntity, actionChoice);
+                    action--;
+                    scanner.nextLine();
+                }
+                case "pick" ->{
+                    String actionChoice = scanner.next();
+                    _dungeon.pickUp(_currentEntity,actionChoice);
+                    action--;
+                    scanner.nextLine();
+                }
+                case "com" ->{
+                    String actionChoice = scanner.nextLine();
+                    _dungeon.comment(_currentEntity, actionChoice);
+                }
+                case "skip" ->{
+                    Display.display("... ok ?");
+                    action--;
+                }
+                case "dm" -> dmActions();
                 default -> Display.displayError("Invalid choice. Please try again.");
             }
 
@@ -392,6 +417,11 @@ import java.util.*;
     }
 
 
+
+    private void dmActions(){
+        Display.displayDmActions();
+
+    }
 
 
         public List<Entity> getEntitiesSortedByInitiative() {

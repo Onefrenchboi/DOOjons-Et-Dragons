@@ -37,4 +37,5 @@ public class GameUtils {
 
         return new int[]{x, y};
     }
+
 }

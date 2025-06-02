@@ -57,19 +57,31 @@ public class Display {
         System.out.println("Possible actions:");
         if (currentEntity.isMonster()){
             System.out.println("  - Let the DM comment the previous action (dm <text>)");
-            System.out.println("  - Open the commenting menu (com menu)");
+            System.out.println("  - Comment the previous action (com <text>)");
             System.out.println("  - Attack (att <position>)");
             System.out.println("  - Move (move <position>)");
+            System.out.println("  - Skip turn (skip turn)");
 
         }else {
             System.out.println("  - Let the DM comment the previous action (dm <text>)");
-            System.out.println("  - Comment the previous action (com)");
+            System.out.println("  - Comment the previous action (com <text>)");
             System.out.println("  - Attack (att <position>)");
             System.out.println("  - Move (move <position>)");
             System.out.println("  - Show inventory to equip an item (equ show)");
             System.out.println("  - Pick up an item (pick <item number>)");
+            System.out.println("  - Skip turn (skip turn)");
 
         }
+        System.out.println("-------------------------------");
+    }
+
+    public static void displayDmActions() {
+        System.out.println("-------------------------------");
+        System.out.println("Possible DM actions :");
+        System.out.println("  - Comment the previous action (com menu)");
+        System.out.println("  - Move an entity (move <entity> <position>)");
+        System.out.println("  - Add an obstacle (add obstacle <position>)");
+        System.out.println("  - Damage an entity (dam <entity> <Number of dice(s)> <faces)");
         System.out.println("-------------------------------");
     }
 }
