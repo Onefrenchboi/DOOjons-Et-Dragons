@@ -415,7 +415,7 @@ public class DM {
                     dmActions();
                 }
 
-                _entitiesSortedByInitiative.removeIf(entity -> entity.getHp() <= 0 && entity.isMonster());
+                _entitiesSortedByInitiative.removeIf(entity -> entity.getHp() <= 0 && entity.getType()==EntityType.MONSTER);
 
                 if (checkIfAllMonstersDead()) {
                     return;
@@ -454,40 +454,22 @@ public class DM {
                 Display.display("The DM says : " + comment);
             }
             case "move" -> {
+                Display.display("Entere the position of the entity to move ([A-Z]x): ");
                 String entityPos = scanner.next();
-                String newPos = scanner.next();
                 int[] entitypos = parsePosition(entityPos);
-                int[] newpos = parsePosition(newPos);
                 int x = entitypos[0];
                 int y = entitypos[1];
-                Entity entity = _dungeon.getEntityAtPosition(x,y);
-                x = newpos[0];
-                y = newpos[1];
-                while (!_dungeon.isValidPosition(x, y)) {
-                    Display.displayError("Invalid position. Please enter a new position : ");
-                    String position = scanner.nextLine();
-                    newpos = parsePosition(position);
-                    x = newpos[0];
-                    y = newpos[1];
+                int[] newPos = askValidPosition("Enter the new position of the entity ([A-Z]x): ", _dungeon);
+                Entity entity = _dungeon.getEntityAtPosition(x, y);
+                if (entity == null) {
+                    Display.displayError("No entity found at the specified position.");
+                    return;
                 }
-                _dungeon.moveEntity(entity, x, y);
-
+                _dungeon.moveEntity(entity, newPos[0], newPos[1]);
             }
             case "add" -> {
-                String position = scanner.nextLine();
-                String[] parts = position.trim().split("\\s+");
-                String posStr = parts[parts.length - 1];
-                int[] pos = parsePosition(posStr);
-                int x = pos[0];
-                int y = pos[1];
-                while (!_dungeon.isValidPosition(x, y)) {
-                    Display.displayError("Invalid position. Please enter a new position : ");
-                    position = scanner.nextLine();
-                    pos = parsePosition(position);
-                    x = pos[0];
-                    y = pos[1];
-                }
-                _dungeon.addObstacle(x, y);
+                int[] pos = askValidPosition("Enter the position to add an obstacle ([A-Z]x): ", _dungeon);
+                _dungeon.addObstacle(pos[0], pos[1]);
                 Display.display("Added obstacle successfully.");
             }
             case "hurt" -> {
@@ -515,7 +497,7 @@ public class DM {
      */
     private boolean isAnyPlayerDead() {
         for (Entity entity : _entitiesSortedByInitiative) {
-            if (entity.isPlayer() && entity.getHp() <= 0) {
+            if (entity.getType()==EntityType.PLAYER && entity.getHp() <= 0) {
                 return true;
             }
         }
@@ -523,7 +505,7 @@ public class DM {
     }
     private boolean checkIfAllMonstersDead() {
         for (Entity entity : _entitiesSortedByInitiative) {
-            if (entity.isMonster()) {
+            if (entity.getType()==EntityType.MONSTER) {
                 return false;
             }
         }

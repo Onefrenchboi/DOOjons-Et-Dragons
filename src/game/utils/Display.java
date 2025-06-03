@@ -84,8 +84,8 @@ public class Display {
         System.out.println("-------------------------------");
         System.out.println("Possible DM actions :");
         System.out.println("  - Comment the previous action (com <text>)");
-        System.out.println("  - Move an entity (move <position> <new position>)");
-        System.out.println("  - Add an obstacle (add obstacle <position>)");
+        System.out.println("  - Move an entity (move)");
+        System.out.println("  - Add an obstacle (add)");
         System.out.println("  - Damage an entity (hurt <position> <Number of dice(s)> <faces>)");
         System.out.println("  - Display map (display)");
         System.out.println("  - Stop (stop)");
