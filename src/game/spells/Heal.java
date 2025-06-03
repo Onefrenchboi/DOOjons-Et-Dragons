@@ -12,6 +12,13 @@ public class Heal extends Spell {
         super("Heal");
     }
 
+
+    /**
+     * Heals the target entity for a 1d10 hp
+     * If the target is a monster, then you cant heal it.
+     *
+     * @param target The entity to heal.
+     */
     @Override
     public void cast(Entity target) {
         int healingAmount = GameUtils.roll(1, 10);

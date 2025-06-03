@@ -7,7 +7,7 @@ import game.items.Equipment;
 public abstract class Spell {
     private String _name;
 
-    public Spell(String name) {
+    protected Spell(String name) {
         this._name = name;
     }
 
@@ -15,7 +15,14 @@ public abstract class Spell {
         return _name;
     }
 
+
+    //? Abstract methods for casting spells
     public abstract void cast(Entity target);
     public abstract void cast(Equipment target);
     public abstract void cast(Entity target1, Entity target2, Dungeon d);
+
+    public String toString() {
+        return "Spell: " + _name;
+    }
+
 }

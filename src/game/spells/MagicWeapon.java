@@ -14,6 +14,12 @@ public class MagicWeapon extends Spell{
         super("MagicWeapon");
     }
 
+    /**
+     * add +1 bonus to the target weapon.
+     * The target can be either an equipped weapon or an item from the character's inventory.
+     *
+     * @param target The equipment (weapon) to enchant.
+     */
     @Override
     public void cast(Equipment target) {
         if (target == null) {
@@ -32,6 +38,13 @@ public class MagicWeapon extends Spell{
     @Override
     public void cast(Entity target){}
 
+    /**
+     * asks user to select an equipment item to enchant.
+     *
+     *
+     * @param character The character whose equipment is being selected.
+     * @return The selected equipment item, or null if no valid selection was made.
+     */
     public Equipment selectEquipmentToEnchant(game.entities.Character character) {
         Display.display("Choose an item to enchant:");
         Display.display("1. Equipped Weapon: " + (character.getEquippedWeapon() != null ? character.getEquippedWeapon().getName() : "None"));
