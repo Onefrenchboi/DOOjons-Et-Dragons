@@ -3,6 +3,7 @@ package game.spells;
 import game.Dungeon;
 import game.entities.Character;
 import game.entities.Entity;
+import game.items.Equipment;
 import game.utils.Display;
 import game.utils.GameUtils;
 
@@ -27,5 +28,8 @@ public class Heal extends Spell {
 
     @Override
     public void cast(Entity target1, Entity target2, Dungeon d){}
+
+    @Override
+    public void cast(Equipment e){}
 }
 
