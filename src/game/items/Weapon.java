@@ -19,6 +19,32 @@ public abstract class Weapon extends Equipment{
     }
 
 
+
+    //? To avoid InstanceOf
+    @Override
+    public boolean isWeapon() {
+        return true;
+    }
+
+
+    //? Add a bonus to the weapon's damage
+    public void addBonus(int i) {
+        if (i < 0) {
+            throw new IllegalArgumentException("Bonus cannot be negative");
+        }
+        this._bonus += i;
+    }
+
+    //? Calculate the damage of the weapon
+    public int damage() {
+        return GameUtils.roll(_dicenum, _damageroll)+ _bonus;
+    }
+
+
+    //? Getters
+    public int getBonus() {
+        return _bonus;
+    }
     public int getRange() {
         return _range;
     }
@@ -26,27 +52,10 @@ public abstract class Weapon extends Equipment{
         return _dicenum + "d" + _damageroll;
     }
 
-    @Override
-    public boolean isWeapon() {
-        return true;
-    }
+
+
     @Override
     public String toString() {
         return getName() + " (Range: " + getRange() + ", Damage: " + getDamage() + ", Bonus: " + _bonus + ")";
-    }
-
-    public int damage() {
-        return GameUtils.roll(_dicenum, _damageroll)+ _bonus;
-    }
-
-    public int getBonus() {
-        return _bonus;
-    }
-
-    public void addBonus(int i) {
-        if (i < 0) {
-            throw new IllegalArgumentException("Bonus cannot be negative");
-        }
-        this._bonus += i;
     }
 }

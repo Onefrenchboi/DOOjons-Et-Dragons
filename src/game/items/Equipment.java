@@ -11,29 +11,32 @@ public abstract class Equipment {
     }
 
 
-    public String getName(){
-        return _name;
-    }
 
-
-    public String toString(){
-        return _name;
-    }
-
-    public Statistics getBonusStats() {
-        return _bonusStats;
-    }
+    //? set les stats bonus
     public void setBonusStats(Statistics bonusStats) {
         this._bonusStats = bonusStats;
     }
 
 
 
-    //!encore un instanceof du pauvre
+    //? instanceof du pauvre, on va override pour return true dans les classes correspondantes
     public boolean isWeapon() {
         return false;
     }
     public boolean isArmor() {
         return false;
+    }
+
+    //? Getters
+    public String getName(){
+        return _name;
+    }
+    public Statistics getBonusStats() {
+        return _bonusStats;
+    }
+
+    @Override
+    public String toString(){
+        return _name;
     }
 }
