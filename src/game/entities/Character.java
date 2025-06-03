@@ -18,7 +18,7 @@ public class Character extends Entity {
 
 
     public Character(String name, Race race, CharacterClass charclass) {
-        super(name);
+        super(name, EntityType.PLAYER);
         this._race = race;
         this._class = charclass;
         this._inventory = new ArrayList<>(charclass.getStartingEquipment());

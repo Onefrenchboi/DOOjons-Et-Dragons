@@ -2,6 +2,7 @@ package game.entities;
 
 
 import game.items.*;
+import game.items.enums.EquipmentType;
 import game.utils.GameUtils;
 
 import java.util.List;
@@ -16,8 +17,9 @@ public abstract class Entity {
     private EntityType _typeEntity;
 
 
-    protected Entity(String name) {
+    protected Entity(String name, EntityType type) {
         this._name = name;
+        this._typeEntity = type;
         this._stats = new Statistics(
                 0,
                 (GameUtils.roll(4, 4) + 3),
@@ -25,6 +27,7 @@ public abstract class Entity {
                 (GameUtils.roll(4, 4) + 3),
                 (GameUtils.roll(4, 4) + 3));
     }
+
 
 
 
@@ -145,7 +148,7 @@ public abstract class Entity {
     public int getInitiative() {
         return _stats.getInitiative();
     }
-    public EntityType getTypeEntity() {
+    public EntityType getType() {
         return _typeEntity;
     }
 

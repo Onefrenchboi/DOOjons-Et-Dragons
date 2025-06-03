@@ -13,7 +13,7 @@ public class Monster extends Entity {
 
 
     public Monster(String species, int number, Weapon weapon, int AC) {
-        super(species);
+        super(species, EntityType.MONSTER);
         this.setHp(GameUtils.roll(4, 4) + 3);
         this.setMaxHp(getHp());
         this._number = number;
@@ -75,6 +75,10 @@ public class Monster extends Entity {
     @Override
     public int getAC() {
         return _AC;
+    }
+
+    public EntityType getType() {
+        return EntityType.MONSTER;
     }
 
 

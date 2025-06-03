@@ -312,7 +312,7 @@ public class DM {
                 turn(_entitiesSortedByInitiative.indexOf(_currentEntity));
             }
             _turn++;
-            if (allMonstersDead()) {
+            if (checkIfAllMonstersDead()) {
                 if (_dungeon.getNumber() < 3) {
                     nextDungeon(_entitiesSortedByInitiative);
                 } else {
@@ -359,12 +359,6 @@ public class DM {
         while (currentEntityNum < _entitiesSortedByInitiative.size()) {
             _currentEntity = _entitiesSortedByInitiative.get(currentEntityNum);
             Display.displayInfo(this);
-
-            if (!_currentEntity.isAlive() && _currentEntity.isPlayer()) {
-                Display.display("This player is dead. Skipping their turn...");
-                currentEntityNum++;
-                continue;
-            }
 
             for (int action = 3; action > 0;) {
                 Display.displayMap(_dungeon);
@@ -423,11 +417,11 @@ public class DM {
 
                 _entitiesSortedByInitiative.removeIf(entity -> entity.getHp() <= 0 && entity.isMonster());
 
-                if (allMonstersDead()) {
+                if (checkIfAllMonstersDead()) {
                     return;
                 }
 
-                if (allPlayersDead()) {
+                if (isAnyPlayerDead()) {
                     gameEnd();
                 }
 
@@ -519,15 +513,15 @@ public class DM {
      * Checks if all monsters are dead and returns true if so, false otherwise.<br>
      * Used to end the game when all players are dead or when all monsters are dead.
      */
-    private boolean allPlayersDead() {
+    private boolean isAnyPlayerDead() {
         for (Entity entity : _entitiesSortedByInitiative) {
-            if (entity.isPlayer() && entity.getHp() > 0) {
-                return false;
+            if (entity.isPlayer() && entity.getHp() <= 0) {
+                return true;
             }
         }
-        return true;
+        return false;
     }
-    private boolean allMonstersDead() {
+    private boolean checkIfAllMonstersDead() {
         for (Entity entity : _entitiesSortedByInitiative) {
             if (entity.isMonster()) {
                 return false;
