@@ -34,6 +34,12 @@ public class DM {
 
 
     //? Functions to create everything
+
+    /**
+     * Creates characters, monsters, equipment based on user input.
+     * Demande a l'user des precisions (nom, race, classe, AC (pour monstres) et autres
+     *
+     */
     public void createCharacters() {
         int nbPlayers = askValidInt("How many players ? (1-4) : ", 1, 4);
 
@@ -138,11 +144,25 @@ public class DM {
             _equipmentList.add(selectedEquipment);
         }
     }
+
+    /**
+     * Creates a dungeon with a specified width and height.
+     * The dungeon number is passed as an argument to the Dungeon constructor.
+     *
+     * @param number the dungeon number
+     */
     public void createDungeon(int number) {
         int width = askValidInt("DM, please enter dungeon width (15-26): ", 15, 26);
         int height = askValidInt("DM, please enter dungeon height (15-26): ", 15, 26);
         _dungeon = new Dungeon(width, height, number);
     }
+
+
+    /**
+     * Sets up the dungeon by placing entities, equipment, and obstacles.<br>
+     * sorts entities by initiative and allows the DM to place them manually or randomly.
+     * Also allows the DM to place items and obstacles manually or randomly.
+     */
     public void setDungeon() {
         _turn = 1;
         //On sort les monstres et personnages par initiative
@@ -229,6 +249,12 @@ public class DM {
         }
     }
 
+
+    /**
+     * Creates the game by calling all above methods.<br>
+     * Displays the start of the game message.<br>
+     * Note : Only used one time, for the other dungeons we use nextDungeon
+     */
     public void createGame() {
         Display.display("----Setting up the game----");
         createCharacters();
@@ -239,6 +265,14 @@ public class DM {
         Display.display("----Start of the game----");
     }
 
+    /**
+     * Recreates a new dungeon with only the players from the last
+     * Heals players
+     * Checks if its the last dungeon
+     * <br>
+     * Note : the list of entities is cleared of all monsters before calling this
+     *
+     */
     private void nextDungeon(List<Entity> entitiesSortedByInitiative) {
         int newDungeonNumber = _dungeon.getNumber()+1;
         if (newDungeonNumber > 3) {
@@ -260,6 +294,15 @@ public class DM {
         setDungeon();
     }
 
+
+    /**
+     * Starts the game loop. <br>
+     * Runs until the dungeon is the 3rd and all monsters are dead (i just realised WinCondition might not even be useful-)
+     * call turn on each entity, check at the end of each turn if every monster OR player is dead, react accordingly<br>
+     * if won, display the end
+     *<br>
+     * Note : endGame is separated, see endGame for why
+     */
     public void play() {
         while (!_winCondition && _dungeon.getNumber() <= 3) {
             for (Entity entity : _entitiesSortedByInitiative) {
@@ -276,14 +319,40 @@ public class DM {
             }
         }
         if (_winCondition) {
+            Display.displayLore("You and your party forced back the darkness,\n" +
+                    "but the shadows still writhe beyond the edge of the light.\n" +
+                    "For now, the Depths are silent—but the true threat stirs deeper below,\n" +
+                    "waiting for the moment to rise again and engulf the world in eternal night.\n" +
+                    "Your victory is but a single spark in a gathering storm.\n" +
+                    "Prepare yourselves, for the battle to save the kingdom has only just begun. \n");
             Display.displaySuccess("Congratulations, you have completed the game!");
         }
     }
+
+    /**
+     * Ends the game when all players are dead.<br>
+     * <br>
+     * Note : Je passe en francais carrement. En gros j'ai eu des problemes pour finir le jeu, avec des return dans ma fonction tour, donc j'ai décidé de faire une methode gameEnd qui exit le programme direct pour faire plus simple
+     */
     public void gameEnd(){
+        Display.displayLore("Overwhelmed by the forces of the Demon King, you fell in battle.\n" +
+                "The shadows gain ground, and the future of the kingdom seems bleak...\n");
         Display.displayError("You just lost the Game.");
         System.exit(0);
     }
 
+
+    /**
+     * Handles the turn of the current entity<br>
+     * Checks if it a dead player (if so, skip his turn since he isnt removed from the list like dead monsters)
+     * if not, repeat 3 times (3 actions) a switch case that asks the user what they want to do.<br>
+     * Afterwards, checks if the DM wants to intervene, and if so, calls dmActions<br>
+     * Checks if all monsters are dead, if so, ends the game<br>
+     * Checks if all players are dead, if so, calls gameEnd
+     * <br>
+     * Note : Technically, everyone can do what they want, BUT, we only print what they can do
+     *
+     */
     public void turn(int currentEntityNum) {
         while (currentEntityNum < _entitiesSortedByInitiative.size()) {
             _currentEntity = _entitiesSortedByInitiative.get(currentEntityNum);
@@ -370,25 +439,16 @@ public class DM {
             currentEntityNum++;
         }
     }
-    private boolean allPlayersDead() {
-        for (Entity entity : _entitiesSortedByInitiative) {
-            if (entity.isPlayer() && entity.getHp() > 0) {
-                return false;
-            }
-        }
-        return true;
-    }
-    private boolean allMonstersDead() {
-        for (Entity entity : _entitiesSortedByInitiative) {
-            if (entity.isMonster()) {
-                return false;
-            }
-        }
-        return true;
-    }
 
 
 
+    /**
+     * Handles the DM actions during the game.<br>
+     * Displays a menu with options for the DM to choose from.<br>
+     *
+     * <br>
+     * Note : recursive, so it will keep asking for actions until the DM chooses to stop.<br>
+     */
     private void dmActions(){
         Display.displayDmActions();
         String choice = scanner.next();
@@ -452,6 +512,33 @@ public class DM {
 
 
 
+    /**
+     * Checks if all players are dead and returns true if so, false otherwise.<br>
+     * Checks if all monsters are dead and returns true if so, false otherwise.<br>
+     * Used to end the game when all players are dead or when all monsters are dead.
+     */
+    private boolean allPlayersDead() {
+        for (Entity entity : _entitiesSortedByInitiative) {
+            if (entity.isPlayer() && entity.getHp() > 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+    private boolean allMonstersDead() {
+        for (Entity entity : _entitiesSortedByInitiative) {
+            if (entity.isMonster()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+
+
+
+    //? Getters
     public List<Entity> getEntitiesSortedByInitiative() {
         return _entitiesSortedByInitiative;
     }
