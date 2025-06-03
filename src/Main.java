@@ -25,10 +25,5 @@ public class Main {
         dm.createGame();
         dm.play();
 
-
-        //todo : commentaires
-        //todo : UML :(
-        //todo : see what i can put in private, protected, etc...
-
     }
 }
