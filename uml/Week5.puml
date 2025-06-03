@@ -10,6 +10,10 @@ skinparam defaultFontName "Century Gothic"
 skinparam roundcorner 15
 
 
+class Main #Bisque {
+    + main(args : String[]) : void
+}
+
 
 package "game" <<frame>> #b3b3b3  {
 
@@ -26,25 +30,31 @@ package utils #palegreen{
         + {static} scanner : Scanner
         + {static} roll(num : Integer, sides : Integer) : Integer
         + {static} parsePosition(position : String) : int[]
+        + {static} askValidInt(prompt : String, min : Integer, max : Integer) : Integer
+        + {static} askValidPosition(prompt : String, Dungeon D) : Integer[]
     }
 
     class Repo  #Bisque {
         + <<create>> Repo()
         + addEquipment(equipment : Equipment)
         + removeEquipment(equipment : Equipment)
-        + getEquipments() : List<Equipment>
         + getEquipmentByName(name : String) : Equipment
+        + getEquipments() : List<Equipment>
         + toString() : String
-        }
+    }
 
     class Display #Bisque {
         + {static} display(stuff : String)
         + {static} displayError(stuff : String)
+        + {static} displayLore(stuff : String)
         + {static} displaySuccess(stuff : String)
         + {static} displayInfo(dm : DM)
         + {static} displayEntityInfo(entity : Entity)
+        + {static} displayLao(dungeon : Dungeon)
         + {static} displayClear()
         + {static} displayActionMenu(currentEntity : Entity, actions : Integer)
+        + {static} displayDmActions()
+        + {static} displaySpellsMenu(entities : Entity)
     }
 }
 
@@ -56,21 +66,26 @@ package utils #palegreen{
   class Positions #Bisque {
     - _obstacles : List<int>
     + <<create>> Positions()
+
     + addEntity (entity : Entity, position : int[])
     + addEquipment (equipment : Equipment, position : int[])
     + addObstacle (position : int[])
     + removeEntity (entity : Entity)
+    + removeEquipment (equipment : Equipment)
+
+    + distanceBetween(entity1 : Entity, targetPosition : int[]) : Integer
+
     + getEntitiesPosition() : HashMap<Entity, int[]>
     + getEquipmentPosition() : HashMap<Equipment, int[]>
     + getObstacles() : List<int>
-    + distanceBetween(entity1 : Entity, targetPosition : int[]) : Integer
-    + toString() : String
+
   }
 
   class DM #Bisque {
     - _turn : Integer
     - _winCondition : Boolean
     + <<create>> DM()
+
     + createCharacters()
     + createMonsters()
     + createEquipment()
@@ -79,12 +94,17 @@ package utils #palegreen{
     + createGame()
     + nextDungeon()
     + turn()
+    + play()
+    + gameEnd()
+
     + allPlayersDead() : Boolean
     + allMonstersDead() : Boolean
+
     + getEntitiesSortedByInitiative() : List<Entity>
     + getTurn() : Integer
     + getCurrentEntity() : Entity
     + getDungeonNumber() : Integer
+
     + toString() : String
   }
   class Dungeon #Bisque {
@@ -93,27 +113,39 @@ package utils #palegreen{
     - _width : Integer
     - _number : Integer
     + <<create>> Dungeon(height : Integer, width : Integer, number : Integer)
+
     + IsValidPosition(x : Integer, y : Integer)
+
     + addEntity(x : Integer, y : Integer, entity : Entity)
     + addEquipment(x : Integer, y : Integer, equipment : Equipment)
     + addObstacle(x : Integer, y : Integer)
     + randomSetEntity(entity : List<Entity>)
     + randomSetEquipment(equipment : List<Equipment>)
     + randomSetObstacle()
+
     - setObstacles()
     - setEntities()
     - setEquipment()
-    - updateMap()
+    + updateMap()
     + displayGrid()
+
     + attack(attacker : Entity, pos : String)
     + equip (entity : Entity, equipment : Equipment)
     + move(entity : Entity, position : String)
     + pickUp(entity : Entity, position : String)
+    + comment(entity : Entity, comment : String)
+    + castSpell(entity : Entity)
+
     + moveEntity(entity : Entity, x : Integer, y : Integer)
-    + getPositions() : Positions
+    + hurtEntity(entity : Entity, dices : Integer, sides : Integer)
+
+    + switchEntities(entity1 : Entity, entity2 : Entity)
+
     + getDungeonNumber() : Integer
     + getEntityAtPosition(x : Integer, y : Integer) : Entity
+    + getEquipmentAtPosition(x : Integer, y : Integer) : Equipment
     + getNumber() : Integer
+
     + toString() : String
   }
 
@@ -124,19 +156,21 @@ package utils #palegreen{
           - _pseudo : String
           - _maxHp : Integer
           # <<create>> Entity(Name : String)
+
+          + removeHp(hp : Integer)
           + isPlayer : Boolean
           + isMonster : Boolean
           + isAlive() : Boolean
           + canAttack : Boolean
-          + removeHp(hp : Integer)
-          + setHp(hp : Integer)
-          + setMaxHp(maxHp : Integer)
+          + {abstract} equipWeapon(weapon : Equipment)
+          + {abstract} equipArmor(armor : Equipment)
+          + {abstract} displayInventory()
           + setEquippedWeapon(weapon : Weapon)
           + setEquippedArmor(armor : Armor)
-          + {abstract} equipWeapon(weapon : Weapon)
-          + {abstract} equipArmor(armor : Armor)
-          + {abstract} displayInventory()
-          + {abstract} getInfo() : String
+          + setHp(hp : Integer)
+          + setMaxHp(maxHp : Integer)
+          + setPseudo(pseudo : String)
+
           + getName() : String
           + getPseudo() : String
           + getStats() : Statistics
@@ -144,10 +178,12 @@ package utils #palegreen{
           + getMaxHp() : Integer
           + getHp() : Integer
           + getAC() : Integer
-          + getInventory() : List<Equipment>
           + getEquippedWeapon() : Weapon
           + getEquippedArmor() : Armor
           + getColor() : String
+
+          + {abstract} getInfo() : String
+          + {abstract} getInventory() : List<Equipment>
           + {abstract} toString() : String
       }
 
@@ -156,7 +192,12 @@ package utils #palegreen{
           - _AC : Integer
           + <<create>> Monster(species : String, number : Integer,
            weapon : Weapon, AC : Integer)
+
+          + isMonster() : Boolean
+
           + getColor() : String
+          + getInfo() : String
+          + getAC() : Integer
           + toString() : String
 
       }
@@ -164,6 +205,14 @@ package utils #palegreen{
       class Character #Bisque extends Entity   {
           + <<create>> Character(name : String, race : Race,
            characterClass : CharacterClass)
+
+          + isPlayer() : Boolean
+          + isCleric() : Boolean
+          + isWizard() : Boolean
+
+          + displayInventory() : String
+          + addToInventory(equipment : Equipment)
+
           + toString() : String
       }
       class Statistics #Bisque {
@@ -172,10 +221,13 @@ package utils #palegreen{
           -_dexterity :  Integer
           -_speed :  Integer
           -_initiative : Integer
+
           + <<create>> Statistics()
           + <<create>> Statistics(hp : Integer, strength : Integer, dexterity : Integer, speed : Integer, initiative : Integer)
+
           + addStatistics(s : statistics)
           + removeStatistics(s : statistics)
+
           + getHp() : Integer
           + getStrength() : Integer
           + getDexterity() : Integer
@@ -190,9 +242,11 @@ package utils #palegreen{
         - _name : String
         # <<create>> CharacterClass(name : String , bonusStats : Statistics,
          startingEquipment : Equipment.Equipment[*]))
+
         + getStartingEquipment() : Equipment.Equipment[*]
         + getBonusStats() : Statistics
         + getName() : String
+
         + toString() : String
         }
         class Rogue extends CharacterClass {
@@ -216,8 +270,10 @@ package utils #palegreen{
         abstract class Race <<abstract>> #Bisque {
         - _name : String
         # <<create>> Race(name : String , bonusStats : Statistics)
+
         + getBonusStats() : Statistics
         + getName() : String
+
         + toString() : String
         }
         class Human extends Race {
@@ -247,10 +303,13 @@ package utils #palegreen{
     abstract class Equipment <<abstract>>  #Bisque {
     - _name : String
     # <<create>> Equipment(name : String)
+
     + isArmor() : Boolean
     + isWeapon() : Boolean
+
     + getAC() : Integer
     + getName() : String
+
     + toString() : String
     }
 
@@ -258,11 +317,17 @@ package utils #palegreen{
     - _range : Integer
     - _damageroll : Integer
     - _dicenumb : Integer
+    - _bonus : Integer
     # <<create>> Weapon(name : String, range : Integer,
      damageroll : Integer, bonusStat : Statistics)
-     + getRange() : Integer
-     + getDamageRoll() : Integer
+
+     + addBonus(bonus : Integer)
      + damage() : Integer
+
+     + getRange() : Integer
+     + getDamage() : String
+     + getBonus() : Integer
+
      + toString() : String
 
     }
@@ -270,6 +335,11 @@ package utils #palegreen{
     - _AC : Integer
     # <<create>> Armor(name : String, AC : Integer,
      bonusStat : Statistics)
+
+     + isArmor() : Boolean
+
+     + getAC() : Integer
+
      + toString() : String
     }
 
@@ -300,6 +370,40 @@ package utils #palegreen{
     }
   }
 
+package spells #ba20d5 {
+    abstract class Spell <<abstract>>  #Bisque {
+        - _name : String
+        # <<create>> Spell(name : String)
+
+        + {abstract} cast(target : Entity)
+        + {abstract} cast(target : Equipment)
+        + {abstract} cast(target1 : Entity, target2 : Entity, d : Dungeon)
+
+        + getName() : String
+
+        + toString() : String
+    }
+    class Heal extends Spell {
+        + <<create>> HealingSpell(name : String)
+        + cast(target : Entity)
+    }
+    class BoogieWoogie extends Spell {
+        + <<create>> BoogieWoogie(name : String)
+        + cast(target1 : Entity, target2 : Entity, d : Dungeon)
+    }
+    class MagicWeapon extends Spell {
+        + <<create>> MagicWeapon(name : String)
+        + cast(target : Equipment)
+        + selectEquipmentToEnchant(char : Character)
+    }
+
+
+
+
+
+
+
+}
 
 
 'Links
@@ -312,7 +416,7 @@ package utils #palegreen{
   Positions "1"  o..* "_equipmentPosition" Equipment : "> uses"
 
 
-  DM "1"  o--> "-_dungeon" Dungeon : "> contains"
+  DM "1"  o--> "-_dungeon" Dungeon : "> plays on"
   DM "1"  o--> "-_equipmentList" Equipment : "> has"
   DM "1"  o--> "-_entitiesSortedByInitiative" Entity : "> has"
   DM "1"  o--> "-_equipmentRepo" utils.Repo : "> has"
@@ -328,15 +432,17 @@ package utils #palegreen{
   entities.Character "1"  *--> "-_class" entities.classes.CharacterClass : "> is"
   entities.Character "1"  *--> "-_race" entities.races.Race : "> is"
   entities.Character "1"  o--> "-_inventory" items.Equipment : "> has"
+  entities.Character "1"  o--> "-_spells" spells.Spell : "> knows"
 
 
   entities.classes.CharacterClass "1"  o--> "-_startingEquipment" items.Equipment : "> has"
   entities.classes.CharacterClass "1"  *--> "-_bonusStat" entities.Statistics : "> has a bonus"
   entities.races.Race "1"  o--> "-_bonusStat" entities.Statistics : "> has a bonus"
 
-  items.Armor "1" *--> "-_bonusStat" entities.Statistics : "> has a bonus"
-  items.Weapon "1" *--> "-_bonusStat" entities.Statistics : "> has a bonus"
+  items.Equipment "1" *--> "-_bonusStat" entities.Statistics : "> has a bonus"
 
+
+  Main "1"  o--> DM : "> starts the game"
 
  }
 
