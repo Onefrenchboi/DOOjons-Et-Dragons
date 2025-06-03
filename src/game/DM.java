@@ -185,14 +185,12 @@ public class DM {
         if (choice.equalsIgnoreCase("Y")) {
             for (Entity entity : _entitiesSortedByInitiative) {
                 int[] pos = askValidPosition("Enter the position of " + entity.getName() + " ([A-Z]x) : ", _dungeon);
-                int x = pos[0];
-                int y = pos[1];
-                _dungeon.addEntity(x, y, entity);
+                _dungeon.addEntity(entity, pos);
             }
         }
         else {
             //place les personnages aléatoirement
-            _dungeon.randomSetEntity(_entitiesSortedByInitiative);
+            _dungeon.randomlyAddEntity(_entitiesSortedByInitiative);
         }
 
         Display.display("DM, do you want to place the items manually ? (Y/N)");
@@ -200,13 +198,11 @@ public class DM {
         if (choice.equalsIgnoreCase("Y")) {
             for (Equipment equipment : _equipmentList) {
                 int[] pos = askValidPosition("Enter the position of " + equipment + " ([A-Z]x) : ", _dungeon);
-                int x = pos[0];
-                int y = pos[1];
-                _dungeon.addEquipment(x, y, equipment);
+                _dungeon.addEquipment(equipment, pos);
             }
         }
         else {
-            _dungeon.randomSetEquipment(_equipmentList);
+            _dungeon.randomlyAddEquipment(_equipmentList);
         }
 
         Display.display("DM, do you want to place the obstacles manually ? (Y/N)");
@@ -222,7 +218,7 @@ public class DM {
             }
         }
         else {//place les obstacles aléatoirement
-            _dungeon.randomSetObstacles();
+            _dungeon.randomlyAddObstacles();
         }
         for (Entity entity : _entitiesSortedByInitiative) {
             if (entity.isPlayer()) {
@@ -307,10 +303,7 @@ public class DM {
      */
     public void play() {
         while (!_winCondition && _dungeon.getNumber() <= 3) {
-            for (Entity entity : _entitiesSortedByInitiative) {
-                _currentEntity = entity;
-                turn(_entitiesSortedByInitiative.indexOf(_currentEntity));
-            }
+            turn();
             _turn++;
             if (checkIfAllMonstersDead()) {
                 if (_dungeon.getNumber() < 3) {
@@ -355,7 +348,8 @@ public class DM {
      * Note : Technically, everyone can do what they want, BUT, we only print what they can do
      *
      */
-    public void turn(int currentEntityNum) {
+    public void turn() {
+        int currentEntityNum = 0;
         while (currentEntityNum < _entitiesSortedByInitiative.size()) {
             _currentEntity = _entitiesSortedByInitiative.get(currentEntityNum);
             Display.displayInfo(this);
@@ -370,18 +364,24 @@ public class DM {
                 switch (choice) {
                     case "att" -> {
                         String actionChoice = scanner.next();
-                        _dungeon.attack(_currentEntity, actionChoice);
+                        int[] position = parsePosition(actionChoice);
+                        int x = position[0];
+                        int y = position[1];
+                        _dungeon.attack(_currentEntity,x,y);
                         action--;
                         scanner.nextLine();
                     }
                     case "equ" -> {
-                        _dungeon.equip(_currentEntity);
+                        _currentEntity.equip();
                         action--;
                         scanner.nextLine();
                     }
                     case "move" -> {
                         String actionChoice = scanner.next();
-                        _dungeon.move(_currentEntity, actionChoice);
+                        int[] position = parsePosition(actionChoice);
+                        int x = position[0];
+                        int y = position[1];
+                        _dungeon.move(_currentEntity, x,y);
                         action--;
                         scanner.nextLine();
                     }

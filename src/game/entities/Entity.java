@@ -3,9 +3,13 @@ package game.entities;
 
 import game.items.*;
 import game.items.enums.EquipmentType;
+import game.utils.Display;
 import game.utils.GameUtils;
 
 import java.util.List;
+
+import static game.utils.GameUtils.askValidInt;
+import static game.utils.GameUtils.scanner;
 
 public abstract class Entity {
     private String _name;
@@ -36,6 +40,62 @@ public abstract class Entity {
         this._stats.addStatistics(new Statistics(-hp, 0, 0, 0, 0));
     }
 
+
+    public boolean attack(Entity target, int distanceTo) {
+        if (this.canAttack(target)) {
+            if (distanceTo > this._equippedWeapon.getRange()) {
+                Display.displayError("You are too far from " + target.getName() + " to attack it.");
+                return !target.isAlive();
+            }
+            int attackRoll = GameUtils.roll(1, 20) + this._equippedWeapon.getBonus();
+            Display.display("You rolled a " + attackRoll);
+            if (this._equippedWeapon.getRange() == 1) {
+                attackRoll += this._stats.getStrength();
+                Display.display("Your attack roll is " + attackRoll + " (Strength bonus applied [+" + this._stats.getStrength() + "])");
+            } else {
+                attackRoll += this._stats.getDexterity();
+                Display.display("Your attack roll is " + attackRoll + " (Dexterity bonus applied [+" + this._stats.getDexterity() + "])");
+            }
+
+            if (attackRoll > target.getAC()) {
+                Display.display("You hit " + target.getName() + "!");
+                int damage = this._equippedWeapon.damage();
+                Display.display("You did " + damage + " damage !");
+                target.removeHp(damage);
+                if (!target.isAlive()) {
+                    Display.display(target.getName() + " has been defeated!");
+                    target.setHp(target.getHp());
+                    return target.isAlive();
+                }
+                Display.display(target.getName() + " has " + target.getHp() + " HP left.");
+            } else {
+                Display.displayError("You missed " + target.getName() + "!");
+            }
+        } else {
+            Display.display(this.getPseudo() + " cannot attack " + target.getPseudo() + ".");
+        }
+        return !target.isAlive();
+    }
+    public void equip() {
+        if (_typeEntity== EntityType.PLAYER) {
+            Display.display("Choose an item to equip from your inventory : ");
+            String inventory = displayInventory();
+            if (inventory.equals("Inventory is empty.")) {
+                Display.displayError("You have no items to equip.");
+                return;
+            }
+            Display.display(inventory);
+            int choice = askValidInt("Choose the item number to equip: ", 0, this.getInventory().size() - 1);
+            Equipment equipment = this.getInventory().get(choice);
+            if (equipment.getType()== EquipmentType.ARMOR) {
+                this.equipArmor(equipment);
+                Display.display("You equipped " + equipment.getName() + ".");
+            } else if (equipment.getType()== EquipmentType.WEAPON) {
+                this.equipWeapon(equipment);
+                Display.display("You equipped " + equipment.getName() + ".");
+            }
+        }
+    }
 
 
     //? le instanceof du pauvre

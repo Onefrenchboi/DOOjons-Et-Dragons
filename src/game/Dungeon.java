@@ -2,6 +2,7 @@ package game;
 
 import game.entities.Character;
 import game.entities.Entity;
+import game.entities.EntityType;
 import game.items.Equipment;
 import game.items.enums.EquipmentType;
 import game.spells.*;
@@ -18,8 +19,10 @@ public class Dungeon {
     private String[][] _map;
     private int _height;
     private int _width;
-    private Positions _positions;
     private int _number;
+    private HashMap<Entity, int[]> _entitiesPosition;
+    private HashMap<Equipment, int[]> _equipmentPosition;
+    private List<int[]> _obstacles;
 
     public Dungeon(int h, int w, int number) {
         if (w >= 15 && w <= 26 && h >= 15 && h <= 26) {
@@ -33,7 +36,9 @@ public class Dungeon {
 
         _number = number;
         _map = new String[_height + 3][_width + 1];
-        _positions = new Positions();
+        _entitiesPosition = new HashMap<>();
+        _equipmentPosition = new HashMap<>();
+        _obstacles = new ArrayList<>();
 
         for (int j = 0; j < _map[0].length; j++) {
             if (j >= 1) {
@@ -82,39 +87,56 @@ public class Dungeon {
             return false;
         }
         //verif obstacles
-        for (int[] obstacle : _positions.getObstacles()) {
+        for (int[] obstacle : _obstacles) {
             if (obstacle[0] == x && obstacle[1] == y) {
                 return false;
             }
         }
         //verif entities
-        for (Map.Entry<Entity, int[]> entity : _positions.getEntitiesPosition().entrySet()) {
+        for (Map.Entry<Entity, int[]> entity : _entitiesPosition.entrySet()) {
             if (entity.getValue()[0] == x && entity.getValue()[1] == y) {
                 return false;
             }
         }
         //verif equipments
-        for (Map.Entry<Equipment, int[]> eqipment : _positions.getEquipmentPosition().entrySet()) {
+        for (Map.Entry<Equipment, int[]> eqipment : _equipmentPosition.entrySet()) {
             if (eqipment.getValue()[0] == x && eqipment.getValue()[1] == y) {
                 return false;
             }
         }
         return true;
     }
+    public boolean isValidPosition(int[] posi) {
+        int x = posi[0];
+        int y = posi[1];
+        return isValidPosition(x, y);
+    }
 
 
-    /** Methods to add entities, equipments, and obstacles to the map.
-     *  Also includes methods to randomly set entities, equipments, and obstacles.
-     * <br>
-     * Note : I won't go into details, but its just checking is the pos is valid
-     * and then adding the entity/equipment/obstacle to the positions list.
+
+    /** Methods to add entities, equipments, and obstacles to the map. <br>
+     * Its just checking is the pos is valid and then adding the entity/equipment/obstacle to the positions list.
      */
-    public void addEntity(int x, int y, Entity entity) {
-        if (isValidPosition(x, y)) {
-            _positions.addEntity(entity, new int[]{x, y});
+    public void addEntity(Entity entity, int[] position) {
+        if (isValidPosition(position)) {
+            _entitiesPosition.put(entity, position);
         }
     }
-    public void randomSetEntity(List<Entity> entities) {
+    public void addEquipment(Equipment equipment, int[] position) {
+        if (isValidPosition(position)) {
+            _equipmentPosition.put(equipment, position);
+        }
+    }
+    public void addObstacle(int x, int y) {
+        if (isValidPosition(x, y)) {
+            addObstacle(new int[]{x, y});
+        }
+    }
+
+    /**
+     * Methods to randomly add entities, equipments, and obstacles.
+     * */
+    public void randomlyAddEntity(List<Entity> entities) {
         for (Entity entity : entities) {
             int x = GameUtils.roll(1, _height-2);
             int y = GameUtils.roll(1, _width-1);
@@ -122,15 +144,10 @@ public class Dungeon {
                 x = GameUtils.roll(1, _height-2);
                 y = GameUtils.roll(1, _width-1);
             }
-            addEntity(x, y, entity);
+            addEntity(entity, new int[]{x, y});
         }
     }
-    public void addEquipment(int x, int y, Equipment equipment) {
-        if (isValidPosition(x, y)) {
-            _positions.addEquipment(equipment ,new int[]{x, y});
-        }
-    }
-    public void randomSetEquipment(List<Equipment> equipments) {
+    public void randomlyAddEquipment(List<Equipment> equipments) {
         for (Equipment equipment : equipments) {
             int x = GameUtils.roll(1, _height-2);
             int y = GameUtils.roll(1, _width-1);
@@ -138,15 +155,10 @@ public class Dungeon {
                 x = GameUtils.roll(1, _height-2);
                 y = GameUtils.roll(1, _width-1);
             }
-            addEquipment(x, y, equipment);
+            addEquipment( equipment, new int[]{x, y});
         }
     }
-    public void addObstacle(int x, int y) {
-        if (isValidPosition(x, y)) {
-            _positions.addObstacle(new int[]{x, y});
-        }
-    }
-    public void randomSetObstacles() {
+    public void randomlyAddObstacles() {
         for (int group = 0; group < 5; group++) {
             Random r = new Random();
             int x = r.nextInt(2, _map.length - 4);
@@ -179,10 +191,10 @@ public class Dungeon {
 
     /**
      * Methods to set the obstacles, entities, and equipments on the map.
-     * Just add each entity/equipment/obstacle to the map at the correct position.
+     * Just add each entity/equipment/obstacle to the map display at the correct position.
      * */
     private void setObstacles() {
-        for (int[] coord : _positions.getObstacles()) {
+        for (int[] coord : _obstacles) {
             int x = coord[0];
             int y = coord[1];
             if (y == _map[0].length - 1) {
@@ -193,7 +205,7 @@ public class Dungeon {
         }
     }
     private void setEntities() {
-        _positions.getEntitiesPosition().forEach((entity, coordinates) -> {
+       _entitiesPosition.forEach((entity, coordinates) -> {
             int x = coordinates[0];
             int y = coordinates[1];
             if (y == _map[0].length - 1) {
@@ -205,7 +217,7 @@ public class Dungeon {
         });
     }
     private void setEquipments() {
-        _positions.getEquipmentPosition().forEach((equipment, coordinates) -> {
+        _equipmentPosition.forEach((equipment, coordinates) -> {
             int x = coordinates[0];
             int y = coordinates[1];
             _map[x][y] = GameUtils.BLUE + "[⌘]" + GameUtils.RESET;
@@ -215,7 +227,7 @@ public class Dungeon {
 
 
     /**
-     * Refresh map by callin above methods.
+     * Refresh map by calling above methods.
      */
     public void updateMap() {
         setObstacles();
@@ -254,85 +266,22 @@ public class Dungeon {
      * They check if the position is valid, if the entity can perform the action,
      * and then perform the action.
      */
-    public void attack(Entity attacker, String pos) {
-        int[] position = parsePosition(pos);
-        int x = position[0];
-        int y = position[1];
-
-        Entity target = getEntityAtPosition(x, y);
+    public void attack(Entity attacker, int x, int y) {
+        Entity target = getEntityAtPosition(x,y);
         if (target == null) {
             Display.displayError("No entity at this position.");
             return;
         }
-
-        if (!attacker.canAttack(target)) {
-            Display.displayError("You cannot attack this entity.");
-            return;
-        }
-        // Check if the attacker is too far from the target
-        if (_positions.distanceBetween(attacker, position) > attacker.getEquippedWeapon().getRange()) {
-            Display.displayError("You are too far from " + target.getName() + " to attack it.");
-            return;
-        }
-        int attackRoll = GameUtils.roll(1, 20)+attacker.getEquippedWeapon().getBonus();
-        Display.display("You rolled a " + attackRoll);
-        if (attacker.getEquippedWeapon().getRange() == 1) {
-            attackRoll += attacker.getStats().getStrength();
-            Display.display("Your attack roll is " + attackRoll + " (Strength bonus applied [+"+ attacker.getStats().getStrength() +"])");
-        } else {
-            attackRoll += attacker.getStats().getDexterity();
-            Display.display("Your attack roll is " + attackRoll + " (Dexterity bonus applied [+"+ attacker.getStats().getDexterity() +"])");
-        }
-
-        if (attackRoll > target.getAC()){
-            Display.display("You hit " + target.getName() + "!");
-            int damage = attacker.getEquippedWeapon().damage();
-            Display.display("You did " + damage + " damage !");
-            target.removeHp(damage);
-            if (!target.isAlive()) {
-                Display.display(target.getName() + " has been defeated!");
-                target.setHp(target.getHp());
-                _positions.removeEntity(target);
-                _map[x][y] = " . ";
-                return;
-            }
-            Display.display(target.getName() + " has " + target.getHp() + " HP left.");
-        } else {
-            Display.displayError("You missed " + target.getName() + "!");
-        }
-
-
-
-    }
-    public void equip(Entity entity) {
-        if (entity.isPlayer()){
-            Display.display("Choose an item to equip from your inventory : ");
-            String inventory = entity.displayInventory();
-            if (inventory.equals("Inventory is empty.")) {
-                Display.displayError("You have no items to equip.");
-                return;
-            }
-            Display.display(inventory);
-            int choice = scanner.nextInt();
-            while (choice < 0 || choice >= entity.getInventory().size()) {
-                Display.displayError("Invalid choice. Please choose a valid item number.");
-                choice = scanner.nextInt();
-            }
-            Equipment equipment = entity.getInventory().get(choice);
-            if (equipment.getType()== EquipmentType.ARMOR) {
-                entity.equipArmor(equipment);
-                Display.display("You equipped " + equipment.getName() + ".");
-            } else if (equipment.getType()== EquipmentType.WEAPON) {
-                entity.equipWeapon(equipment);
-                Display.display("You equipped " + equipment.getName() + ".");
-            }
+        int dist = distanceBetween(attacker, new int[]{x, y});
+        boolean isDead = attacker.attack(target, dist);
+        if (isDead) {
+            Display.display(target.getName() + " has been defeated!");
+            removeEntity(target);
+            _map[x][y] = " . ";
         }
     }
-    public void move(Entity entity, String pos) {
-        int[] position = parsePosition(pos);
-        int x = position[0];
-        int y = position[1];
 
+    public void move(Entity entity, int x, int y) {
         if (!isValidPosition(x, y)) {
             Display.displayError("Invalid position. Please enter a new position : ");
             return;
@@ -342,38 +291,37 @@ public class Dungeon {
             Display.displayError("There is already an entity at this position.");
             return;
         }
-        if (_positions.distanceBetween(entity, position) > entity.getStats().getSpeed()/3) {
+        if (distanceBetween(entity, new int[] {x, y}) > entity.getStats().getSpeed()/3) {
             Display.displayError("Too far.");
             return;
         }
         moveEntity(entity, x, y);
-        Display.display(entity.getPseudo() + " moved to " + pos + ".");
     }
     public void pickUp(Entity entity,String pos) {
-        int[] position = parsePosition(pos);
-        int x = position[0];
-        int y = position[1];
-
-        Equipment equipment = getEquipmentAtPosition(x, y);
-        if (equipment == null) {
-            Display.displayError("No equipment at this position.");
-            return;
-        }
-
-        if (entity.isMonster()) {
-            Display.displayError("You cannot pick up this equipment.");
-            return;
-        }
-
-        if (_positions.distanceBetween(entity, position) > entity.getStats().getSpeed()/3) {
-            Display.displayError("Too far.");
-            return;
-        }
-
-        ((game.entities.Character) entity).addToInventory(equipment);
-        _positions.removeEquipment(equipment);
-        _map[x][y] = " . ";
-        Display.display(entity.getPseudo() + " picked up " + equipment.getName() + ".");
+//        int[] position = parsePosition(pos);
+//        int x = position[0];
+//        int y = position[1];
+//
+//        Equipment equipment = getEquipmentAtPosition(x, y);
+//        if (equipment == null) {
+//            Display.displayError("No equipment at this position.");
+//            return;
+//        }
+//
+//        if (entity.isMonster()) {
+//            Display.displayError("You cannot pick up this equipment.");
+//            return;
+//        }
+//
+//        if (_positions.distanceBetween(entity, position) > entity.getStats().getSpeed()/3) {
+//            Display.displayError("Too far.");
+//            return;
+//        }
+//
+//        ((game.entities.Character) entity).addToInventory(equipment);
+//        _positions.removeEquipment(equipment);
+//        _map[x][y] = " . ";
+//        Display.display(entity.getPseudo() + " picked up " + equipment.getName() + ".");
     }
     public void comment(Entity entity, String text){
         Display.display(entity.toString() + " : " + text);
@@ -454,10 +402,10 @@ public class Dungeon {
      */
     public void moveEntity(Entity entity, int x, int y) {
         if (isValidPosition(x, y)) {
-            int[] oldPosition = _positions.getEntitiesPosition().get(entity);
+            int[] oldPosition = _entitiesPosition.get(entity);
             if (oldPosition != null) {
-                _positions.getEntitiesPosition().remove(entity);
-                _positions.addEntity(entity, new int[]{x, y});
+                _entitiesPosition.remove(entity);
+                addEntity(entity, new int[]{x, y});
                 _map[oldPosition[0]][oldPosition[1]] = " . ";
             }
         } else {
@@ -482,7 +430,7 @@ public class Dungeon {
         if (!target.isAlive()) {
             Display.display(target.getName() + " has been defeated!");
             target.setHp(-target.getHp());
-            _positions.removeEntity(target);
+            removeEntity(target);
             _map[x][y] = " . ";
         }
 
@@ -496,18 +444,18 @@ public class Dungeon {
      * Note : Used for the Boogie Woogie spell
      */
     public void switchEntities(Entity target1, Entity target2) {
-        int[] pos1 = _positions.getEntityPosition(target1);
-        int[] pos2 = _positions.getEntityPosition(target2);
+        int[] pos1 = getEntityPosition(target1);
+        int[] pos2 = getEntityPosition(target2);
 
         if (pos1 == null || pos2 == null) {
             Display.displayError("One of the targets is not in the dungeon.");
             return;
         }
-        _positions.removeEntity(target1);
-        _positions.removeEntity(target2);
+        removeEntity(target1);
+        removeEntity(target2);
 
-        _positions.addEntity(target1, new int[]{pos2[0], pos2[1]});
-        _positions.addEntity(target2, new int[]{pos1[0], pos1[1]});
+        addEntity(target1, new int[]{pos2[0], pos2[1]});
+        addEntity(target2, new int[]{pos1[0], pos1[1]});
 
 
         Display.display("You switched " + target1.getPseudo() + " and " + target2.getPseudo() + ".");
@@ -519,7 +467,7 @@ public class Dungeon {
         return _number;
     }
     public Entity getEntityAtPosition(int x, int y) {
-        for (Map.Entry<Entity, int[]> entry : _positions.getEntitiesPosition().entrySet()) {
+        for (Map.Entry<Entity, int[]> entry : _entitiesPosition.entrySet()) {
             int[] position = entry.getValue();
             if (position[0] == x && position[1] == y) {
                 return entry.getKey();
@@ -528,7 +476,7 @@ public class Dungeon {
         return null;
     }
     public Equipment getEquipmentAtPosition(int x, int y) {
-        for (Map.Entry<Equipment, int[]> entry : _positions.getEquipmentPosition().entrySet()) {
+        for (Map.Entry<Equipment, int[]> entry : _equipmentPosition.entrySet()) {
             int[] position = entry.getValue();
             if (position[0] == x && position[1] == y) {
                 return entry.getKey();
@@ -542,5 +490,54 @@ public class Dungeon {
 
 
 
+
+
+
+    //? methods pour add et remove entities et tt le tralala t'as compris
+
+
+    public void addObstacle(int[] position) {
+        _obstacles.add(position);
+    }
+    public void removeEntity(Entity target) {
+        _entitiesPosition.remove(target);
+    }
+    public void removeEquipment(Equipment target) {
+        _equipmentPosition.remove(target);
+    }
+
+
+
+    /**
+     * give the distance between an entity and a target position.
+     * uses une formule dont je me souviens plus le nom mais qui permets de calculer la diag
+     *
+     * @param entity the entity to check the distance from
+     * @param targetPosition the target position to check the distance to
+     * @return the distance between the entity and the target position
+     */
+    public int distanceBetween(Entity entity, int[] targetPosition) {
+        int[] entityPosition = _entitiesPosition.get(entity);
+
+        int dx = Math.abs(entityPosition[0] - targetPosition[0]);
+        int dy = Math.abs(entityPosition[1] - targetPosition[1]);
+
+        return Math.max(dx, dy);
+    }
+
+
+    //? Getters
+    public HashMap<Entity, int[]> getEntitiesPosition() {
+        return _entitiesPosition;
+    }
+    public HashMap<Equipment, int[]> getEquipmentPosition() {
+        return _equipmentPosition;
+    }
+    public List<int[]> getObstacles() {
+        return _obstacles;
+    }
+    public int[] getEntityPosition(Entity entity) {
+        return _entitiesPosition.get(entity);
+    }
 }
 
