@@ -1,13 +1,17 @@
 package game.items;
 
 import game.entities.Statistics;
+import game.items.enums.EquipmentType;
 
 public abstract class Equipment {
     private String _name;
     private Statistics _bonusStats;
+    private EquipmentType _type;
 
-    protected Equipment(String name) {
+
+    protected Equipment(String name, EquipmentType type) {
         _name = name;
+        _type = type;
     }
 
 
@@ -33,6 +37,9 @@ public abstract class Equipment {
     }
     public Statistics getBonusStats() {
         return _bonusStats;
+    }
+    public EquipmentType getType() {
+        return _type;
     }
 
     @Override
