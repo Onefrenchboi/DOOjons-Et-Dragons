@@ -17,12 +17,10 @@ public class Heal extends Spell {
         if (target.isMonster()) {
             Display.displayError("You cannot heal monsters!");
         } else {
-            int newHealth = target.getHp() + healingAmount;
-            if (newHealth > target.getMaxHp()) {
-                newHealth = target.getMaxHp() - target.getHp();
-            }
-            target.setHp(newHealth);
-            Display.display(GameUtils.GREEN + "You heal " + target.getName() + " for " + healingAmount + " hp!" + GameUtils.RESET);
+            int missingHp = target.getMaxHp() - target.getHp();
+            int healAmountToApply = Math.min(healingAmount, missingHp);
+            target.setHp(healAmountToApply);
+            Display.display(GameUtils.GREEN + "You heal " + target.getName() + " for " + healAmountToApply + " hp!" + GameUtils.RESET);
         }
 
     }
