@@ -38,6 +38,7 @@ public class MagicWeapon extends Spell{
     @Override
     public void cast(Entity target){}
 
+
     /**
      * asks user to select an equipment item to enchant.
      *
@@ -76,4 +77,5 @@ public class MagicWeapon extends Spell{
         }
         return target;
     }
+
 }

@@ -49,23 +49,23 @@ public class Character extends Entity {
     }
 
 
-    public void addToInventory(Equipment equipment) {
-        _inventory.add(equipment);
-    }
 
+
+    //? Eviter les Instanceof
+    //! on fait que isWizard et isCleric pour l'instant (pour les sorts), mais on peut en ajouter d'autres si besoin
     @Override
     public boolean isPlayer() {
         return true;
     }
-
     public boolean isCleric() {
         return _class.getName().equalsIgnoreCase("Cleric");
     }
-
     public boolean isWizard() {
         return _class.getName().equalsIgnoreCase("Wizard");
     }
 
+
+    //? Inventory management
     public String displayInventory() {
         if (_inventory == null || _inventory.isEmpty()) {
             return "Inventory is empty.";
@@ -77,11 +77,18 @@ public class Character extends Entity {
         }
         return inventoryDisplay.toString();
     }
-
-    public List<Equipment> getInventory() {
-        return _inventory;
+    public void addToInventory(Equipment equipment) {
+        _inventory.add(equipment);
     }
 
+
+
+    /**
+     * Eqips the specified weapon/armor for the character.
+     * Applies the bonus stats from the equipment to the character's stats.
+     * also removes the equipment from the inventory. (or adds it if reequipping)
+     * @param equipment the equipment item to equip (either a Weapon or Armor).
+     */
     @Override
     public void equipWeapon(Equipment equipment){
         if (this.getEquippedWeapon()==null){
@@ -97,7 +104,6 @@ public class Character extends Entity {
             this._inventory.remove(equipment);
         }
     }
-
     @Override
     public void equipArmor(Equipment equipment){
         if (this.getEquippedArmor()==null){
@@ -115,6 +121,7 @@ public class Character extends Entity {
     }
 
 
+    //? Getters
     public Spell getSpellByName(String name) {
         for (Spell spell : _spells) {
             if (spell.getName().equalsIgnoreCase(name)) {
@@ -123,7 +130,6 @@ public class Character extends Entity {
         }
         return null;
     }
-
     public String getInfo(){
         return  "   HP ❤ : " + this.getHp() + "/" + this.getMaxHp() + "\n" +
                 "   Armor ⊙ : " + (this.getEquippedArmor() != null ? this.getEquippedArmor().getName() : "None") + "\n" +
@@ -133,6 +139,11 @@ public class Character extends Entity {
                 "   DEX ➔ : " + this.getStats().getDexterity() + "\n" +
                 "   SPD ⚡ : " + this.getStats().getSpeed() + " (You can move " + this.getStats().getSpeed()/3 + " spaces per turn).";
     }
+    public List<Equipment> getInventory() {
+        return _inventory;
+    }
+
+
     @Override
     public String toString() {
         return GameUtils.PURPLE + super.getName() + " the " + _class.getName() + " " + _race.getName() + GameUtils.RESET;

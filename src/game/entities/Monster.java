@@ -31,20 +31,14 @@ public class Monster extends Entity {
     }
 
 
+    //? pour eviter le InstanceOf
     @Override
     public boolean isMonster() {
         return true;
     }
 
-    @Override
-    public int getAC() {
-        return _AC;
-    }
 
-    @Override
-    public String displayInventory() {
-        return "Monsters don't have an inventory.";
-    }
+    //? Equipping weapons and armor is not allowed for monsters, donc on override en rien
     @Override
     public void equipWeapon(Equipment equipment) {
             Display.displayError("Monsters can't equip weapons.");
@@ -54,15 +48,16 @@ public class Monster extends Entity {
     public void equipArmor(Equipment equipment) {
         Display.displayError("Monsters can't equip armor.");
     }
+
     @Override
-    public List<Equipment> getInventory() {
-        return null;
-    }
-    @Override
-    public String getColor() {
-        return GameUtils.RED;
+    public String displayInventory() {
+        return "Monsters don't have an inventory.";
     }
 
+
+
+    //? Getters
+    @Override
     public String getInfo() {
         return  "   HP ❤ : " + this.getHp() + "/" + this.getMaxHp() + "\n" +
                 "   Range : " + this.getEquippedWeapon().getRange() + "\n" +
@@ -70,6 +65,19 @@ public class Monster extends Entity {
                 "   DEX ➔ : " + this.getStats().getDexterity() + "\n" +
                 "   SPD ⚡ : " + this.getStats().getSpeed() + " (You can move " + this.getStats().getSpeed()/3 + " spaces per turn).";
     }
+    public String getColor() {
+        return GameUtils.RED;
+    }
+    @Override
+    public List<Equipment> getInventory() {
+        return null;
+    }
+    @Override
+    public int getAC() {
+        return _AC;
+    }
+
+
 
     @Override
     public String toString() {
