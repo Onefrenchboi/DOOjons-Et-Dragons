@@ -337,6 +337,46 @@ public class Dungeon {
     public void comment(Entity entity, String text){
         Display.display(entity.toString() + " : " + text);
     }
+    public void castSpell(Entity entity) {
+        if (entity.isMonster()) {
+            Display.displayError("Monsters cannot cast spells.");
+            return;
+        }
+        Display.displaySpellsMenu(entity);
+        game.entities.Character character = (game.entities.Character) entity;
+        String choice = scanner.next();
+        switch(choice) {
+            case "heal" -> {
+                if (character.getSpellByName("Heal") == null) {
+                    Display.displayError("You don't have the Heal spell.");
+                    return;
+                }
+                String pos = scanner.next();
+                int[] position = parsePosition(pos);
+                Entity target= getEntityAtPosition(position[0], position[1]);
+                if (target == null) {
+                    Display.displayError("No target at this position.");
+                    return;
+                }
+                character.getSpellByName("Heal").cast(target);
+            }
+            case "boogiewoogie" -> {
+                if (character.getSpellByName("BoogieWoogie") == null) {
+                    Display.displayError("You don't have the Boogie Woogie spell.");
+                    return;
+                }
+                String pos1 = scanner.next();
+                String pos2 = scanner.next();
+                int[] position1 = parsePosition(pos1);
+                int[] position2 = parsePosition(pos2);
+                Entity target1 = getEntityAtPosition(position1[0], position1[1]);
+                Entity target2 = getEntityAtPosition(position2[0], position2[1]);
+                character.getSpellByName("BoogieWoogie").cast(target1, target2, this);
+                
+            }
+            default -> Display.displayError("Invalid choice. Please try again.");
+        }
+    }
 
     public void moveEntity(Entity entity, int x, int y) {
         if (isValidPosition(x, y)) {
@@ -407,5 +447,25 @@ public class Dungeon {
     public int getNumber() {
         return _number;
     }
+
+    public void switchEntities(Entity target1, Entity target2) {
+        int[] pos1 = _positions.getEntityPosition(target1);
+        int[] pos2 = _positions.getEntityPosition(target2);
+
+        if (pos1 == null || pos2 == null) {
+            Display.displayError("One of the targets is not in the dungeon.");
+            return;
+        }
+        _positions.removeEntity(target1);
+        _positions.removeEntity(target2);
+
+        _positions.addEntity(target1, new int[]{pos2[0], pos2[1]});
+        _positions.addEntity(target2, new int[]{pos1[0], pos1[1]});
+
+
+        Display.display("You switched " + target1.getPseudo() + " and " + target2.getPseudo() + ".");
+    }
+
+
 }
 

@@ -245,7 +245,7 @@ public class DM {
         Display.display("Healing players...");
         for (Entity entity : entitiesSortedByInitiative) {
             if (entity.isPlayer()) {
-                entity.setHp(entity.getMaxHp()- entity.getHp());
+                entity.setHp(entity.getMaxHp() - entity.getHp());
             }
         }
         Display.display("All players healed :D");
@@ -279,9 +279,6 @@ public class DM {
             Display.displaySuccess("Congratulations, you have completed the game!");
         }
     }
-
-
-
 
     public void turn(int currentEntityNum){
         _currentEntity = _entitiesSortedByInitiative.get(currentEntityNum);
@@ -325,6 +322,11 @@ public class DM {
                 case "com"  ->{
                     String actionChoice = scanner.nextLine();
                     _dungeon.comment(_currentEntity, actionChoice);
+                }
+                case "spell" ->{
+                    _dungeon.castSpell(_currentEntity);
+                    action--;
+
                 }
                 case "skip" ->{
                     Display.display("... ok ?");
@@ -373,8 +375,6 @@ public class DM {
         }
         return true;
     }
-
-
     private boolean allMonstersDead() {
         for (Entity entity : _entitiesSortedByInitiative) {
             if (entity.isMonster()) {
@@ -449,7 +449,7 @@ public class DM {
 
 
 
-        public List<Entity> getEntitiesSortedByInitiative() {
+    public List<Entity> getEntitiesSortedByInitiative() {
         return _entitiesSortedByInitiative;
     }
     public int getTurn(){
@@ -461,7 +461,5 @@ public class DM {
     public int getDungeonNumber() {
         return _dungeon.getDungeonNumber();
     }
-
-
 
 }

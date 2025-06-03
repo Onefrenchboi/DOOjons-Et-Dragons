@@ -2,6 +2,7 @@
 package game.utils;
 import game.DM;
 import game.Dungeon;
+import game.entities.Character;
 import game.entities.Entity;
 
 import static game.utils.GameUtils.*;
@@ -66,7 +67,8 @@ public class Display {
             System.out.println("  - Attack (att <position>)");
             System.out.println("  - Move (move <position>)");
             System.out.println("  - Show inventory to equip an item (equ show)");
-            System.out.println("  - Pick up an item (pick <item number>)");
+            System.out.println("  - Pick up an item (pick <position>)");
+            System.out.println("  - Open Spellbook (spell)");
             System.out.println("  - Skip turn (skip turn)");
 
         }
@@ -82,6 +84,30 @@ public class Display {
         System.out.println("  - Damage an entity (hurt <position> <Number of dice(s)> <faces>)");
         System.out.println("  - Display map (display)");
         System.out.println("  - Stop (stop)");
+        System.out.println("-------------------------------");
+    }
+
+    public static void displaySpellsMenu(Entity currentEntity) {
+        System.out.println("-------------------------------");
+        System.out.println(currentEntity.toString() + ", you can cast the following spells:");
+        if (currentEntity.isPlayer()) {
+            game.entities.Character character = (game.entities.Character) currentEntity;
+            if (character.isCleric()) {
+                System.out.println("  - Heal (heal <position>)");
+                System.out.println("  - Stop casting (stop)");
+            } else if (character.isWizard()) {
+                System.out.println("  - Heal (heal <position>)");
+                System.out.println("  - Magic Weapon (magic weapon <position>)");
+                System.out.println("  - Boogie Woogie (boogiewoogie <position1> <position2>)");
+                System.out.println("  - Stop casting (stop)");
+            } else {
+                System.out.println("No spells available for this class.");
+                System.out.println("  - Stop casting (stop)");
+            }
+        } else {
+            System.out.println("  - No spells available for monsters.");
+            System.out.println("  - Stop casting (stop)");
+        }
         System.out.println("-------------------------------");
     }
 }
