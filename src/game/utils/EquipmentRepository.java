@@ -2,9 +2,7 @@ package game.utils;
 
 import game.items.*;
 import game.items.equipments.*;
-
 import java.util.Arrays;
-import java.util.Arrays.*;
 import java.util.List;
 
 public enum EquipmentRepository {

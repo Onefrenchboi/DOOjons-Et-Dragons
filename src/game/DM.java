@@ -6,8 +6,10 @@ import game.entities.classes.*;
 
 import game.entities.Character;
 import game.items.*;
+import game.items.equipments.MeleeWeapon;
+import game.items.equipments.RangedWeapon;
 import game.utils.Display;
-import game.utils.Repo;
+import game.utils.EquipmentRepository;
 import game.utils.GameUtils;
 
 
@@ -20,7 +22,6 @@ public class DM {
         private Dungeon _dungeon;
         private List<Entity> _entitiesSortedByInitiative;
         private List<Equipment> _equipmentList;
-        private Repo _equipmentRepo;
         private Entity _currentEntity;
         private int _turn;
         private boolean _winCondition;
@@ -28,7 +29,6 @@ public class DM {
     public DM() {
         _entitiesSortedByInitiative = new ArrayList<>();
         _equipmentList = new ArrayList<>();
-        _equipmentRepo= new Repo();
         _winCondition= false;
     }
 
@@ -134,13 +134,14 @@ public class DM {
     public void createEquipments() {
         int nbEquipment = askValidInt("How many items? (1-5): ", 1, 5);
         Display.display("Here is the list of available items:");
-        for (Equipment equipment : _equipmentRepo.getEquipments()) {
-            int n = _equipmentRepo.getEquipments().indexOf(equipment);
-            Display.display("(" + n + ") " + equipment.toString());
+
+        List<Equipment> allEquipment = EquipmentRepository.getAllEquipment();
+        for (int i = 0; i < allEquipment.size(); i++) {
+            Display.display("(" + i + ") " + allEquipment.get(i).toString());
         }
         for (int i = 0; i < nbEquipment; i++) {
-            int equipmentIndex = askValidInt("Enter the number of the item to add:", 0, _equipmentRepo.getEquipments().size()-1);
-            Equipment selectedEquipment = _equipmentRepo.getEquipments().get(equipmentIndex);
+            int equipmentIndex = askValidInt("Enter the number of the item to add:", 0, allEquipment.size() - 1);
+            Equipment selectedEquipment = allEquipment.get(equipmentIndex);
             _equipmentList.add(selectedEquipment);
         }
     }

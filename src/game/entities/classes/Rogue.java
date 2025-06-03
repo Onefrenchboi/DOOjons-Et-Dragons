@@ -2,7 +2,6 @@ package game.entities.classes;
 
 import game.entities.Statistics;
 import game.utils.EquipmentRepository;
-import game.utils.Repo;
 
 import java.util.Arrays;
 
