@@ -18,11 +18,7 @@ public abstract class Armor extends Equipment {
 
 
 
-    //? To avoid InstanceOf
-    @Override
-    public boolean isArmor() {
-        return true;
-    }
+
 
     //? Getters
     public int getArmorClass() {

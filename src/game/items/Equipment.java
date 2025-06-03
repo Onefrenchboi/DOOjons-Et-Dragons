@@ -23,13 +23,7 @@ public abstract class Equipment {
 
 
 
-    //? instanceof du pauvre, on va override pour return true dans les classes correspondantes
-    public boolean isWeapon() {
-        return false;
-    }
-    public boolean isArmor() {
-        return false;
-    }
+
 
     //? Getters
     public String getName(){

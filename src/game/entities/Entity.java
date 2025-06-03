@@ -13,6 +13,7 @@ public abstract class Entity {
     private Weapon _equippedWeapon;
     private Armor _equippedArmor;
     private int _maxHp;
+    private EntityType _typeEntity;
 
 
     protected Entity(String name) {
@@ -143,6 +144,9 @@ public abstract class Entity {
     }
     public int getInitiative() {
         return _stats.getInitiative();
+    }
+    public EntityType getTypeEntity() {
+        return _typeEntity;
     }
 
 

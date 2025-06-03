@@ -3,6 +3,7 @@ package game;
 import game.entities.Character;
 import game.entities.Entity;
 import game.items.Equipment;
+import game.items.enums.EquipmentType;
 import game.spells.*;
 import game.utils.GameUtils;
 import game.utils.Display;
@@ -318,10 +319,10 @@ public class Dungeon {
                 choice = scanner.nextInt();
             }
             Equipment equipment = entity.getInventory().get(choice);
-            if (equipment.isArmor()) {
+            if (equipment.getType()== EquipmentType.ARMOR) {
                 entity.equipArmor(equipment);
                 Display.display("You equipped " + equipment.getName() + ".");
-            } else if (equipment.isWeapon()) {
+            } else if (equipment.getType()== EquipmentType.WEAPON) {
                 entity.equipWeapon(equipment);
                 Display.display("You equipped " + equipment.getName() + ".");
             }

@@ -66,7 +66,7 @@ public class MagicWeapon extends Spell{
             case 2 -> {
                 Display.display("Choose an item from your inventory:");
                 int inventoryChoice = scanner.nextInt();
-                if (inventoryChoice >= 0 && inventoryChoice < character.getInventory().size() && character.getInventory().get(inventoryChoice).isWeapon()) {
+                if (inventoryChoice >= 0 && inventoryChoice < character.getInventory().size() && character.getInventory().get(inventoryChoice).getType() == game.items.enums.EquipmentType.WEAPON) {
                     target = character.getInventory().get(inventoryChoice);
                 } else {
                     Display.displayError("Invalid choice.");

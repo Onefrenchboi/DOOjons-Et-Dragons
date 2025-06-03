@@ -24,11 +24,7 @@ public abstract class Weapon extends Equipment{
 
 
 
-    //? To avoid InstanceOf
-    @Override
-    public boolean isWeapon() {
-        return true;
-    }
+
 
 
     //? Add a bonus to the weapon's damage

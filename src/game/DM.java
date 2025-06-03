@@ -6,6 +6,7 @@ import game.entities.classes.*;
 
 import game.entities.Character;
 import game.items.*;
+import game.items.enums.EquipmentType;
 import game.items.equipments.MeleeWeapon;
 import game.items.equipments.RangedWeapon;
 import game.utils.Display;
@@ -238,10 +239,10 @@ public class DM {
                     choice2 = scanner.nextInt();
                 }
                 Equipment equipment = entity.getInventory().get(choice2);
-                if (equipment.isArmor()) {
+                if (equipment.getType() == EquipmentType.ARMOR) {
                     entity.equipArmor(equipment);
                     Display.display("You equipped " + equipment.getName() + ".");
-                } else if (equipment.isWeapon()) {
+                } else if (equipment.getType()== EquipmentType.WEAPON) {
                     entity.equipWeapon(equipment);
                     Display.display("You equipped " + equipment.getName() + ".");
                 }
