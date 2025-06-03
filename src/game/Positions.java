@@ -39,19 +39,16 @@ public class Positions {
         _equipmentPosition.remove(target);
     }
 
-    //? Getters
-    public HashMap<Entity, int[]> getEntitiesPosition() {
-        return _entitiesPosition;
-    }
-    public HashMap<Equipment, int[]> getEquipmentPosition() {
-        return _equipmentPosition;
-    }
-    public List<int[]> getObstacles() {
-        return _obstacles;
-    }
 
 
-
+    /**
+     * give the distance between an entity and a target position.
+     * uses une formule dont je me souviens plus le nom mais qui permets de calculer la diag
+     *
+     * @param entity the entity to check the distance from
+     * @param targetPosition the target position to check the distance to
+     * @return the distance between the entity and the target position
+     */
     public int distanceBetween(Entity entity, int[] targetPosition) {
         int[] entityPosition = _entitiesPosition.get(entity);
 
@@ -62,7 +59,16 @@ public class Positions {
     }
 
 
-
+    //? Getters
+    public HashMap<Entity, int[]> getEntitiesPosition() {
+        return _entitiesPosition;
+    }
+    public HashMap<Equipment, int[]> getEquipmentPosition() {
+        return _equipmentPosition;
+    }
+    public List<int[]> getObstacles() {
+        return _obstacles;
+    }
     public int[] getEntityPosition(Entity entity) {
         return _entitiesPosition.get(entity);
     }
