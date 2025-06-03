@@ -20,6 +20,14 @@ public class GameUtils {
     public static final Random random = new Random();
     public static final Scanner scanner = new Scanner(System.in);
 
+
+    /**
+     * Rolls a number of dice with a specified number of sides.
+     *
+     * @param num   the number of dice to roll
+     * @param sides the number of sides on each die
+     * @return the total value of the rolled dice
+     */
     public static int roll(int num, int sides) {
         int total = 0;
         for (int i = 0; i < num; i++) {
@@ -28,7 +36,12 @@ public class GameUtils {
         return total;
     }
 
-
+    /**
+     * Parses a position string in the format "A3" or smth like that to an int[]
+     *
+     * @param position the position string
+     * @return array with the coordinates
+     */
     public static int[] parsePosition(String position) {
         char column = position.charAt(0);
         String rowPart = position.substring(1);
@@ -39,6 +52,15 @@ public class GameUtils {
         return new int[]{x, y};
     }
 
+
+    /**
+     * ask user for a valid integer input within a range
+     *
+     * @param prompt what we say to the user
+     * @param min    minimum value
+     * @param max    maximum value
+     * @return int value within the range
+     */
     public static int askValidInt(String prompt, int min, int max) {
         int value = -1;
         while (true) {
@@ -58,6 +80,13 @@ public class GameUtils {
         return value;
     }
 
+    /**
+     * ask user for a valid position input
+     *
+     * @param prompt what we say to the user
+        * @param dungeon the dungeon to check the pos
+     * @return array with the coordinates
+     */
     public static int[] askValidPosition(String prompt, Dungeon dungeon) {
         int[] pos;
         while (true) {

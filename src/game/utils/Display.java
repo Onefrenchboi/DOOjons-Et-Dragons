@@ -10,14 +10,19 @@ import static game.utils.GameUtils.*;
 
 public class Display {
 
+    //? All functions in here are pretty straightforward, donc flemme de commenter tout
     public static void display(String message) {
         System.out.println(message);
     }
 
-
     public static void displayError(String message) {
         System.out.println(RED + message + RESET);
     }
+
+    public static void displayLore(String message) {
+        System.out.println(YELLOW + message + RESET);
+    }
+
 
     public static void displaySuccess(String message) {
         System.out.println(GREEN + message + RESET);
