@@ -9,9 +9,9 @@ public class Cleric extends CharacterClass{
     public Cleric() {
         super("Cleric", new Statistics(16, 0, 0, 0, 0),
                 Arrays.asList(
-                        Repo.getEquipmentByName("Mace"),
-                        Repo.getEquipmentByName("Scale armor"),
-                        Repo.getEquipmentByName("Light crossbow")
+                        EquipmentRepository.MACE.get(),
+                        EquipmentRepository.SCALE_ARMOR.get(),
+                        EquipmentRepository.LIGHT_CROSSBOW.get()
                 ));
     }
 }

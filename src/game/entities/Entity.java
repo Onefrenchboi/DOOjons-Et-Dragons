@@ -1,9 +1,7 @@
 package game.entities;
 
 
-import game.items.Armor;
-import game.items.Equipment;
-import game.items.Weapon;
+import game.items.*;
 import game.utils.GameUtils;
 
 import java.util.List;
@@ -135,7 +133,7 @@ public abstract class Entity {
         if (_equippedArmor == null) {
             return 0;
         }
-        return _equippedArmor.getAC();
+        return _equippedArmor.getArmorClass();
     }
     public String getName() {
         return _name;
