@@ -20,7 +20,6 @@ public class Dungeon {
     private Positions _positions;
     private int _number;
 
-    //?Constructeur de la classe Dungeon
     public Dungeon(int h, int w, int number) {
         if (w >= 15 && w <= 26 && h >= 15 && h <= 26) {
             _height = h;
@@ -65,6 +64,17 @@ public class Dungeon {
         }
     }
 
+
+
+    /**
+     * Checks if the given position (x, y) is valid in the dungeon.
+     * A position is valid if it is within the bounds of the map,
+     * not occupied by an obstacle, entity, or equipment.
+     *
+     * @param x
+     * @param y
+     * @return true if the position is valid, false sinn.
+     */
     public boolean isValidPosition(int x, int y) {
         //verif bounds map
         if (x < 1 || x >= _map.length - 1 || y < 1 || y >= _map[0].length) {
@@ -91,7 +101,13 @@ public class Dungeon {
         return true;
     }
 
-    //? Methods to add everything to the lists and hashmaps, manually or randomly
+
+    /** Methods to add entities, equipments, and obstacles to the map.
+     *  Also includes methods to randomly set entities, equipments, and obstacles.
+     * <br>
+     * Note : I won't go into details, but its just checking is the pos is valid
+     * and then adding the entity/equipment/obstacle to the positions list.
+     */
     public void addEntity(int x, int y, Entity entity) {
         if (isValidPosition(x, y)) {
             _positions.addEntity(entity, new int[]{x, y});
@@ -159,7 +175,11 @@ public class Dungeon {
 
 
 
-    //? Methods to set everything on the map
+
+    /**
+     * Methods to set the obstacles, entities, and equipments on the map.
+     * Just add each entity/equipment/obstacle to the map at the correct position.
+     * */
     private void setObstacles() {
         for (int[] coord : _positions.getObstacles()) {
             int x = coord[0];
@@ -192,7 +212,10 @@ public class Dungeon {
     }
 
 
-    //? Method to update the map (duh)
+
+    /**
+     * Refresh map by callin above methods.
+     */
     public void updateMap() {
         setObstacles();
         setEntities();
@@ -200,6 +223,11 @@ public class Dungeon {
         displayGrid();
     }
 
+    /**
+     * Displays the current state of the dungeon map.
+     * Also gives a legend
+     *
+     * */
     private void displayGrid() {
         for (String[] strings : _map) {
             for (String string : strings) {
@@ -215,6 +243,16 @@ public class Dungeon {
 
 
 
+    /**
+     * Methods to handle actions in the dungeon.
+     * These methods are called by the game loop to perform actions
+
+     * <br>
+     * Note : I won't go into details here either, but they almost all
+     * take an Entity and a position as parameters.
+     * They check if the position is valid, if the entity can perform the action,
+     * and then perform the action.
+     */
     public void attack(Entity attacker, String pos) {
         int[] position = parsePosition(pos);
         int x = position[0];
@@ -339,6 +377,11 @@ public class Dungeon {
     public void comment(Entity entity, String text){
         Display.display(entity.toString() + " : " + text);
     }
+    /**
+     * The only "different" method
+     * It does another switch case, but for the spells
+     *
+     * */
     public void castSpell(Entity entity) {
         if (entity.isMonster()) {
             Display.displayError("Monsters cannot cast spells.");
@@ -401,6 +444,13 @@ public class Dungeon {
         }
     }
 
+
+    /**
+     * Moves an entity to a new position (x, y) in the dungeon.
+     * Hurts an entity
+     * <br>
+     * Note : Mainly used by the DM
+     */
     public void moveEntity(Entity entity, int x, int y) {
         if (isValidPosition(x, y)) {
             int[] oldPosition = _positions.getEntitiesPosition().get(entity);
@@ -439,11 +489,34 @@ public class Dungeon {
     }
 
 
+    /**
+     * Switches the positions of two entities in the dungeon.
+     * <br>
+     * Note : Used for the Boogie Woogie spell
+     */
+    public void switchEntities(Entity target1, Entity target2) {
+        int[] pos1 = _positions.getEntityPosition(target1);
+        int[] pos2 = _positions.getEntityPosition(target2);
+
+        if (pos1 == null || pos2 == null) {
+            Display.displayError("One of the targets is not in the dungeon.");
+            return;
+        }
+        _positions.removeEntity(target1);
+        _positions.removeEntity(target2);
+
+        _positions.addEntity(target1, new int[]{pos2[0], pos2[1]});
+        _positions.addEntity(target2, new int[]{pos1[0], pos1[1]});
+
+
+        Display.display("You switched " + target1.getPseudo() + " and " + target2.getPseudo() + ".");
+    }
+
+
     //? Getters
     public int getDungeonNumber(){
         return _number;
     }
-
     public Entity getEntityAtPosition(int x, int y) {
         for (Map.Entry<Entity, int[]> entry : _positions.getEntitiesPosition().entrySet()) {
             int[] position = entry.getValue();
@@ -462,32 +535,10 @@ public class Dungeon {
         }
         return null;
     }
-
-    public Positions getPositions() {
-        return _positions;
-    }
-
     public int getNumber() {
         return _number;
     }
 
-    public void switchEntities(Entity target1, Entity target2) {
-        int[] pos1 = _positions.getEntityPosition(target1);
-        int[] pos2 = _positions.getEntityPosition(target2);
-
-        if (pos1 == null || pos2 == null) {
-            Display.displayError("One of the targets is not in the dungeon.");
-            return;
-        }
-        _positions.removeEntity(target1);
-        _positions.removeEntity(target2);
-
-        _positions.addEntity(target1, new int[]{pos2[0], pos2[1]});
-        _positions.addEntity(target2, new int[]{pos1[0], pos1[1]});
-
-
-        Display.display("You switched " + target1.getPseudo() + " and " + target2.getPseudo() + ".");
-    }
 
 
 }
