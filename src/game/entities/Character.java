@@ -2,8 +2,10 @@ package game.entities;
 import game.entities.races.*;
 import game.entities.classes.*;
 import game.items.*;
+import game.spells.*;
 import game.utils.GameUtils;
-import game.utils.Display;
+
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,12 +14,15 @@ public class Character extends Entity {
     private Race _race;
     private CharacterClass _class;
     private List<Equipment> _inventory;
+    private List<Spell> _spells;
+
 
     public Character(String name, Race race, CharacterClass charclass) {
         super(name);
         this._race = race;
         this._class = charclass;
         this._inventory = new ArrayList<>(charclass.getStartingEquipment());
+        this._spells = new ArrayList<>();
 
         this.getStats().addStatistics(_race.getBonusStats());
         this.getStats().addStatistics(_class.getBonusStats());
@@ -33,6 +38,14 @@ public class Character extends Entity {
 
         this.setMaxHp(this.getHp());
 
+        if (isCleric()) {
+            _spells.add(new Heal());
+        } else if (isWizard()) {
+            _spells.add(new Heal());
+            _spells.add(new BoogieWoogie());
+            _spells.add(new MagicWeapon());
+        }
+
     }
 
 
@@ -43,6 +56,14 @@ public class Character extends Entity {
     @Override
     public boolean isPlayer() {
         return true;
+    }
+
+    public boolean isCleric() {
+        return _class.getName().equalsIgnoreCase("Cleric");
+    }
+
+    public boolean isWizard() {
+        return _class.getName().equalsIgnoreCase("Wizard");
     }
 
     public String displayInventory() {
@@ -93,6 +114,15 @@ public class Character extends Entity {
         }
     }
 
+
+    public Spell getSpellByName(String name) {
+        for (Spell spell : _spells) {
+            if (spell.getName().equalsIgnoreCase(name)) {
+                return spell;
+            }
+        }
+        return null;
+    }
 
     public String getInfo(){
         return  "   HP ❤ : " + this.getHp() + "/" + this.getMaxHp() + "\n" +
