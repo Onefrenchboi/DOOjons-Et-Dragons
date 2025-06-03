@@ -1,7 +1,9 @@
 package game;
 
+import game.entities.Character;
 import game.entities.Entity;
 import game.items.Equipment;
+import game.spells.*;
 import game.utils.GameUtils;
 import game.utils.Display;
 
@@ -233,7 +235,7 @@ public class Dungeon {
             Display.displayError("You are too far from " + target.getName() + " to attack it.");
             return;
         }
-        int attackRoll = GameUtils.roll(1, 20);
+        int attackRoll = GameUtils.roll(1, 20)+attacker.getEquippedWeapon().getBonus();
         Display.display("You rolled a " + attackRoll);
         if (attacker.getEquippedWeapon().getRange() == 1) {
             attackRoll += attacker.getStats().getStrength();
@@ -347,7 +349,8 @@ public class Dungeon {
         String choice = scanner.next();
         switch(choice) {
             case "heal" -> {
-                if (character.getSpellByName("Heal") == null) {
+                Heal healSpell = (Heal) character.getSpellByName("Heal");
+                if (healSpell == null) {
                     Display.displayError("You don't have the Heal spell.");
                     return;
                 }
@@ -358,10 +361,11 @@ public class Dungeon {
                     Display.displayError("No target at this position.");
                     return;
                 }
-                character.getSpellByName("Heal").cast(target);
+                healSpell.cast(target);
             }
             case "boogiewoogie" -> {
-                if (character.getSpellByName("BoogieWoogie") == null) {
+                BoogieWoogie boogieWoogie = (BoogieWoogie) character.getSpellByName("BoogieWoogie");
+                if (boogieWoogie == null) {
                     Display.displayError("You don't have the Boogie Woogie spell.");
                     return;
                 }
@@ -371,8 +375,27 @@ public class Dungeon {
                 int[] position2 = parsePosition(pos2);
                 Entity target1 = getEntityAtPosition(position1[0], position1[1]);
                 Entity target2 = getEntityAtPosition(position2[0], position2[1]);
-                character.getSpellByName("BoogieWoogie").cast(target1, target2, this);
+                boogieWoogie.cast(target1, target2, this);
                 
+            }
+            case "magicweapon" -> {
+                MagicWeapon magicWeapon = (MagicWeapon) character.getSpellByName("MagicWeapon");
+                if (magicWeapon == null) {
+                    Display.displayError("You don't have the Magic Weapon spell.");
+                    return;
+                }
+                String pos = scanner.next();
+                int[] position = parsePosition(pos);
+                Entity targetEntity = getEntityAtPosition(position[0], position[1]);
+                if (targetEntity == null) {
+                    Display.displayError("No target at this position.");
+                    return;
+                }
+                Equipment target = magicWeapon.selectEquipmentToEnchant((Character) targetEntity);
+                if (target != null) {
+                    character.getSpellByName("MagicWeapon").cast(target);
+                    Display.display("You enchanted " + target.getName() + " with Magic Weapon!");
+                }
             }
             default -> Display.displayError("Invalid choice. Please try again.");
         }

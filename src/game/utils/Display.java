@@ -97,7 +97,7 @@ public class Display {
                 System.out.println("  - Stop casting (stop)");
             } else if (character.isWizard()) {
                 System.out.println("  - Heal (heal <position>)");
-                System.out.println("  - Magic Weapon (magic weapon <position>)");
+                System.out.println("  - Magic Weapon (magicweapon <position>)");
                 System.out.println("  - Boogie Woogie (boogiewoogie <position1> <position2>)");
                 System.out.println("  - Stop casting (stop)");
             } else {

@@ -38,9 +38,12 @@ public class DM {
         int nbPlayers = askValidInt("How many players ? (1-4) : ", 1, 4);
 
         String name = "Z";
+
         Race heroRace = null;
         CharacterClass heroClass = null;
         for (int i = 0; i < nbPlayers; i++) {
+            heroRace = null;
+            heroClass = null;
             Display.display("Player " + (i + 1) + ", enter your name : ");
             name = scanner.next();
 
@@ -65,9 +68,9 @@ public class DM {
                     default -> Display.displayError("Invalid choice. Please enter a number between 1 and 4.");
                 }
             }
+            Character hero = new Character(name, heroRace, heroClass);
+            _entitiesSortedByInitiative.add(hero);
         }
-        Character hero = new Character(name, heroRace, heroClass);
-        _entitiesSortedByInitiative.add(hero);
     }
     public void createMonsters(){
         Display.display("DM, do you want to create monsters ? (if not, a predetermined selection will be applied) (Y/N)");
@@ -259,114 +262,114 @@ public class DM {
 
     public void play() {
         while (!_winCondition && _dungeon.getNumber() <= 3) {
-            for (int currentEntityIndex = 0; currentEntityIndex < _entitiesSortedByInitiative.size(); ) {
-                _currentEntity = _entitiesSortedByInitiative.get(currentEntityIndex);
-                turn(currentEntityIndex);
-                currentEntityIndex++;
+            for (Entity entity : _entitiesSortedByInitiative) {
+                _currentEntity = entity;
+                turn(_entitiesSortedByInitiative.indexOf(_currentEntity));
             }
             _turn++;
-            if (allMonstersDead() && _dungeon.getNumber() < 3) {
-                nextDungeon(_entitiesSortedByInitiative);
-            } else if (allMonstersDead() && _dungeon.getNumber() == 3) {
-                _winCondition = true;
-            }
-            if (allPlayersDead()){
-                Display.displayError("You just lost the Game.");
-                return;
+            if (allMonstersDead()) {
+                if (_dungeon.getNumber() < 3) {
+                    nextDungeon(_entitiesSortedByInitiative);
+                } else {
+                    _winCondition = true;
+                }
             }
         }
         if (_winCondition) {
             Display.displaySuccess("Congratulations, you have completed the game!");
         }
     }
-
-    public void turn(int currentEntityNum){
-        _currentEntity = _entitiesSortedByInitiative.get(currentEntityNum);
-        Display.displayInfo(this);
-        if (!_currentEntity.isAlive() && _currentEntity.isPlayer()) {
-            Display.display("This player is dead. Skipping their turn...");
-            turn(currentEntityNum + 1);
-            return;
-        }
-        for (int action = 3 ; action > 0;) {
-            Display.displayMap(_dungeon);
-            Display.displayEntityInfo(_currentEntity);
-
-            Display.displayActionMenu(_currentEntity, action);
-            String choice = scanner.next();
-            Display.display("You chose: " + choice);
-            switch (choice) {
-                case "att"  ->{
-                    String actionChoice = scanner.next();
-                    _dungeon.attack(_currentEntity, actionChoice);
-                    action--;
-                    scanner.nextLine();
-                }
-                case "equ"  ->{
-                    _dungeon.equip(_currentEntity);
-                    action--;
-                    scanner.nextLine();
-                }
-                case "move" ->{
-                    String actionChoice = scanner.next();
-                    _dungeon.move(_currentEntity, actionChoice);
-                    action--;
-                    scanner.nextLine();
-                }
-                case "pick" ->{
-                    String actionChoice = scanner.next();
-                    _dungeon.pickUp(_currentEntity,actionChoice);
-                    action--;
-                    scanner.nextLine();
-                }
-                case "com"  ->{
-                    String actionChoice = scanner.nextLine();
-                    _dungeon.comment(_currentEntity, actionChoice);
-                }
-                case "spell" ->{
-                    _dungeon.castSpell(_currentEntity);
-                    action--;
-
-                }
-                case "skip" ->{
-                    Display.display("... ok ?");
-                    action--;
-                }
-                default -> Display.displayError("Invalid choice. Please try again.");
-            }
-
-            //c pour attendre que le joueur presse
-            Display.display("Press Any Key to continue...");
-            scanner.nextLine();
-
-            //dm actions
-            Display.display("Dm, would you like to intervene ? (Y/N)");
-            String dmChoice = scanner.nextLine();
-            if (dmChoice.equalsIgnoreCase("Y")) {
-                dmActions();
-            }
-
-
-
-            //remove all dead monsters
-            _entitiesSortedByInitiative.removeIf(entity -> entity.getHp() <= 0 && entity.isMonster());
-            //check if won (i.e. all monsters are dead)
-            if (allMonstersDead()){
-                return;
-            }
-            //check if lost (i.e. all players are dead)
-            if (allPlayersDead()){
-                return;
-            }
-            if (!_currentEntity.isAlive()) {
-                Display.display("The current entity is dead. Skipping to the next turn...");
-                return;
-            }
-        }
-
-        Display.displayClear();
+    public void gameEnd(){
+        Display.displayError("You just lost the Game.");
+        System.exit(0);
     }
 
+    public void turn(int currentEntityNum) {
+        while (currentEntityNum < _entitiesSortedByInitiative.size()) {
+            _currentEntity = _entitiesSortedByInitiative.get(currentEntityNum);
+            Display.displayInfo(this);
+
+            if (!_currentEntity.isAlive() && _currentEntity.isPlayer()) {
+                Display.display("This player is dead. Skipping their turn...");
+                currentEntityNum++;
+                continue;
+            }
+
+            for (int action = 3; action > 0;) {
+                Display.displayMap(_dungeon);
+                Display.displayEntityInfo(_currentEntity);
+
+                Display.displayActionMenu(_currentEntity, action);
+                String choice = scanner.next();
+                Display.display("You chose: " + choice);
+                switch (choice) {
+                    case "att" -> {
+                        String actionChoice = scanner.next();
+                        _dungeon.attack(_currentEntity, actionChoice);
+                        action--;
+                        scanner.nextLine();
+                    }
+                    case "equ" -> {
+                        _dungeon.equip(_currentEntity);
+                        action--;
+                        scanner.nextLine();
+                    }
+                    case "move" -> {
+                        String actionChoice = scanner.next();
+                        _dungeon.move(_currentEntity, actionChoice);
+                        action--;
+                        scanner.nextLine();
+                    }
+                    case "pick" -> {
+                        String actionChoice = scanner.next();
+                        _dungeon.pickUp(_currentEntity, actionChoice);
+                        action--;
+                        scanner.nextLine();
+                    }
+                    case "com" -> {
+                        String actionChoice = scanner.nextLine();
+                        _dungeon.comment(_currentEntity, actionChoice);
+                    }
+                    case "spell" -> {
+                        _dungeon.castSpell(_currentEntity);
+                        action--;
+                    }
+                    case "skip" -> {
+                        Display.display("... ok ?");
+                        action--;
+                    }
+                    default -> Display.displayError("Invalid choice. Please try again.");
+                }
+
+                Display.display("Press Any Key to continue...");
+                scanner.nextLine();
+
+                Display.display("Dm, would you like to intervene ? (Y/N)");
+                String dmChoice = scanner.nextLine();
+                if (dmChoice.equalsIgnoreCase("Y")) {
+                    dmActions();
+                }
+
+                _entitiesSortedByInitiative.removeIf(entity -> entity.getHp() <= 0 && entity.isMonster());
+
+                if (allMonstersDead()) {
+                    return;
+                }
+
+                if (allPlayersDead()) {
+                    gameEnd();
+                }
+
+                if (!_currentEntity.isAlive()) {
+                    Display.display("The current entity is dead. Skipping to the next turn...");
+                    break;
+                }
+            }
+
+            Display.displayClear();
+            currentEntityNum++;
+        }
+    }
     private boolean allPlayersDead() {
         for (Entity entity : _entitiesSortedByInitiative) {
             if (entity.isPlayer() && entity.getHp() > 0) {
