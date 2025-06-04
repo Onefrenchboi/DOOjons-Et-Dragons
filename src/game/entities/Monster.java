@@ -31,11 +31,6 @@ public class Monster extends Entity {
     }
 
 
-    //? pour eviter le InstanceOf
-    @Override
-    public boolean isMonster() {
-        return true;
-    }
 
 
     //? Equipping weapons and armor is not allowed for monsters, donc on override en rien

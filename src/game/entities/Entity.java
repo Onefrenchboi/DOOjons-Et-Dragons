@@ -98,13 +98,6 @@ public abstract class Entity {
     }
 
 
-    //? le instanceof du pauvre
-    public boolean isPlayer() {
-        return false; // par defaut, les entites ne sont pas des joueurs
-    }
-    public boolean isMonster() {
-        return false; // par defaut, les entites ne sont pas des monstres
-    }
 
     /**
      * Checks if the entity is alive based on its HP.
@@ -128,7 +121,7 @@ public abstract class Entity {
      * @return true if the entity can attack the target, false otherwise
      */
     public boolean canAttack(Entity target) {
-        if ((this.isMonster() && target.isPlayer() || this.isPlayer() && target.isMonster()) && this.getEquippedWeapon() != null) {
+        if ((this._typeEntity==EntityType.MONSTER && target.getType()==EntityType.PLAYER || this._typeEntity==EntityType.PLAYER && target.getType()==EntityType.MONSTER) && this.getEquippedWeapon() != null) {
             return true;
         }
         return false;

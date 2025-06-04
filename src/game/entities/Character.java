@@ -14,7 +14,6 @@ public class Character extends Entity {
     private Race _race;
     private CharacterClass _class;
     private List<Equipment> _inventory;
-    private List<Spell> _spells;
 
 
     public Character(String name, Race race, CharacterClass charclass) {
@@ -22,7 +21,7 @@ public class Character extends Entity {
         this._race = race;
         this._class = charclass;
         this._inventory = new ArrayList<>(charclass.getStartingEquipment());
-        this._spells = new ArrayList<>();
+
 
         this.getStats().addStatistics(_race.getBonusStats());
         this.getStats().addStatistics(_class.getBonusStats());
@@ -38,31 +37,12 @@ public class Character extends Entity {
 
         this.setMaxHp(this.getHp());
 
-        if (isCleric()) {
-            _spells.add(new Heal());
-        } else if (isWizard()) {
-            _spells.add(new Heal());
-            _spells.add(new BoogieWoogie());
-            _spells.add(new MagicWeapon());
-        }
 
     }
 
 
 
 
-    //? Eviter les Instanceof
-    //! on fait que isWizard et isCleric pour l'instant (pour les sorts), mais on peut en ajouter d'autres si besoin
-    @Override
-    public boolean isPlayer() {
-        return true;
-    }
-    public boolean isCleric() {
-        return _class.getName().equalsIgnoreCase("Cleric");
-    }
-    public boolean isWizard() {
-        return _class.getName().equalsIgnoreCase("Wizard");
-    }
 
 
     //? Inventory management
@@ -122,13 +102,8 @@ public class Character extends Entity {
 
 
     //? Getters
-    public Spell getSpellByName(String name) {
-        for (Spell spell : _spells) {
-            if (spell.getName().equalsIgnoreCase(name)) {
-                return spell;
-            }
-        }
-        return null;
+    public List<Spell> getSpells() {
+        return this._class.getSpells();
     }
     public String getInfo(){
         return  "   HP ❤ : " + this.getHp() + "/" + this.getMaxHp() + "\n" +
