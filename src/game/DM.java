@@ -220,31 +220,7 @@ public class DM {
         else {//place les obstacles aléatoirement
             _dungeon.randomlyAddObstacles();
         }
-        for (Entity entity : _entitiesSortedByInitiative) {
-            if (entity.getType()==EntityType.PLAYER) {
-                Display.display(entity.getName() + ", choose an item to equip from your inventory : ");
-                String inventory = entity.displayInventory();
-                if (inventory.equals("Inventory is empty.")) {
-                    Display.displayError("You have no items to equip.");
-                    return;
-                }
-                Display.display(inventory);
-                int choice2 = scanner.nextInt();
-                while (choice2 < 0 || choice2 >= entity.getInventory().size()) {
-                    Display.displayError("Invalid choice. Please choose a valid item number.");
-                    choice2 = scanner.nextInt();
-                }
-                Equipment equipment = entity.getInventory().get(choice2);
-                if (equipment.getType() == EquipmentType.ARMOR) {
-                    entity.equipArmor(equipment);
-                    Display.display("You equipped " + equipment.getName() + ".");
-                } else if (equipment.getType()== EquipmentType.WEAPON) {
-                    entity.equipWeapon(equipment);
-                    Display.display("You equipped " + equipment.getName() + ".");
-                }
 
-            }
-        }
     }
 
 
@@ -260,6 +236,29 @@ public class DM {
         createEquipments();
         createDungeon(1);
         setDungeon();
+        //equip entities
+        for (Entity entity : _entitiesSortedByInitiative) {
+            if (entity.getType()==EntityType.PLAYER) {
+                Display.display(entity.getName() + ", choose an item to equip from your inventory : ");
+                String inventory = entity.displayInventory();
+                if (inventory.equals("Inventory is empty.")) {
+                    Display.displayError("You have no items to equip.");
+                    return;
+                }
+                Display.display(inventory);
+
+                int choice2 = askValidInt("Choose an item to equip",0,entity.getInventory().size());
+                Equipment equipment = entity.getInventory().get(choice2);
+                if (equipment.getType() == EquipmentType.ARMOR) {
+                    entity.equipArmor(equipment);
+                    Display.display("You equipped " + equipment.getName() + ".");
+                } else if (equipment.getType()== EquipmentType.WEAPON) {
+                    entity.equipWeapon(equipment);
+                    Display.display("You equipped " + equipment.getName() + ".");
+                }
+
+            }
+        }
         Display.display("----Start of the game----");
     }
 
@@ -387,7 +386,10 @@ public class DM {
                     }
                     case "pick" -> {
                         String actionChoice = scanner.next();
-                        _dungeon.pickUp(_currentEntity, actionChoice);
+                        int[] position = parsePosition(actionChoice);
+                        int x = position[0];
+                        int y = position[1];
+                        _dungeon.pickUp(_currentEntity, x, y);
                         action--;
                         scanner.nextLine();
                     }
@@ -396,8 +398,9 @@ public class DM {
                         _dungeon.comment(_currentEntity, actionChoice);
                     }
                     case "spell" -> {
-                        _dungeon.castSpell(_currentEntity);
-                        action--;
+                        if(_dungeon.castSpell(_currentEntity)){
+                            action--;
+                        }
                     }
                     case "skip" -> {
                         Display.display("... ok ?");

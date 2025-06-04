@@ -296,31 +296,27 @@ public class Dungeon {
         }
         moveEntity(entity, x, y);
     }
-    public void pickUp(Entity entity,String pos) {
-//        int[] position = parsePosition(pos);
-//        int x = position[0];
-//        int y = position[1];
-//
-//        Equipment equipment = getEquipmentAtPosition(x, y);
-//        if (equipment == null) {
-//            Display.displayError("No equipment at this position.");
-//            return;
-//        }
-//
-//        if (entity.isMonster()) {
-//            Display.displayError("You cannot pick up this equipment.");
-//            return;
-//        }
-//
-//        if (_positions.distanceBetween(entity, position) > entity.getStats().getSpeed()/3) {
-//            Display.displayError("Too far.");
-//            return;
-//        }
-//
-//        ((game.entities.Character) entity).addToInventory(equipment);
-//        _positions.removeEquipment(equipment);
-//        _map[x][y] = " . ";
-//        Display.display(entity.getPseudo() + " picked up " + equipment.getName() + ".");
+    public void pickUp(Entity entity,int x, int y) {
+        Equipment equipment = getEquipmentAtPosition(x, y);
+        if (equipment == null) {
+            Display.displayError("No equipment at this position.");
+            return;
+        }
+
+        if (entity.getType()==EntityType.MONSTER) {
+            Display.displayError("You cannot pick up this equipment.");
+            return;
+        }
+
+        if (distanceBetween(entity, new int[]{x,y}) > entity.getStats().getSpeed()/3) {
+            Display.displayError("Too far.");
+            return;
+        }
+
+        ((game.entities.Character) entity).addToInventory(equipment);
+        removeEquipment(equipment);
+        _map[x][y] = " . ";
+        Display.display(entity.getPseudo() + " picked up " + equipment.getName() + ".");
     }
     public void comment(Entity entity, String text){
         Display.display(entity.toString() + " : " + text);
@@ -330,13 +326,17 @@ public class Dungeon {
      * It does another switch case, but for the spells
      *
      * */
-    public void castSpell(Entity entity) {
+    public boolean castSpell(Entity entity) {
         if (entity.getType() == EntityType.MONSTER) {
             Display.displayError("Monsters cannot cast spells.");
-            return;
+            return false;
         }
         Character character = (Character) entity;
         List<Spell> spells = character.getSpells();
+        if (character.getSpells().isEmpty()) {
+            Display.display("  - You have no spells.");
+            return false;
+        }
         Display.displaySpellsMenu(entity);
         String choice = scanner.next();
         switch(choice) {
@@ -348,10 +348,10 @@ public class Dungeon {
                         Entity target= getEntityAtPosition(position[0], position[1]);
                         if (target == null) {
                             Display.displayError("No target at this position.");
-                            return;
+                            return false;
                         }
                         spell.cast(_entitiesPosition, target);
-                        return;
+                        return true;
                     }
                 }
                 Display.displayError("You don't have this spell.");
@@ -364,10 +364,10 @@ public class Dungeon {
                         Entity target= getEntityAtPosition(position[0], position[1]);
                         if (target == null) {
                             Display.displayError("No target at this position.");
-                            return;
+                            return false;
                         }
                         spell.cast(_entitiesPosition, target);
-                        return;
+                        return true;
                     }
                 }
                 Display.displayError("You don't have this spell.");
@@ -380,16 +380,20 @@ public class Dungeon {
                         Entity target= getEntityAtPosition(position[0], position[1]);
                         if (target == null) {
                             Display.displayError("No target at this position.");
-                            return;
+                            return false;
                         }
                         spell.cast(_entitiesPosition, target);
-                        return;
+                        return true;
                     }
                 }
                 Display.displayError("You don't have this spell.");
             }
+            case "stop" -> {
+                return false;
+            }
             default -> Display.displayError("Invalid choice. Please try again.");
         }
+        return false;
     }
 
 
@@ -437,28 +441,6 @@ public class Dungeon {
     }
 
 
-    /**
-     * Switches the positions of two entities in the dungeon.
-     * <br>
-     * Note : Used for the Boogie Woogie spell
-     */
-    public void switchEntities(Entity target1, Entity target2) {
-        int[] pos1 = getEntityPosition(target1);
-        int[] pos2 = getEntityPosition(target2);
-
-        if (pos1 == null || pos2 == null) {
-            Display.displayError("One of the targets is not in the dungeon.");
-            return;
-        }
-        removeEntity(target1);
-        removeEntity(target2);
-
-        addEntity(target1, new int[]{pos2[0], pos2[1]});
-        addEntity(target2, new int[]{pos1[0], pos1[1]});
-
-
-        Display.display("You switched " + target1.getPseudo() + " and " + target2.getPseudo() + ".");
-    }
 
 
     //? Getters

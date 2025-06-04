@@ -97,7 +97,6 @@ public class Display {
         System.out.println("-------------------------------");
         System.out.println(currentEntity.toString() + ", you can cast the following spells:");
         if (currentEntity.getType()== EntityType.PLAYER) {
-
                 System.out.println("  - Heal (heal <position>)");
                 System.out.println("  - Magic Weapon (magicweapon <position>)");
                 System.out.println("  - Boogie Woogie (boogiewoogie <position1>)");
