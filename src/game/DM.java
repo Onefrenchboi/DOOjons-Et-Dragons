@@ -221,7 +221,7 @@ public class DM {
             _dungeon.randomlyAddObstacles();
         }
         for (Entity entity : _entitiesSortedByInitiative) {
-            if (entity.isPlayer()) {
+            if (entity.getType()==EntityType.PLAYER) {
                 Display.display(entity.getName() + ", choose an item to equip from your inventory : ");
                 String inventory = entity.displayInventory();
                 if (inventory.equals("Inventory is empty.")) {
@@ -279,7 +279,7 @@ public class DM {
         Display.display("You managed to kill all the monsters on this floor, Well done !");
         Display.display("Healing players...");
         for (Entity entity : entitiesSortedByInitiative) {
-            if (entity.isPlayer()) {
+            if (entity.getType()==EntityType.PLAYER) {
                 entity.setHp(entity.getMaxHp() - entity.getHp());
             }
         }

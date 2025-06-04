@@ -280,7 +280,6 @@ public class Dungeon {
             _map[x][y] = " . ";
         }
     }
-
     public void move(Entity entity, int x, int y) {
         if (!isValidPosition(x, y)) {
             Display.displayError("Invalid position. Please enter a new position : ");
@@ -332,62 +331,62 @@ public class Dungeon {
      *
      * */
     public void castSpell(Entity entity) {
-        if (entity.isMonster()) {
+        if (entity.getType() == EntityType.MONSTER) {
             Display.displayError("Monsters cannot cast spells.");
             return;
         }
+        Character character = (Character) entity;
+        List<Spell> spells = character.getSpells();
         Display.displaySpellsMenu(entity);
-        game.entities.Character character = (game.entities.Character) entity;
         String choice = scanner.next();
         switch(choice) {
             case "heal" -> {
-                Heal healSpell = (Heal) character.getSpellByName("Heal");
-                if (healSpell == null) {
-                    Display.displayError("You don't have the Heal spell.");
-                    return;
+                for (Spell spell : spells) {
+                    if (spell.getName().equalsIgnoreCase("Heal")) {
+                        String pos = scanner.next();
+                        int[] position = parsePosition(pos);
+                        Entity target= getEntityAtPosition(position[0], position[1]);
+                        if (target == null) {
+                            Display.displayError("No target at this position.");
+                            return;
+                        }
+                        spell.cast(_entitiesPosition, target);
+                        return;
+                    }
                 }
-                String pos = scanner.next();
-                int[] position = parsePosition(pos);
-                Entity target= getEntityAtPosition(position[0], position[1]);
-                if (target == null) {
-                    Display.displayError("No target at this position.");
-                    return;
-                }
-                healSpell.cast(target);
+                Display.displayError("You don't have this spell.");
             }
             case "boogiewoogie" -> {
-                BoogieWoogie boogieWoogie = (BoogieWoogie) character.getSpellByName("BoogieWoogie");
-                if (boogieWoogie == null) {
-                    Display.displayError("You don't have the Boogie Woogie spell.");
-                    return;
+                for (Spell spell : spells) {
+                    if (spell.getName().equalsIgnoreCase("BoogieWoogie")) {
+                        String pos = scanner.next();
+                        int[] position = parsePosition(pos);
+                        Entity target= getEntityAtPosition(position[0], position[1]);
+                        if (target == null) {
+                            Display.displayError("No target at this position.");
+                            return;
+                        }
+                        spell.cast(_entitiesPosition, target);
+                        return;
+                    }
                 }
-                String pos1 = scanner.next();
-                String pos2 = scanner.next();
-                int[] position1 = parsePosition(pos1);
-                int[] position2 = parsePosition(pos2);
-                Entity target1 = getEntityAtPosition(position1[0], position1[1]);
-                Entity target2 = getEntityAtPosition(position2[0], position2[1]);
-                boogieWoogie.cast(target1, target2, this);
-                
+                Display.displayError("You don't have this spell.");
             }
             case "magicweapon" -> {
-                MagicWeapon magicWeapon = (MagicWeapon) character.getSpellByName("MagicWeapon");
-                if (magicWeapon == null) {
-                    Display.displayError("You don't have the Magic Weapon spell.");
-                    return;
+                for (Spell spell : spells) {
+                    if (spell.getName().equalsIgnoreCase("Magicweapon")) {
+                        String pos = scanner.next();
+                        int[] position = parsePosition(pos);
+                        Entity target= getEntityAtPosition(position[0], position[1]);
+                        if (target == null) {
+                            Display.displayError("No target at this position.");
+                            return;
+                        }
+                        spell.cast(_entitiesPosition, target);
+                        return;
+                    }
                 }
-                String pos = scanner.next();
-                int[] position = parsePosition(pos);
-                Entity targetEntity = getEntityAtPosition(position[0], position[1]);
-                if (targetEntity == null) {
-                    Display.displayError("No target at this position.");
-                    return;
-                }
-                Equipment target = magicWeapon.selectEquipmentToEnchant((Character) targetEntity);
-                if (target != null) {
-                    character.getSpellByName("MagicWeapon").cast(target);
-                    Display.display("You enchanted " + target.getName() + " with Magic Weapon!");
-                }
+                Display.displayError("You don't have this spell.");
             }
             default -> Display.displayError("Invalid choice. Please try again.");
         }

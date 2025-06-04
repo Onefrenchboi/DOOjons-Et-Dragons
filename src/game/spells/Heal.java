@@ -1,11 +1,11 @@
 package game.spells;
 
-import game.Dungeon;
-import game.entities.Character;
 import game.entities.Entity;
-import game.items.Equipment;
+import game.entities.EntityType;
 import game.utils.Display;
 import game.utils.GameUtils;
+
+import java.util.HashMap;
 
 public class Heal extends Spell {
     public Heal() {
@@ -17,12 +17,13 @@ public class Heal extends Spell {
      * Heals the target entity for a 1d10 hp
      * If the target is a monster, then you cant heal it.
      *
-     * @param target The entity to heal.
+     * @param entitiesPos The list of entities, to find the one we want to heal
+     * @param target the target
      */
     @Override
-    public void cast(Entity target) {
+    public void cast(HashMap<Entity, int[]> entitiesPos, Entity target) {
         int healingAmount = GameUtils.roll(1, 10);
-        if (target.isMonster()) {
+        if (target.getType()== EntityType.MONSTER) {
             Display.displayError("You cannot heal monsters!");
         } else {
             int missingHp = target.getMaxHp() - target.getHp();
@@ -32,11 +33,6 @@ public class Heal extends Spell {
         }
 
     }
-
-    @Override
-    public void cast(Entity target1, Entity target2, Dungeon d){}
-
-    @Override
-    public void cast(Equipment e){}
 }
+
 

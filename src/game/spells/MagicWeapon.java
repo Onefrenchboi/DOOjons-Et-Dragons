@@ -1,64 +1,44 @@
 package game.spells;
 
-import game.Dungeon;
 import game.entities.Entity;
+import game.entities.EntityType;
 import game.items.Equipment;
 import game.items.Weapon;
 import game.utils.Display;
 
+import java.util.HashMap;
+
 import static game.utils.GameUtils.askValidInt;
 import static game.utils.GameUtils.scanner;
 
-public class MagicWeapon extends Spell{
+public class MagicWeapon extends Spell {
     public MagicWeapon() {
         super("MagicWeapon");
     }
-
     /**
-     * add +1 bonus to the target weapon.
-     * The target can be either an equipped weapon or an item from the character's inventory.
+     * add +1 bonus to an equipment chosen by the user.
+     * The equipment can be either an equipped item or an item from the character's inventory.
      *
-     * @param target The equipment (weapon) to enchant.
+     * @param entitiesPos The list of entities
+     * @param targetChar the target
      */
-    @Override
-    public void cast(Equipment target) {
-        if (target == null) {
-            Display.displayError("No valid equipment selected for enchanting.");
+    public void cast(HashMap<Entity, int[]> entitiesPos, Entity targetChar) {
+        if (targetChar.getType()== EntityType.MONSTER) {
+            Display.displayError("You can't enchant a monster.");
             return;
         }
-
-        ((Weapon) target).addBonus(1);
-
-
-    }
-
-
-    @Override
-    public void cast(Entity target1, Entity target2, Dungeon d){}
-    @Override
-    public void cast(Entity target){}
-
-
-    /**
-     * asks user to select an equipment item to enchant.
-     *
-     *
-     * @param character The character whose equipment is being selected.
-     * @return The selected equipment item, or null if no valid selection was made.
-     */
-    public Equipment selectEquipmentToEnchant(game.entities.Character character) {
         Display.display("Choose an item to enchant:");
-        Display.display("1. Equipped Weapon: " + (character.getEquippedWeapon() != null ? character.getEquippedWeapon().getName() : "None"));
+        Display.display("1. Equipped Weapon: " + (targetChar.getEquippedWeapon() != null ? targetChar.getEquippedWeapon().getName() : "None"));
         Display.display("2. Inventory:");
-        Display.display(character.displayInventory());
+        Display.display(targetChar.displayInventory());
 
         int choice = askValidInt("Enter your choice (1 for equipped weapon, 2 for inventory item):", 1, 2);
         Equipment target = null;
 
         switch (choice) {
             case 1 -> {
-                if (character.getEquippedWeapon() != null) {
-                    target = character.getEquippedWeapon();
+                if (targetChar.getEquippedWeapon() != null) {
+                    target = targetChar.getEquippedWeapon();
                 } else {
                     Display.displayError("You don't have an equipped weapon.");
                 }
@@ -66,8 +46,8 @@ public class MagicWeapon extends Spell{
             case 2 -> {
                 Display.display("Choose an item from your inventory:");
                 int inventoryChoice = scanner.nextInt();
-                if (inventoryChoice >= 0 && inventoryChoice < character.getInventory().size() && character.getInventory().get(inventoryChoice).getType() == game.items.enums.EquipmentType.WEAPON) {
-                    target = character.getInventory().get(inventoryChoice);
+                if (inventoryChoice >= 0 && inventoryChoice < targetChar.getInventory().size() && targetChar.getInventory().get(inventoryChoice).getType() == game.items.enums.EquipmentType.WEAPON) {
+                    target = targetChar.getInventory().get(inventoryChoice);
                 } else {
                     Display.displayError("Invalid choice.");
                 }
@@ -75,7 +55,9 @@ public class MagicWeapon extends Spell{
 
             default -> Display.displayError("Invalid choice.");
         }
-        return target;
+
+
+        ((Weapon) target).addBonus(1);
     }
 
 }

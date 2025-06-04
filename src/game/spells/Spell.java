@@ -1,8 +1,8 @@
 package game.spells;
 
-import game.Dungeon;
 import game.entities.Entity;
-import game.items.Equipment;
+
+import java.util.HashMap;
 
 public abstract class Spell {
     private String _name;
@@ -11,18 +11,12 @@ public abstract class Spell {
         this._name = name;
     }
 
+
     public String getName() {
         return _name;
     }
 
+    public abstract void cast(HashMap<Entity, int[]> entitiesPos, Entity target);
 
-    //? Abstract methods for casting spells
-    public abstract void cast(Entity target);
-    public abstract void cast(Equipment target);
-    public abstract void cast(Entity target1, Entity target2, Dungeon d);
-
-    public String toString() {
-        return "Spell: " + _name;
-    }
 
 }
