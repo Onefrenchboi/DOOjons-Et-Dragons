@@ -6,7 +6,7 @@ import game.entities.classes.*;
 
 import game.entities.Character;
 import game.items.*;
-import game.items.enums.EquipmentType;
+import game.items.EquipmentType;
 import game.items.equipments.MeleeWeapon;
 import game.items.equipments.RangedWeapon;
 import game.utils.Display;

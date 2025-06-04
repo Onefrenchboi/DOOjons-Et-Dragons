@@ -2,14 +2,13 @@ package game.entities;
 
 
 import game.items.*;
-import game.items.enums.EquipmentType;
+import game.items.EquipmentType;
 import game.utils.Display;
 import game.utils.GameUtils;
 
 import java.util.List;
 
 import static game.utils.GameUtils.askValidInt;
-import static game.utils.GameUtils.scanner;
 
 public abstract class Entity {
     private String _name;

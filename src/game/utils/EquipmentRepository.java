@@ -45,7 +45,4 @@ public enum EquipmentRepository {
                      .map(EquipmentRepository::get)
                      .toList();
     }
-
-
-
 }

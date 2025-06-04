@@ -1,4 +1,4 @@
-package game.items.enums;
+package game.items;
 
 public enum EquipmentType {
     WEAPON,

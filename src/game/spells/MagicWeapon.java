@@ -3,6 +3,7 @@ package game.spells;
 import game.entities.Entity;
 import game.entities.EntityType;
 import game.items.Equipment;
+import game.items.EquipmentType;
 import game.items.Weapon;
 import game.utils.Display;
 
@@ -46,7 +47,7 @@ public class MagicWeapon extends Spell {
             case 2 -> {
                 Display.display("Choose an item from your inventory:");
                 int inventoryChoice = scanner.nextInt();
-                if (inventoryChoice >= 0 && inventoryChoice < targetChar.getInventory().size() && targetChar.getInventory().get(inventoryChoice).getType() == game.items.enums.EquipmentType.WEAPON) {
+                if (inventoryChoice >= 0 && inventoryChoice < targetChar.getInventory().size() && targetChar.getInventory().get(inventoryChoice).getType() == EquipmentType.WEAPON) {
                     target = targetChar.getInventory().get(inventoryChoice);
                 } else {
                     Display.displayError("Invalid choice.");

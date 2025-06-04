@@ -1,8 +1,6 @@
 package game.items;
 
 import game.entities.Statistics;
-import game.items.enums.EquipmentType;
-import game.items.enums.WeaponType;
 import game.utils.GameUtils;
 
 public abstract class Weapon extends Equipment{
@@ -10,16 +8,13 @@ public abstract class Weapon extends Equipment{
     private int _damageroll; //represents the dice to roll for damage
     private int _dicenum; //represents the number of dice to roll for damage
     private int _bonus; //pour le MagicWeapon
-    private WeaponType _weaponType;
-
-    protected Weapon(String name, int range, int dicenum, int damageroll, Statistics bonusStats,WeaponType weaponType) {
+    protected Weapon(String name, int range, int dicenum, int damageroll, Statistics bonusStats) {
         super(name, EquipmentType.WEAPON);
         _range = range;
         _dicenum = dicenum;
         _damageroll = damageroll;
         this._bonus=0; //default bonus is 0
         this.setBonusStats(bonusStats);
-        this._weaponType = weaponType;
     }
 
 
@@ -51,9 +46,7 @@ public abstract class Weapon extends Equipment{
     public String getDamage() {
         return _dicenum + "d" + _damageroll;
     }
-    public WeaponType getWeaponType() {
-        return _weaponType;
-    }
+
 
 
 

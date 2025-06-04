@@ -4,7 +4,6 @@ import game.entities.Character;
 import game.entities.Entity;
 import game.entities.EntityType;
 import game.items.Equipment;
-import game.items.enums.EquipmentType;
 import game.spells.*;
 import game.utils.GameUtils;
 import game.utils.Display;

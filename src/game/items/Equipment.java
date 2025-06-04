@@ -1,7 +1,6 @@
 package game.items;
 
 import game.entities.Statistics;
-import game.items.enums.EquipmentType;
 
 public abstract class Equipment {
     private String _name;
