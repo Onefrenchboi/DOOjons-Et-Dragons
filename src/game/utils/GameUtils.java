@@ -2,6 +2,7 @@ package game.utils;
 
 import game.Dungeon;
 import game.entities.Entity;
+import game.spells.Spell;
 
 import java.util.InputMismatchException;
 import java.util.Random;
@@ -107,4 +108,5 @@ public class GameUtils {
         }
         return pos;
     }
+
 }

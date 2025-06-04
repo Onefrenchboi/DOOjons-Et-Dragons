@@ -28,14 +28,14 @@ public enum EquipmentRepository {
     SLING(new RangedWeapon("Sling", 6, 1, 4)),
     SHORTBOW(new RangedWeapon("Shortbow", 16, 1, 6));
 
-    private final Equipment equipment;
+    private final Equipment _equipment;
 
     EquipmentRepository (Equipment equipment) {
-        this.equipment = equipment;
+        this._equipment = equipment;
     }
 
     public Equipment get() {
-        return equipment;
+        return _equipment;
     }
 
     //list of all equipment
