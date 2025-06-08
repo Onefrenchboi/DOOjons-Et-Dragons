@@ -41,6 +41,17 @@ public abstract class Entity {
     }
 
 
+
+
+    /**
+     * Attacks a target entity if the attacking entity can attack the target.
+     * The method checks if the target is within range and performs an attack roll.
+     * If the attack hits, it deals damage to the target and checks if the target is still alive.
+     *
+     * @param target      the target entity to attack
+     * @param distanceTo  the distance to the target
+     * @return ActionResult indicating the result of the attack
+     */
     public ActionResult attack(Entity target, int distanceTo) {
         if (this.canAttack(target)) {
             if (distanceTo > this._equippedWeapon.getRange()) {
@@ -136,9 +147,6 @@ public abstract class Entity {
      */
     public abstract void equipArmor(Equipment equipment);
     public abstract void equipWeapon(Equipment equipment);
-
-
-
 
 
     /**

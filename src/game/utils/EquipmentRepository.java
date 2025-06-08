@@ -38,7 +38,7 @@ public enum EquipmentRepository {
         return _equipment;
     }
 
-    //list of all equipment
+    //? list of all equipment
     public static List<Equipment> getAllEquipment() {
         return Arrays.asList(EquipmentRepository.values())
                      .stream()
