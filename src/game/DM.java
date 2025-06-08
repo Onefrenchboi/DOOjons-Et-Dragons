@@ -36,7 +36,6 @@ public class DM {
 
 
     //? Functions to create everything
-
     /**
      * Creates characters, monsters, equipment based on user input.
      * Demande a l'user des precisions (nom, race, classe, AC (pour monstres) et autres

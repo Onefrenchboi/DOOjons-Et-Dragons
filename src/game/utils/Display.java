@@ -50,8 +50,21 @@ public class Display {
         System.out.println(currentEntity.getInfo());
     }
 
+
+    /**
+     * Displays the current state of the dungeon map.
+     * Also gives a legend
+     * */
+
     public static void displayMap(Dungeon dungeon) {
         dungeon.updateMap();
+        for (String[] strings : dungeon.getMap()) {
+            for (String string : strings) {
+                System.out.print(string);
+            }
+            System.out.println();
+        }
+        Display.display( GameUtils.WHITE_BG + "   " + GameUtils.RESET + " : Obstacles ||" + GameUtils.BLUE + " [⌘]" + GameUtils.RESET + " : Equipements || " + GameUtils.PURPLE + " [*]" + GameUtils.RESET + " : Entities ||" + GameUtils.RED + " [#]" + GameUtils.RESET + " : Monsters");
     }
 
     public static void displayClear() {
