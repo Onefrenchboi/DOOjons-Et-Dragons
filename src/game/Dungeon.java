@@ -5,6 +5,7 @@ import game.entities.Entity;
 import game.entities.EntityType;
 import game.items.Equipment;
 import game.spells.*;
+import game.utils.ActionResult;
 import game.utils.GameUtils;
 import game.utils.Display;
 
@@ -265,76 +266,67 @@ public class Dungeon {
      * They check if the position is valid, if the entity can perform the action,
      * and then perform the action.
      */
-    public void attack(Entity attacker, int x, int y) {
+    public ActionResult attack(Entity attacker, int x, int y) {
         Entity target = getEntityAtPosition(x,y);
         if (target == null) {
-            Display.displayError("No entity at this position.");
-            return;
+            return ActionResult.NO_TARGET;
         }
+
         int dist = distanceBetween(attacker, new int[]{x, y});
-        boolean isDead = attacker.attack(target, dist);
-        if (isDead) {
-            Display.display(target.getName() + " has been defeated!");
+        ActionResult isDead = attacker.attack(target, dist);
+        if (isDead==ActionResult.TARGET_KILLED) {
             removeEntity(target);
             _map[x][y] = " . ";
         }
+        return isDead;
     }
-    public void move(Entity entity, int x, int y) {
+    public ActionResult move(Entity entity, int x, int y) {
         if (!isValidPosition(x, y)) {
-            Display.displayError("Invalid position. Please enter a new position : ");
-            return;
+            return ActionResult.POSITION_BLOCKED;
         }
-
         if (getEntityAtPosition(x, y) != null) {
-            Display.displayError("There is already an entity at this position.");
-            return;
+            return ActionResult.POSITION_BLOCKED;
         }
-        if (distanceBetween(entity, new int[] {x, y}) > entity.getStats().getSpeed()/3) {
-            Display.displayError("Too far.");
-            return;
+        if (distanceBetween(entity, new int[] {x, y}) > entity.getSpeed()/3) {
+            return ActionResult.POSITION_TOO_FAR;
         }
-        moveEntity(entity, x, y);
+        return moveEntity(entity, x, y);
     }
-    public void pickUp(Entity entity,int x, int y) {
+    public ActionResult pickUp(Entity entity,int x, int y) {
         Equipment equipment = getEquipmentAtPosition(x, y);
         if (equipment == null) {
-            Display.displayError("No equipment at this position.");
-            return;
+            return ActionResult.POSITION_EMPTY;
         }
-
         if (entity.getType()==EntityType.MONSTER) {
-            Display.displayError("You cannot pick up this equipment.");
-            return;
+            return ActionResult.WRONG_TYPE;
         }
 
         if (distanceBetween(entity, new int[]{x,y}) > entity.getStats().getSpeed()/3) {
-            Display.displayError("Too far.");
-            return;
+            return ActionResult.POSITION_TOO_FAR;
         }
 
         ((game.entities.Character) entity).addToInventory(equipment);
         removeEquipment(equipment);
         _map[x][y] = " . ";
         Display.display(entity.getPseudo() + " picked up " + equipment.getName() + ".");
+        return ActionResult.SUCCESS;
     }
-    public void comment(Entity entity, String text){
-        Display.display(entity.toString() + " : " + text);
+    public String comment(Entity entity, String text){
+        return (entity.toString() + " : " + text);
     }
     /**
      * The only "different" method
      * It does another switch case, but for the spells
      *
      * */
-    public boolean castSpell(Entity entity) {
+    public ActionResult castSpell(Entity entity) {
         if (entity.getType() == EntityType.MONSTER) {
-            Display.displayError("Monsters cannot cast spells.");
-            return false;
+            return ActionResult.WRONG_TYPE;
         }
         Character character = (Character) entity;
         List<Spell> spells = character.getSpells();
         if (character.getSpells().isEmpty()) {
-            Display.display("  - You have no spells.");
-            return false;
+            return ActionResult.FAILURE;
         }
         Display.displaySpellsMenu(entity);
         String choice = scanner.next();
@@ -346,14 +338,13 @@ public class Dungeon {
                         int[] position = parsePosition(pos);
                         Entity target= getEntityAtPosition(position[0], position[1]);
                         if (target == null) {
-                            Display.displayError("No target at this position.");
-                            return false;
+                            return ActionResult.FAILURE;
                         }
                         spell.cast(_entitiesPosition, target);
-                        return true;
+                        return ActionResult.SUCCESS;
                     }
+                    return ActionResult.UNKNOWN_SPELL;
                 }
-                Display.displayError("You don't have this spell.");
             }
             case "boogiewoogie" -> {
                 for (Spell spell : spells) {
@@ -362,14 +353,13 @@ public class Dungeon {
                         int[] position = parsePosition(pos);
                         Entity target= getEntityAtPosition(position[0], position[1]);
                         if (target == null) {
-                            Display.displayError("No target at this position.");
-                            return false;
+                            return ActionResult.FAILURE;
                         }
                         spell.cast(_entitiesPosition, target);
-                        return true;
+                        return ActionResult.SUCCESS;
                     }
+                    return ActionResult.UNKNOWN_SPELL;
                 }
-                Display.displayError("You don't have this spell.");
             }
             case "magicweapon" -> {
                 for (Spell spell : spells) {
@@ -378,21 +368,20 @@ public class Dungeon {
                         int[] position = parsePosition(pos);
                         Entity target= getEntityAtPosition(position[0], position[1]);
                         if (target == null) {
-                            Display.displayError("No target at this position.");
-                            return false;
+                            return ActionResult.FAILURE;
                         }
                         spell.cast(_entitiesPosition, target);
-                        return true;
+                        return ActionResult.SUCCESS;
                     }
+                    return ActionResult.UNKNOWN_SPELL;
                 }
-                Display.displayError("You don't have this spell.");
             }
             case "stop" -> {
-                return false;
+                return ActionResult.STOP;
             }
             default -> Display.displayError("Invalid choice. Please try again.");
         }
-        return false;
+        return ActionResult.FAILURE;
     }
 
 
@@ -400,9 +389,9 @@ public class Dungeon {
      * Moves an entity to a new position (x, y) in the dungeon.
      * Hurts an entity
      * <br>
-     * Note : Mainly used by the DM
+     *
      */
-    public void moveEntity(Entity entity, int x, int y) {
+    public ActionResult moveEntity(Entity entity, int x, int y) {
         if (isValidPosition(x, y)) {
             int[] oldPosition = _entitiesPosition.get(entity);
             if (oldPosition != null) {
@@ -411,32 +400,30 @@ public class Dungeon {
                 _map[oldPosition[0]][oldPosition[1]] = " . ";
             }
         } else {
-            Display.displayError("Invalid position for entity movement.");
+            return ActionResult.FAILURE;
         }
-        Display.display("Moved " + entity.toString() + " successfully.");
+        return ActionResult.SUCCESS;
     }
-    public void hurtEntity(String pos, int dices, int faces){
+    public ActionResult hurtEntity(String pos, int dices, int faces){
         int[] position = parsePosition(pos);
         int x = position[0];
         int y = position[1];
 
         Entity target = getEntityAtPosition(x, y);
         if (target == null) {
-            Display.displayError("No entity at this position.");
-            return;
+            return ActionResult.NO_TARGET;
         }
-        int damage = GameUtils.roll(dices, faces); // Example damage calculation
+        int damage = GameUtils.roll(dices, faces);
         target.removeHp(damage);
         Display.display(target.getName() + " has been hurt for " + damage + " damage.");
 
         if (!target.isAlive()) {
-            Display.display(target.getName() + " has been defeated!");
             target.setHp(-target.getHp());
             removeEntity(target);
             _map[x][y] = " . ";
+            return ActionResult.TARGET_KILLED;
         }
-
-
+        return ActionResult.TARGET_HIT;
     }
 
 
@@ -519,5 +506,10 @@ public class Dungeon {
     public int[] getEntityPosition(Entity entity) {
         return _entitiesPosition.get(entity);
     }
+    public int getHeight(){
+        return _height;
+    }
+    public int getWidth(){
+        return _width;}
 }
 

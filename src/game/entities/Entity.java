@@ -1,6 +1,7 @@
 package game.entities;
 
 
+import game.utils.ActionResult;
 import game.items.*;
 import game.items.EquipmentType;
 import game.utils.Display;
@@ -40,11 +41,10 @@ public abstract class Entity {
     }
 
 
-    public boolean attack(Entity target, int distanceTo) {
+    public ActionResult attack(Entity target, int distanceTo) {
         if (this.canAttack(target)) {
             if (distanceTo > this._equippedWeapon.getRange()) {
-                Display.displayError("You are too far from " + target.getName() + " to attack it.");
-                return !target.isAlive();
+                return ActionResult.POSITION_TOO_FAR;
             }
             int attackRoll = GameUtils.roll(1, 20) + this._equippedWeapon.getBonus();
             Display.display("You rolled a " + attackRoll);
@@ -62,18 +62,17 @@ public abstract class Entity {
                 Display.display("You did " + damage + " damage !");
                 target.removeHp(damage);
                 if (!target.isAlive()) {
-                    Display.display(target.getName() + " has been defeated!");
                     target.setHp(target.getHp());
-                    return target.isAlive();
+                    return ActionResult.TARGET_KILLED;
                 }
                 Display.display(target.getName() + " has " + target.getHp() + " HP left.");
             } else {
-                Display.displayError("You missed " + target.getName() + "!");
+                return ActionResult.TARGET_MISSED;
             }
         } else {
-            Display.display(this.getPseudo() + " cannot attack " + target.getPseudo() + ".");
+            return ActionResult.WRONG_TYPE;
         }
-        return !target.isAlive();
+        return ActionResult.TARGET_HIT;
     }
     public void equip() {
         if (_typeEntity== EntityType.PLAYER) {
@@ -83,6 +82,7 @@ public abstract class Entity {
                 Display.displayError("You have no items to equip.");
                 return;
             }
+
             Display.display(inventory);
             int choice = askValidInt("Choose the item number to equip: ", 0, this.getInventory().size() - 1);
             Equipment equipment = this.getInventory().get(choice);
@@ -93,6 +93,9 @@ public abstract class Entity {
                 this.equipWeapon(equipment);
                 Display.display("You equipped " + equipment.getName() + ".");
             }
+        }
+        else {
+            Display.displayError("Monsters cannot equip.");
         }
     }
 
@@ -181,6 +184,9 @@ public abstract class Entity {
     }
     public int getHp() {
         return _stats.getHp();
+    }
+    public int getSpeed() {
+        return _stats.getSpeed();
     }
     public int getMaxHp() {
         return _maxHp;

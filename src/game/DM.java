@@ -9,6 +9,7 @@ import game.items.*;
 import game.items.EquipmentType;
 import game.items.equipments.MeleeWeapon;
 import game.items.equipments.RangedWeapon;
+import game.utils.ActionResult;
 import game.utils.Display;
 import game.utils.EquipmentRepository;
 import game.utils.GameUtils;
@@ -45,14 +46,13 @@ public class DM {
         int nbPlayers = askValidInt("How many players ? (1-4) : ", 1, 4);
 
         String name = "Z";
-
         Race heroRace = null;
         CharacterClass heroClass = null;
         for (int i = 0; i < nbPlayers; i++) {
             heroRace = null;
             heroClass = null;
             Display.display("Player " + (i + 1) + ", enter your name : ");
-            name = scanner.next();
+            name = scanner.nextLine().trim();
 
             while (heroRace == null) {
                 int raceChoice = askValidInt("Choose your race (1-Dwarf, 2-Elf, 3-Halfling, 4-Human): ", 1, 4);
@@ -80,35 +80,43 @@ public class DM {
         }
     }
     public void createMonsters(){
-        Display.display("DM, do you want to create monsters ? (if not, a predetermined selection will be applied) (Y/N)");
-        String choice = scanner.next();
-        if (choice.equalsIgnoreCase("Y")) {
+        boolean choice = askYesOrNoAnswer("DM, do you want to create monsters ? (if not, a predetermined selection will be applied) (Y/N)");
+        if (choice) {
             int nbMonstres = askValidInt("How many monsters ? (1-4) : ", 1, 4);
 
             Map<String, Integer> monsterCount = new HashMap<>();
             for (int i = 0; i < nbMonstres; i++) {
                 Display.display("Enter the monster's race : ");
-                String species = scanner.next();
+                String species = scanner.nextLine().trim();
                 int AC = -1;
                 while (AC < 0) {
                     AC = askValidInt("Enter the monster's armor class : ",0, 99);
                 }
                 int range = -1, dicenum = -1, damageroll = -1;
                 boolean validAttackInput = false;
+
                 while (!validAttackInput) {
                     Display.display("Enter the monster's attack range, number of dice, and dice value (e.g., 1 2 6 for range 1, 2d6 damage) : ");
+                    String line = scanner.nextLine().trim();
+                    String[] tokens = line.split("\\s+");
+
+                    if (tokens.length != 3) {
+                        Display.displayError("Please enter exactly three numbers separated by spaces.");
+                        continue;
+                    }
+
                     try {
-                        range = scanner.nextInt();
-                        dicenum = scanner.nextInt();
-                        damageroll = scanner.nextInt();
+                        range = Integer.parseInt(tokens[0]);
+                        dicenum = Integer.parseInt(tokens[1]);
+                        damageroll = Integer.parseInt(tokens[2]);
+
                         if (range < 1 || dicenum < 1 || damageroll < 1) {
                             Display.displayError("All values must be positive numbers.");
                         } else {
                             validAttackInput = true;
                         }
-                    } catch (InputMismatchException e) {
-                        Display.displayError("Invalid input, please enter three numbers.");
-                        scanner.nextLine(); //pr clear le mauvais input
+                    } catch (NumberFormatException e) {
+                        Display.displayError("Invalid input, please enter valid numbers.");
                     }
                 }
                 Weapon weapon;
@@ -167,62 +175,54 @@ public class DM {
      */
     public void setDungeon() {
         _turn = 1;
-        //On sort les monstres et personnages par initiative
+        // On sort les monstres et personnages par initiative
         Map<Entity, Integer> initiativeMap = new HashMap<>();
         for (Entity entity : _entitiesSortedByInitiative) {
             initiativeMap.put(entity, entity.getInitiative() + GameUtils.roll(1, 20));
         }
 
         _entitiesSortedByInitiative.sort((e1, e2) -> initiativeMap.get(e2) - initiativeMap.get(e1));
-        //et on les affiche
+        // et on les affiche
         Display.display("Here is the list of players and monsters in the game : ");
         for (Entity entity : _entitiesSortedByInitiative) {
             Display.display(entity.toString());
         }
 
-        Display.display("DM, do you want to place the entities manually ? (Y/N)");
-        String choice = scanner.next();
-        if (choice.equalsIgnoreCase("Y")) {
+        boolean choice = askYesOrNoAnswer("DM, do you want to place the entities manually ? (Y/N)");
+        if (choice) {
             for (Entity entity : _entitiesSortedByInitiative) {
                 int[] pos = askValidPosition("Enter the position of " + entity.getName() + " ([A-Z]x) : ", _dungeon);
                 _dungeon.addEntity(entity, pos);
             }
-        }
-        else {
-            //place les personnages aléatoirement
+        } else {
+            // place les personnages aléatoirement
             _dungeon.randomlyAddEntity(_entitiesSortedByInitiative);
         }
 
-        Display.display("DM, do you want to place the items manually ? (Y/N)");
-        choice = scanner.next();
-        if (choice.equalsIgnoreCase("Y")) {
+        choice = askYesOrNoAnswer("DM, do you want to place the items manually ? (Y/N)");
+        if (choice) {
             for (Equipment equipment : _equipmentList) {
                 int[] pos = askValidPosition("Enter the position of " + equipment + " ([A-Z]x) : ", _dungeon);
                 _dungeon.addEquipment(equipment, pos);
             }
-        }
-        else {
+        } else {
             _dungeon.randomlyAddEquipment(_equipmentList);
         }
 
-        Display.display("DM, do you want to place the obstacles manually ? (Y/N)");
-        choice = scanner.next();
-        if (choice.equalsIgnoreCase("Y")) {
-            Display.display("How many ?");
-            int nbObstacles = scanner.nextInt();
+        choice = askYesOrNoAnswer("DM, do you want to place the obstacles manually ? (Y/N)");
+        if (choice) {
+            int nbObstacles = askValidInt("How many (1-15) ?", 1, 15);
             for (int i = 0; i < nbObstacles; i++) {
                 int[] pos = askValidPosition("Enter the position of obstacle " + (i + 1) + " ([A-Z]x) : ", _dungeon);
                 int x = pos[0];
                 int y = pos[1];
                 _dungeon.addObstacle(x, y);
             }
-        }
-        else {//place les obstacles aléatoirement
+        } else {
+            // place les obstacles aléatoirement
             _dungeon.randomlyAddObstacles();
         }
-
     }
-
 
     /**
      * Creates the game by calling all above methods.<br>
@@ -359,14 +359,23 @@ public class DM {
 
                 Display.displayActionMenu(_currentEntity, action);
                 String choice = scanner.next();
+                scanner.nextLine(); //pour clear
                 Display.display("You chose: " + choice);
                 switch (choice) {
                     case "att" -> {
-                        String actionChoice = scanner.next();
-                        int[] position = parsePosition(actionChoice);
+                        int[] position = askPositionInBound("Enter the position of the entity to attack ? ([A-Z]x) : ", _dungeon);
                         int x = position[0];
                         int y = position[1];
-                        _dungeon.attack(_currentEntity,x,y);
+                        ActionResult result = _dungeon.attack(_currentEntity, x, y);
+
+                        switch (result) {
+                            case NO_TARGET -> Display.displayError("No entity at this position.");
+                            case POSITION_TOO_FAR -> Display.displayError("Target is too far.");
+                            case TARGET_MISSED -> Display.displayError("You missed.");
+                            case WRONG_TYPE -> Display.displayError("You cannot attack this entity.");
+                            case TARGET_HIT -> Display.displaySuccess("");
+                            case TARGET_KILLED -> Display.displaySuccess("Target has been defeated!");
+                        }
                         action--;
                         scanner.nextLine();
                     }
@@ -376,30 +385,52 @@ public class DM {
                         scanner.nextLine();
                     }
                     case "move" -> {
-                        String actionChoice = scanner.next();
-                        int[] position = parsePosition(actionChoice);
+                        int[] position = askValidPosition("Where do you want to move ? ([A-Z]x) : ", _dungeon);
                         int x = position[0];
                         int y = position[1];
-                        _dungeon.move(_currentEntity, x,y);
+                        ActionResult result = _dungeon.move(_currentEntity, x,y);
+
+                        switch (result) {
+                            case POSITION_BLOCKED -> Display.displayError("There is already something here.");
+                            case POSITION_TOO_FAR -> Display.displayError("Too far.");
+                            case SUCCESS -> Display.displaySuccess("Moved successfully.");
+                            case FAILURE -> Display.displayError("Couldn't move.");
+                        }
                         action--;
                         scanner.nextLine();
                     }
                     case "pick" -> {
-                        String actionChoice = scanner.next();
-                        int[] position = parsePosition(actionChoice);
+                        int[] position = askPositionInBound("Enter the position of the item to pick up ? ([A-Z]x) : ", _dungeon);
                         int x = position[0];
                         int y = position[1];
-                        _dungeon.pickUp(_currentEntity, x, y);
+                        ActionResult result = _dungeon.pickUp(_currentEntity, x, y);
+
+                        switch (result) {
+                            case POSITION_EMPTY -> Display.displayError("No equipment at this position.");
+                            case WRONG_TYPE -> Display.displayError("You cannot pick up this equipment.");
+                            case POSITION_TOO_FAR -> Display.displayError("Too far.");
+                            case SUCCESS -> Display.displaySuccess("Successfully picked up the equipment.");
+                        }
                         action--;
                         scanner.nextLine();
                     }
                     case "com" -> {
+                        Display.display("What do you want to say ? :");
                         String actionChoice = scanner.nextLine();
-                        _dungeon.comment(_currentEntity, actionChoice);
+                        Display.display(_dungeon.comment(_currentEntity, actionChoice));
                     }
                     case "spell" -> {
-                        if(_dungeon.castSpell(_currentEntity)){
-                            action--;
+                        ActionResult result = _dungeon.castSpell(_currentEntity);
+
+                        switch (result){
+                            case SUCCESS -> {
+                                Display.displaySuccess("Successfully cast a spell");
+                                action--;
+                            }
+                            case FAILURE -> Display.displayError("Failed to cast a spell");
+                            case WRONG_TYPE -> Display.displayError("Monsters cannot cast spells");
+                            case STOP -> Display.displayError("Stopped casting.");
+                            case UNKNOWN_SPELL -> Display.displayError("You dont know this spell.");
                         }
                     }
                     case "skip" -> {
@@ -412,9 +443,9 @@ public class DM {
                 Display.display("Press Any Key to continue...");
                 scanner.nextLine();
 
-                Display.display("Dm, would you like to intervene ? (Y/N)");
-                String dmChoice = scanner.nextLine();
-                if (dmChoice.equalsIgnoreCase("Y")) {
+
+                boolean dmChoice = askYesOrNoAnswer("Dm, would you like to intervene ? (Y/N)");
+                if (dmChoice) {
                     dmActions();
                 }
 
@@ -457,11 +488,9 @@ public class DM {
                 Display.display("The DM says : " + comment);
             }
             case "move" -> {
-                Display.display("Entere the position of the entity to move ([A-Z]x): ");
-                String entityPos = scanner.next();
-                int[] entitypos = parsePosition(entityPos);
-                int x = entitypos[0];
-                int y = entitypos[1];
+                int[] entityPos = askValidPosition("Enter the position of the entity to move ([A-Z]x): ", _dungeon);
+                int x = entityPos[0];
+                int y = entityPos[1];
                 int[] newPos = askValidPosition("Enter the new position of the entity ([A-Z]x): ", _dungeon);
                 Entity entity = _dungeon.getEntityAtPosition(x, y);
                 if (entity == null) {
@@ -476,10 +505,32 @@ public class DM {
                 Display.display("Added obstacle successfully.");
             }
             case "hurt" -> {
+                if (!scanner.hasNext()) {
+                    Display.displayError("Missing target name.");
+                    return;
+                }
+
                 String target = scanner.next();
-                int dices = scanner.nextInt();
-                int faces = scanner.nextInt();
-                _dungeon.hurtEntity(target, dices, faces);
+
+                String diceStr = scanner.next();
+                String faceStr = scanner.next();
+
+                int dices, faces;
+
+                try {
+                    dices = Integer.parseInt(diceStr);
+                    faces = Integer.parseInt(faceStr);
+                } catch (NumberFormatException e) {
+                    Display.displayError("Invalid number of dice or faces. Usage: hurt <name> <dices> <faces>");
+                    return;
+                }
+
+                ActionResult result = _dungeon.hurtEntity(target, dices, faces);
+                switch (result) {
+                    case NO_TARGET -> Display.displayError("No entity at this position");
+                    case TARGET_KILLED -> Display.display("Killed the entity");
+                    case TARGET_HIT -> Display.display("Successfully hit the entity");
+                }
             }
             case "display" -> {
                 Display.displayMap(_dungeon);

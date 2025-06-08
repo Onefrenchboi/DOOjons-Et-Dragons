@@ -1,0 +1,19 @@
+package game.utils;
+
+public enum ActionResult {
+    STOP,
+    UNKNOWN_SPELL,
+    FAILURE,
+    SUCCESS,
+    WRONG_TYPE,
+    NO_TARGET,
+    TARGET_UNREACHABLE,
+    TARGET_MISSED,
+    TARGET_HIT,
+    TARGET_KILLED,
+    POSITION_EMPTY,
+    POSITION_TOO_FAR,
+    POSITION_BLOCKED,
+    POSITION_REACHED
+
+}

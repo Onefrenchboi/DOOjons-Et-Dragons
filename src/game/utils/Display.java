@@ -63,17 +63,17 @@ public class Display {
         System.out.println(currentEntity.toString() + ", you have " + actions + " actions left this turn.");
         System.out.println("Possible actions:");
         if (currentEntity.getType()==EntityType.MONSTER){
-            System.out.println("  - Comment the previous action (com <text>)");
-            System.out.println("  - Attack (att <position>)");
-            System.out.println("  - Move (move <position>)");
+            System.out.println("  - Comment the previous action (com)");
+            System.out.println("  - Attack (att)");
+            System.out.println("  - Move (move)");
             System.out.println("  - Skip turn (skip turn)");
 
         }else {
-            System.out.println("  - Comment the previous action (com <text>)");
-            System.out.println("  - Attack (att <position>)");
-            System.out.println("  - Move (move <position>)");
+            System.out.println("  - Comment the previous action (com)");
+            System.out.println("  - Attack (att)");
+            System.out.println("  - Move (move)");
             System.out.println("  - Show inventory to equip an item (equ show)");
-            System.out.println("  - Pick up an item (pick <position>)");
+            System.out.println("  - Pick up an item (pick)");
             System.out.println("  - Open Spellbook (spell)");
             System.out.println("  - Skip turn (skip turn)");
 
