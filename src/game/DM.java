@@ -35,10 +35,9 @@ public class DM {
     }
 
 
-    //? Functions to create everything
     /**
      * Creates characters, monsters, equipment based on user input.
-     * Demande a l'user des precisions (nom, race, classe, AC (pour monstres) et autres
+     * Demande a l'user des precisions (nom, race, classe, AC (pour monstres) et autres)
      *
      */
     public void createCharacters() {
@@ -155,7 +154,7 @@ public class DM {
     }
 
     /**
-     * Creates a dungeon with a specified width and height.
+     * Creates a dungeon with a width and height specified by the user.
      * The dungeon number is passed as an argument to the Dungeon constructor.
      *
      * @param number the dungeon number
@@ -174,18 +173,21 @@ public class DM {
      */
     public void setDungeon() {
         _turn = 1;
-        // On sort les monstres et personnages par initiative
+        //? On sort les monstres et personnages par initiative
         Map<Entity, Integer> initiativeMap = new HashMap<>();
         for (Entity entity : _entitiesSortedByInitiative) {
             initiativeMap.put(entity, entity.getInitiative() + GameUtils.roll(1, 20));
         }
 
         _entitiesSortedByInitiative.sort((e1, e2) -> initiativeMap.get(e2) - initiativeMap.get(e1));
-        // et on les affiche
+        //? et on les affiche
         Display.display("Here is the list of players and monsters in the game : ");
         for (Entity entity : _entitiesSortedByInitiative) {
             Display.display(entity.toString());
         }
+
+        //? Pour les equipments, les entities, les obstacles, on va demander au DM s'il veut les poser manuellement.
+        //? Si oui, on demande chaque pos, sinon, on mets aléatoirement
 
         boolean choice = askYesOrNoAnswer("DM, do you want to place the entities manually ? (Y/N)");
         if (choice) {
@@ -194,7 +196,6 @@ public class DM {
                 _dungeon.addEntity(entity, pos);
             }
         } else {
-            // place les personnages aléatoirement
             _dungeon.randomlyAddEntity(_entitiesSortedByInitiative);
         }
 
@@ -218,10 +219,10 @@ public class DM {
                 _dungeon.addObstacle(x, y);
             }
         } else {
-            // place les obstacles aléatoirement
             _dungeon.randomlyAddObstacles();
         }
     }
+
 
     /**
      * Creates the game by calling all above methods.<br>
@@ -235,7 +236,8 @@ public class DM {
         createEquipments();
         createDungeon(1);
         setDungeon();
-        //equip entities
+
+        //? On equipe les entities.
         for (Entity entity : _entitiesSortedByInitiative) {
             if (entity.getType()==EntityType.PLAYER) {
                 Display.display(entity.getName() + ", choose an item to equip from your inventory : ");
@@ -267,7 +269,6 @@ public class DM {
      * Checks if its the last dungeon
      * <br>
      * Note : the list of entities is cleared of all monsters before calling this
-     *
      */
     private void nextDungeon(List<Entity> entitiesSortedByInitiative) {
         int newDungeonNumber = _dungeon.getNumber()+1;
@@ -293,8 +294,8 @@ public class DM {
 
     /**
      * Starts the game loop. <br>
-     * Runs until the dungeon is the 3rd and all monsters are dead (i just realised WinCondition might not even be useful-)
-     * call turn on each entity, check at the end of each turn if every monster OR player is dead, react accordingly<br>
+     * Runs until the dungeon is the 3rd and all monsters are dead
+     * calls turn on each entity, check at the end of each turn if every monster is dead, reacts accordingly<br>
      * if won, display the end
      *<br>
      * Note : endGame is separated, see endGame for why
@@ -322,28 +323,31 @@ public class DM {
         }
     }
 
+
     /**
      * Ends the game when all players are dead.<br>
      * <br>
-     * Note : Je passe en francais carrement. En gros j'ai eu des problemes pour finir le jeu, avec des return dans ma fonction tour, donc j'ai décidé de faire une methode gameEnd qui exit le programme direct pour faire plus simple
+     * Note : Je passe en francais carrement. En gros j'ai eu des problemes pour finir le jeu, avec des return dans ma fonction tour,
+     * donc j'ai décidé de faire une methode gameEnd qui exit le programme direct pour faire plus simple
      */
     public void gameEnd(){
         Display.displayLore("Overwhelmed by the forces of the Demon King, you fell in battle.\n" +
                 "The shadows gain ground, and the future of the kingdom seems bleak...\n");
         Display.displayError("You just lost the Game.");
-        System.exit(0);
+        System.exit(0); //? Force exit le programme, pour eviter les problemes de return dans la fonction tour
     }
 
 
     /**
-     * Handles the turn of the current entity<br>
-     * Checks if it a dead player (if so, skip his turn since he isnt removed from the list like dead monsters)
-     * if not, repeat 3 times (3 actions) a switch case that asks the user what they want to do.<br>
+     * Handles the turn of the current entity
+     *
+     * Displays the info of the current entity.
+     * Repeats 3 times (3 actions) a switch case that asks the user what they want to do.<br>
      * Afterwards, checks if the DM wants to intervene, and if so, calls dmActions<br>
-     * Checks if all monsters are dead, if so, ends the game<br>
-     * Checks if all players are dead, if so, calls gameEnd
+     * Checks if all monsters are dead, if so, ends the dungeon<br>
+     * Checks if one player is dead, if so, calls gameEnd
      * <br>
-     * Note : Technically, everyone can do what they want, BUT, we only print what they can do
+     * Note : Technically, everyone can do what they want, BUT, we only print what they can do, and we check in each action the type, so no pb
      *
      */
     public void turn() {
@@ -448,6 +452,7 @@ public class DM {
                     dmActions();
                 }
 
+                //? On retire les monstres morts de la liste
                 _entitiesSortedByInitiative.removeIf(entity -> entity.getHp() <= 0 && entity.getType()==EntityType.MONSTER);
 
                 if (checkIfAllMonstersDead()) {
@@ -477,7 +482,7 @@ public class DM {
      * Displays a menu with options for the DM to choose from.<br>
      *
      * <br>
-     * Note : recursive, so it will keep asking for actions until the DM chooses to stop.<br>
+     * Note : keeps asking for input until the DM chooses to stop.<br>
      */
     private void dmActions() {
         while (true) {
@@ -554,8 +559,9 @@ public class DM {
         }
     }
 
+
     /**
-     * Checks if all players are dead and returns true if so, false otherwise.<br>
+     * Checks if at least ONE player is dead and returns true if so, false otherwise.<br>
      * Checks if all monsters are dead and returns true if so, false otherwise.<br>
      * Used to end the game when all players are dead or when all monsters are dead.
      */
