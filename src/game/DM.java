@@ -452,6 +452,7 @@ public class DM {
                 _entitiesSortedByInitiative.removeIf(entity -> entity.getHp() <= 0 && entity.getType()==EntityType.MONSTER);
 
                 if (checkIfAllMonstersDead()) {
+                    scanner.nextLine();
                     return;
                 }
 
@@ -479,70 +480,80 @@ public class DM {
      * <br>
      * Note : recursive, so it will keep asking for actions until the DM chooses to stop.<br>
      */
-    private void dmActions(){
-        Display.displayDmActions();
-        String choice = scanner.next();
-        switch (choice){
-            case "com" -> {
-                String comment = scanner.nextLine();
-                Display.display("The DM says : " + comment);
-            }
-            case "move" -> {
-                int[] entityPos = askValidPosition("Enter the position of the entity to move ([A-Z]x): ", _dungeon);
-                int x = entityPos[0];
-                int y = entityPos[1];
-                int[] newPos = askValidPosition("Enter the new position of the entity ([A-Z]x): ", _dungeon);
-                Entity entity = _dungeon.getEntityAtPosition(x, y);
-                if (entity == null) {
-                    Display.displayError("No entity found at the specified position.");
+    private void dmActions() {
+        while (true) {
+            Display.displayDmActions();
+            String choice = scanner.next();
+            switch (choice) {
+                case "com" -> {
+                    scanner.nextLine();
+                    String comment = scanner.nextLine();
+                    Display.display("The DM says: " + comment);
+                }
+                case "move" -> {
+                    scanner.nextLine();
+                    int[] entityPos = askPositionInBound("Enter the position of the entity to move ([A-Z]x): ", _dungeon);
+                    int x = entityPos[0];
+                    int y = entityPos[1];
+                    int[] newPos = askValidPosition("Enter the new position of the entity ([A-Z]x): ", _dungeon);
+                    Entity entity = _dungeon.getEntityAtPosition(x, y);
+                    if (entity == null) {
+                        Display.displayError("No entity found at the specified position.");
+                        continue;
+                    }
+                    ActionResult result = _dungeon.moveEntity(entity, newPos[0], newPos[1]);
+                    switch (result) {
+                        case SUCCESS -> Display.displaySuccess("Successfully moved the entity.");
+                        case FAILURE -> Display.displayError("Failed to move the entity.");
+                    }
+                }
+                case "add" -> {
+                    scanner.nextLine();
+                    int[] pos = askValidPosition("Enter the position to add an obstacle ([A-Z]x): ", _dungeon);
+                    _dungeon.addObstacle(pos[0], pos[1]);
+                    Display.display("Added obstacle successfully.");
+                }
+                case "hurt" -> {
+                    String input = scanner.nextLine().trim();
+                    String[] parts = input.split("\\s+");
+                    if (parts.length < 3) {
+                        Display.displayError("Invalid input. Usage: hurt <name> <dices> <faces>");
+                        continue;
+                    }
+                    String target = parts[0];
+                    String diceStr = parts[1];
+                    String faceStr = parts[2];
+
+                    int dices, faces;
+                    try {
+                        dices = Integer.parseInt(diceStr);
+                        faces = Integer.parseInt(faceStr);
+                        if (dices <= 0 || faces <= 0) {
+                            Display.displayError("Number of dice and faces must be positive numbers.");
+                            continue;
+                        }
+                    } catch (NumberFormatException e) {
+                        Display.displayError("Invalid number of dice or faces. Usage: hurt <name> <dices> <faces>");
+                        continue;
+                    }
+
+                    ActionResult result = _dungeon.hurtEntity(target, dices, faces);
+                    switch (result) {
+                        case NO_TARGET -> Display.displayError("No entity at this position.");
+                        case TARGET_KILLED -> Display.display("Killed the entity.");
+                        case TARGET_HIT -> Display.display("Successfully hit the entity.");
+                    }
+                }
+                case "display" -> {
+                    Display.displayMap(_dungeon);
+                }
+                case "stop" -> {
                     return;
                 }
-                _dungeon.moveEntity(entity, newPos[0], newPos[1]);
-            }
-            case "add" -> {
-                int[] pos = askValidPosition("Enter the position to add an obstacle ([A-Z]x): ", _dungeon);
-                _dungeon.addObstacle(pos[0], pos[1]);
-                Display.display("Added obstacle successfully.");
-            }
-            case "hurt" -> {
-                if (!scanner.hasNext()) {
-                    Display.displayError("Missing target name.");
-                    return;
-                }
-
-                String target = scanner.next();
-
-                String diceStr = scanner.next();
-                String faceStr = scanner.next();
-
-                int dices, faces;
-
-                try {
-                    dices = Integer.parseInt(diceStr);
-                    faces = Integer.parseInt(faceStr);
-                } catch (NumberFormatException e) {
-                    Display.displayError("Invalid number of dice or faces. Usage: hurt <name> <dices> <faces>");
-                    return;
-                }
-
-                ActionResult result = _dungeon.hurtEntity(target, dices, faces);
-                switch (result) {
-                    case NO_TARGET -> Display.displayError("No entity at this position");
-                    case TARGET_KILLED -> Display.display("Killed the entity");
-                    case TARGET_HIT -> Display.display("Successfully hit the entity");
-                }
-            }
-            case "display" -> {
-                Display.displayMap(_dungeon);
-            }
-            case "stop" -> {
-                return;
+                default -> Display.displayError("Invalid choice. Please try again.");
             }
         }
-        dmActions();
     }
-
-
 
     /**
      * Checks if all players are dead and returns true if so, false otherwise.<br>
