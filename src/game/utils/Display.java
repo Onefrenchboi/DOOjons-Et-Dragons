@@ -2,21 +2,28 @@
 package game.utils;
 import game.DM;
 import game.Dungeon;
+import game.entities.Character;
 import game.entities.Entity;
+import game.entities.EntityType;
 
 import static game.utils.GameUtils.*;
 
 
 public class Display {
 
+    //? All functions in here are pretty straightforward, donc flemme de commenter tout
     public static void display(String message) {
         System.out.println(message);
     }
 
-
     public static void displayError(String message) {
         System.out.println(RED + message + RESET);
     }
+
+    public static void displayLore(String message) {
+        System.out.println(YELLOW + message + RESET);
+    }
+
 
     public static void displaySuccess(String message) {
         System.out.println(GREEN + message + RESET);
@@ -43,8 +50,21 @@ public class Display {
         System.out.println(currentEntity.getInfo());
     }
 
+
+    /**
+     * Displays the current state of the dungeon map.
+     * Also gives a legend
+     * */
+
     public static void displayMap(Dungeon dungeon) {
         dungeon.updateMap();
+        for (String[] strings : dungeon.getMap()) {
+            for (String string : strings) {
+                System.out.print(string);
+            }
+            System.out.println();
+        }
+        Display.display( GameUtils.WHITE_BG + "   " + GameUtils.RESET + " : Obstacles ||" + GameUtils.BLUE + " [⌘]" + GameUtils.RESET + " : Equipements || " + GameUtils.PURPLE + " [*]" + GameUtils.RESET + " : Entities ||" + GameUtils.RED + " [#]" + GameUtils.RESET + " : Monsters");
     }
 
     public static void displayClear() {
@@ -55,20 +75,48 @@ public class Display {
         System.out.println("-------------------------------");
         System.out.println(currentEntity.toString() + ", you have " + actions + " actions left this turn.");
         System.out.println("Possible actions:");
-        if (currentEntity.isMonster()){
-            System.out.println("  - Let the DM comment the previous action (dm <text>)");
-            System.out.println("  - Comment the previous action (com <text>)");
-            System.out.println("  - Attack (att <position>)");
-            System.out.println("  - Move (move <position>)");
+        if (currentEntity.getType()==EntityType.MONSTER){
+            System.out.println("  - Comment the previous action (com)");
+            System.out.println("  - Attack (att)");
+            System.out.println("  - Move (move)");
+            System.out.println("  - Skip turn (skip turn)");
 
         }else {
-            System.out.println("  - Let the DM comment the previous action (dm <text>)");
-            System.out.println("  - Comment the previous action (com <text>)");
-            System.out.println("  - Attack (att <position>)");
-            System.out.println("  - Move (move <position>)");
+            System.out.println("  - Comment the previous action (com)");
+            System.out.println("  - Attack (att)");
+            System.out.println("  - Move (move)");
             System.out.println("  - Show inventory to equip an item (equ show)");
-            System.out.println("  - Pick up an item (pick <item number>)");
+            System.out.println("  - Pick up an item (pick)");
+            System.out.println("  - Open Spellbook (spell)");
+            System.out.println("  - Skip turn (skip turn)");
 
+        }
+        System.out.println("-------------------------------");
+    }
+
+    public static void displayDmActions() {
+        System.out.println("-------------------------------");
+        System.out.println("Possible DM actions :");
+        System.out.println("  - Comment the previous action (com <text>)");
+        System.out.println("  - Move an entity (move)");
+        System.out.println("  - Add an obstacle (add)");
+        System.out.println("  - Damage an entity (hurt <position> <Number of dice(s)> <faces>)");
+        System.out.println("  - Display map (display)");
+        System.out.println("  - Stop (stop)");
+        System.out.println("-------------------------------");
+    }
+
+    public static void displaySpellsMenu(Entity currentEntity) {
+        System.out.println("-------------------------------");
+        System.out.println(currentEntity.toString() + ", you can cast the following spells:");
+        if (currentEntity.getType()== EntityType.PLAYER) {
+                System.out.println("  - Heal (heal <position>)");
+                System.out.println("  - Magic Weapon (magicweapon <position>)");
+                System.out.println("  - Boogie Woogie (boogiewoogie <position1>)");
+                System.out.println("  - Stop casting (stop)");
+        } else {
+            System.out.println("  - No spells available for monsters.");
+            return;
         }
         System.out.println("-------------------------------");
     }

@@ -1,12 +1,15 @@
 package game.entities;
 
 
-import game.items.Armor;
-import game.items.Equipment;
-import game.items.Weapon;
+import game.utils.ActionResult;
+import game.items.*;
+import game.items.EquipmentType;
+import game.utils.Display;
 import game.utils.GameUtils;
 
 import java.util.List;
+
+import static game.utils.GameUtils.askValidInt;
 
 public abstract class Entity {
     private String _name;
@@ -15,10 +18,12 @@ public abstract class Entity {
     private Weapon _equippedWeapon;
     private Armor _equippedArmor;
     private int _maxHp;
+    private EntityType _typeEntity;
 
 
-    protected Entity(String name) {
+    protected Entity(String name, EntityType type) {
         this._name = name;
+        this._typeEntity = type;
         this._stats = new Statistics(
                 0,
                 (GameUtils.roll(4, 4) + 3),
@@ -27,67 +32,91 @@ public abstract class Entity {
                 (GameUtils.roll(4, 4) + 3));
     }
 
-    public Statistics getStats() {
-        return _stats;
-    }
 
 
 
-    //!popopo le instanceof du pauvre
-    public boolean isPlayer() {
-        return false; // par defaut, les entites ne sont pas des joueurs
-    }
-    public boolean isMonster() {
-        return false; // par defaut, les entites ne sont pas des monstres
-    }
-
-
-
-
-    public abstract String toString(); //juste la pour etre overidden donc abstract
-
-    public String getName() {
-        return _name;
-    }
-
-    public String getPseudo() {
-        return _pseudo;
-    }
-
-
-    public abstract String getInfo();
-
-
-    public int getInitiative() {
-        return _stats.getInitiative();
-    }
-
+    //? je sais pas ou la mettre elle :)
     public void removeHp(int hp) {
         this._stats.addStatistics(new Statistics(-hp, 0, 0, 0, 0));
     }
-    public void setHp(int hp) {
-        this._stats.addStatistics(new Statistics(hp, 0, 0, 0, 0));
+
+
+
+
+    /**
+     * Attacks a target entity if the attacking entity can attack the target.
+     * The method checks if the target is within range and performs an attack roll.
+     * If the attack hits, it deals damage to the target and checks if the target is still alive.
+     *
+     * @param target      the target entity to attack
+     * @param distanceTo  the distance to the target
+     * @return ActionResult indicating the result of the attack
+     */
+    public ActionResult attack(Entity target, int distanceTo) {
+        if (this.canAttack(target)) {
+            if (distanceTo > this._equippedWeapon.getRange()) {
+                return ActionResult.POSITION_TOO_FAR;
+            }
+            int attackRoll = GameUtils.roll(1, 20) + this._equippedWeapon.getBonus();
+            Display.display("You rolled a " + attackRoll);
+            if (this._equippedWeapon.getRange() == 1) {
+                attackRoll += this._stats.getStrength();
+                Display.display("Your attack roll is " + attackRoll + " (Strength bonus applied [+" + this._stats.getStrength() + "])");
+            } else {
+                attackRoll += this._stats.getDexterity();
+                Display.display("Your attack roll is " + attackRoll + " (Dexterity bonus applied [+" + this._stats.getDexterity() + "])");
+            }
+
+            if (attackRoll > target.getAC()) {
+                Display.display("You hit " + target.getName() + "!");
+                int damage = this._equippedWeapon.damage();
+                Display.display("You did " + damage + " damage !");
+                target.removeHp(damage);
+                if (!target.isAlive()) {
+                    target.setHp(target.getHp());
+                    return ActionResult.TARGET_KILLED;
+                }
+                Display.display(target.getName() + " has " + target.getHp() + " HP left.");
+            } else {
+                return ActionResult.TARGET_MISSED;
+            }
+        } else {
+            return ActionResult.WRONG_TYPE;
+        }
+        return ActionResult.TARGET_HIT;
+    }
+    public void equip() {
+        if (_typeEntity== EntityType.PLAYER) {
+            Display.display("Choose an item to equip from your inventory : ");
+            String inventory = displayInventory();
+            if (inventory.equals("Inventory is empty.")) {
+                Display.displayError("You have no items to equip.");
+                return;
+            }
+
+            Display.display(inventory);
+            int choice = askValidInt("Choose the item number to equip: ", 0, this.getInventory().size() - 1);
+            Equipment equipment = this.getInventory().get(choice);
+            if (equipment.getType()== EquipmentType.ARMOR) {
+                this.equipArmor(equipment);
+                Display.display("You equipped " + equipment.getName() + ".");
+            } else if (equipment.getType()== EquipmentType.WEAPON) {
+                this.equipWeapon(equipment);
+                Display.display("You equipped " + equipment.getName() + ".");
+            }
+        }
+        else {
+            Display.displayError("Monsters cannot equip.");
+        }
     }
 
-    public void setMaxHp(int maxHp) {
-        this._maxHp = maxHp;
-    }
-    public int getHp() {
-        return _stats.getHp();
-    }
 
-    public int getMaxHp() {
-        return _maxHp;
-    }
 
-    public void setPseudo(String pseudo) {
-        this._pseudo = pseudo;
-    }
-
-    public String getColor() {
-        return GameUtils.PURPLE;
-    }
-
+    /**
+     * Checks if the entity is alive based on its HP.
+     *
+     * @return true if the entity's HP is greater than 0, false sinon
+     */
     public boolean isAlive() {
         if (_stats.getHp() > 0) {
             return true;
@@ -96,41 +125,107 @@ public abstract class Entity {
         }
     }
 
+
+    /**
+     * Checks if the entity can attack a target based on their types and equipped weapon.
+     * methods checks if the entity is a player or a monster and if the target is of the opposite type.
+     * and if the entity has an equipped weapon.
+     * @param target the target entity to check against
+     * @return true if the entity can attack the target, false otherwise
+     */
     public boolean canAttack(Entity target) {
-        if ((this.isMonster() && target.isPlayer() || this.isPlayer() && target.isMonster()) && this.getEquippedWeapon() != null) {
+        if ((this._typeEntity==EntityType.MONSTER && target.getType()==EntityType.PLAYER || this._typeEntity==EntityType.PLAYER && target.getType()==EntityType.MONSTER) && this.getEquippedWeapon() != null) {
             return true;
         }
         return false;
     }
 
+    /**
+     * Equip either an armor or a weapon to the entity.
+     *
+     * @param equipment the equipment to equip, which can be either an Armor or a Weapon
+     */
+    public abstract void equipArmor(Equipment equipment);
+    public abstract void equipWeapon(Equipment equipment);
 
-    public int getAC() {
-        if (_equippedArmor == null) {
-            return 0;
-        }
-        return _equippedArmor.getAC();
-    }
 
+    /**
+     * Displays the inv
+     *
+     *
+     * @return a string representation of the entity's inventory
+     */
     public abstract String displayInventory();
-    public abstract List<Equipment> getInventory();
-
-    public Weapon getEquippedWeapon() {
-        return _equippedWeapon;
-    }
-    public Armor getEquippedArmor() {
-        return _equippedArmor;
-    }
 
 
 
+    //? Setters
     protected void setEquippedWeapon(Weapon weapon) {
         this._equippedWeapon=weapon;
     }
     protected void setEquippedArmor(Armor armor){
         this._equippedArmor=armor;
     }
+    public void setHp(int hp) {
+        this._stats.addStatistics(new Statistics(hp, 0, 0, 0, 0));
+    }
+    public void setMaxHp(int maxHp) {
+        this._maxHp = maxHp;
+    }
+    public void setPseudo(String pseudo) {
+        this._pseudo = pseudo;
+    }
 
-    public abstract void equipArmor(Equipment equipment);
 
-    public abstract void equipWeapon(Equipment equipment);
+    //? Getters
+    public Statistics getStats() {
+        return _stats;
+    }
+    public Weapon getEquippedWeapon() {
+        return _equippedWeapon;
+    }
+    public Armor getEquippedArmor() {
+        return _equippedArmor;
+    }
+    public String getColor() {
+        return GameUtils.PURPLE;
+    }
+    public int getHp() {
+        return _stats.getHp();
+    }
+    public int getSpeed() {
+        return _stats.getSpeed();
+    }
+    public int getMaxHp() {
+        return _maxHp;
+    }
+    public int getAC() {
+        if (_equippedArmor == null) {
+            return 0;
+        }
+        return _equippedArmor.getArmorClass();
+    }
+    public String getName() {
+        return _name;
+    }
+    public String getPseudo() {
+        return _pseudo;
+    }
+    public int getInitiative() {
+        return _stats.getInitiative();
+    }
+    public EntityType getType() {
+        return _typeEntity;
+    }
+
+
+    //? getters abstraits pour les sous-classes
+    public abstract String getInfo();
+    public abstract List<Equipment> getInventory();
+
+
+    public abstract String toString(); //juste la pour etre overidden donc abstract
+
+
+
 }

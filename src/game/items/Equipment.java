@@ -5,35 +5,38 @@ import game.entities.Statistics;
 public abstract class Equipment {
     private String _name;
     private Statistics _bonusStats;
+    private EquipmentType _type;
 
-    protected Equipment(String name) {
+
+    protected Equipment(String name, EquipmentType type) {
         _name = name;
+        _type = type;
     }
 
 
-    public String getName(){
-        return _name;
-    }
 
-
-    public String toString(){
-        return _name;
-    }
-
-    public Statistics getBonusStats() {
-        return _bonusStats;
-    }
+    //? set les stats bonus
     public void setBonusStats(Statistics bonusStats) {
         this._bonusStats = bonusStats;
     }
 
 
 
-    //!encore un instanceof du pauvre
-    public boolean isWeapon() {
-        return false;
+
+
+    //? Getters
+    public String getName(){
+        return _name;
     }
-    public boolean isArmor() {
-        return false;
+    public Statistics getBonusStats() {
+        return _bonusStats;
+    }
+    public EquipmentType getType() {
+        return _type;
+    }
+
+    @Override
+    public String toString(){
+        return _name;
     }
 }

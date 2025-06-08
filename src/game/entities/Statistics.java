@@ -24,6 +24,7 @@ public class Statistics {
     }
 
 
+    //? add and remove methods for Statistics
     public void addStatistics(Statistics s) {
         this._hp += s._hp;
         this._strength += s._strength;
@@ -31,7 +32,6 @@ public class Statistics {
         this._speed += s._speed;
         this._initiative += s._initiative;
     }
-
     public void removeStatistics(Statistics s) {
         this._hp -= s._hp;
         this._strength -= s._strength;
@@ -40,6 +40,8 @@ public class Statistics {
         this._initiative -= s._initiative;
     }
 
+
+    //? Getters
     public int getHp() {
         return _hp;
     }
@@ -56,4 +58,15 @@ public class Statistics {
         return _initiative;
     }
 
+
+    @Override
+    public String toString() {
+        return "Statistics{" +
+                "_hp=" + _hp +
+                ", _strength=" + _strength +
+                ", _dexterity=" + _dexterity +
+                ", _speed=" + _speed +
+                ", _initiative=" + _initiative +
+                '}';
+    }
 }

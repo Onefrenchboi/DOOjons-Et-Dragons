@@ -1,6 +1,7 @@
-package game.items;
+package game.items.equipments;
 
 import game.entities.Statistics;
+import game.items.Armor;
 
 public class HeavyArmor extends Armor {
 

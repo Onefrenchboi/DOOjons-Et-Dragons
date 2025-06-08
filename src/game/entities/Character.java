@@ -2,8 +2,10 @@ package game.entities;
 import game.entities.races.*;
 import game.entities.classes.*;
 import game.items.*;
+import game.spells.*;
 import game.utils.GameUtils;
-import game.utils.Display;
+
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,11 +15,13 @@ public class Character extends Entity {
     private CharacterClass _class;
     private List<Equipment> _inventory;
 
+
     public Character(String name, Race race, CharacterClass charclass) {
-        super(name);
+        super(name, EntityType.PLAYER);
         this._race = race;
         this._class = charclass;
         this._inventory = new ArrayList<>(charclass.getStartingEquipment());
+
 
         this.getStats().addStatistics(_race.getBonusStats());
         this.getStats().addStatistics(_class.getBonusStats());
@@ -33,14 +37,15 @@ public class Character extends Entity {
 
         this.setMaxHp(this.getHp());
 
+
     }
 
 
-    @Override
-    public boolean isPlayer() {
-        return true;
-    }
 
+
+
+
+    //? Inventory management
     public String displayInventory() {
         if (_inventory == null || _inventory.isEmpty()) {
             return "Inventory is empty.";
@@ -52,11 +57,18 @@ public class Character extends Entity {
         }
         return inventoryDisplay.toString();
     }
-
-    public List<Equipment> getInventory() {
-        return _inventory;
+    public void addToInventory(Equipment equipment) {
+        _inventory.add(equipment);
     }
 
+
+
+    /**
+     * Eqips the specified weapon/armor for the character.
+     * Applies the bonus stats from the equipment to the character's stats.
+     * also removes the equipment from the inventory. (or adds it if reequipping)
+     * @param equipment the equipment item to equip (either a Weapon or Armor).
+     */
     @Override
     public void equipWeapon(Equipment equipment){
         if (this.getEquippedWeapon()==null){
@@ -72,7 +84,6 @@ public class Character extends Entity {
             this._inventory.remove(equipment);
         }
     }
-
     @Override
     public void equipArmor(Equipment equipment){
         if (this.getEquippedArmor()==null){
@@ -90,6 +101,10 @@ public class Character extends Entity {
     }
 
 
+    //? Getters
+    public List<Spell> getSpells() {
+        return this._class.getSpells();
+    }
     public String getInfo(){
         return  "   HP ❤ : " + this.getHp() + "/" + this.getMaxHp() + "\n" +
                 "   Armor ⊙ : " + (this.getEquippedArmor() != null ? this.getEquippedArmor().getName() : "None") + "\n" +
@@ -99,6 +114,11 @@ public class Character extends Entity {
                 "   DEX ➔ : " + this.getStats().getDexterity() + "\n" +
                 "   SPD ⚡ : " + this.getStats().getSpeed() + " (You can move " + this.getStats().getSpeed()/3 + " spaces per turn).";
     }
+    public List<Equipment> getInventory() {
+        return _inventory;
+    }
+
+
     @Override
     public String toString() {
         return GameUtils.PURPLE + super.getName() + " the " + _class.getName() + " " + _race.getName() + GameUtils.RESET;

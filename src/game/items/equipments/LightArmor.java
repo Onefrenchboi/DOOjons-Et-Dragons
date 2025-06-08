@@ -1,6 +1,7 @@
-package game.items;
+package game.items.equipments;
 
 import game.entities.Statistics;
+import game.items.Armor;
 
 public class LightArmor extends Armor {
     public LightArmor(String name, int AC) {

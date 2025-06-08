@@ -3,28 +3,29 @@ package game.items;
 import game.entities.Statistics;
 
 public abstract class Armor extends Equipment {
-    private String _name;
-    private int _AC; // armor class tsais si t'es pas un nerd et que tu fais pas du dnd tt les vendredis en 202
+    private int _armorClass; // armor class tsais si t'es pas un nerd et que tu fais pas du dnd tt les vendredis en 202 (oui c'est une pub pour le club jdr d'emina)
 
 
+    protected Armor(String name, int AC, Statistics bonusStats) {
+        super(name, EquipmentType.ARMOR);
 
-    public Armor(String name, int AC, Statistics bonusStats) {
-        super(name);
-        this._AC = AC;
+        this._armorClass = AC;
         this.setBonusStats(bonusStats);
     }
 
 
-    @Override
-    public boolean isArmor() {
-        return true;
-    }
-    @Override
-    public String toString() {
-        return getName() + " (AC: " + _AC + ")";
+
+
+
+
+
+    //? Getters
+    public int getArmorClass() {
+        return _armorClass;
     }
 
-    public int getAC() {
-        return _AC;
+    @Override
+    public String toString() {
+        return getName() + " (AC: " + _armorClass + ")";
     }
 }
