@@ -56,6 +56,8 @@ public class GameUtils {
 
     /**
      * ask user for a valid integer input within a range
+     * Note : also handles multiple inputs in a single line
+     *
      *
      * @param prompt what we say to the user
      * @param min    minimum value
@@ -87,6 +89,7 @@ public class GameUtils {
 
     /**
      * ask user for a valid position input
+     * Note : also handles multiple inputs in a single line
      *
      * @param prompt what we say to the user
      * @param dungeon the dungeon to check the pos
@@ -145,6 +148,15 @@ public class GameUtils {
         }
         return pos;
     }
+
+
+    /**
+     * ask user for a valid answer to a yes or no question
+     *
+     *
+     * @param prompt what we say to the user
+     * @return boolean value indicating if the person answered yes or no
+     */
     public static boolean askYesOrNoAnswer(String prompt) {
         while (true) {
             Display.display(prompt);
