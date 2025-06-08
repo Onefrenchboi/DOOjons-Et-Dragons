@@ -119,7 +119,6 @@ package game <<frame>> #b3b3b3 {
         - setEntities()
         - setEquipment()
         + updateMap()
-        + displayGrid()
 
         + addEntity (entity : Entity, position : Integer[2])
         + addEquipment (equipment : Equipment, position : Integer[2])
@@ -142,10 +141,9 @@ package game <<frame>> #b3b3b3 {
         + moveEntity(entity : Entity, x : Integer, y : Integer) : ActionResult
         + hurtEntity(entity : Entity, dices : Integer, sides : Integer) : ActionResult
 
-        + getDungeonNumber() : Integer
-        + getEntityAtPosition(x : Integer, y : Integer) : Entity
-        + getEquipmentAtPosition(x : Integer, y : Integer) : Equipment
-        + getNumber() : Integer
+        + getHeight() : Integer
+        + getWidth() : Integer
+        + getMap() : String[*]
 
         + toString() : String
     }
