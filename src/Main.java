@@ -1,12 +1,5 @@
 import game.DM;
-import game.entities.Character;
-import game.entities.Monster;
-import game.entities.classes.*;
-import game.entities.races.*;
-import game.items.MeleeWeapon;
 import game.utils.Display;
-
-import static game.utils.Repo.getEquipmentByName;
 
 public class Main {
     public static void main(String args[]){
