@@ -73,7 +73,7 @@ public class Dungeon {
 
 
     /**
-     * Checks if the given position (x, y) is valid in the dungeon.
+     * Checks if the given position (x, y / string like A6) is valid in the dungeon.
      * A position is valid if it is within the bounds of the map,
      * not occupied by an obstacle, entity, or equipment.
      *
@@ -114,8 +114,10 @@ public class Dungeon {
 
 
 
-    /** Methods to add entities, equipments, and obstacles to the map. <br>
-     * Its just checking is the pos is valid and then adding the entity/equipment/obstacle to the positions list.
+    /**
+     * Methods to add entities, equipments, and obstacles to the map. <br>
+     * Its just checking is the pos is valid and then adding the entity/equipment/obstacle to the positions Hashmap.
+     * Note : The overload for addObstacles is to avoid unneccessary conversions.
      */
     public void addEntity(Entity entity, int[] position) {
         if (isValidPosition(position)) {
@@ -132,9 +134,14 @@ public class Dungeon {
             addObstacle(new int[]{x, y});
         }
     }
+    public void addObstacle(int[] position) {
+        _obstacles.add(position);
+    }
 
     /**
      * Methods to randomly add entities, equipments, and obstacles.
+     * Uses GameUtils.roll to generate random positions.
+     * Checks if the position is valid and adds it if so.
      * */
     public void randomlyAddEntity(List<Entity> entities) {
         for (Entity entity : entities) {
@@ -233,25 +240,7 @@ public class Dungeon {
         setObstacles();
         setEntities();
         setEquipments();
-        displayGrid();
     }
-
-    /**
-     * Displays the current state of the dungeon map.
-     * Also gives a legend
-     *
-     * */
-    private void displayGrid() {
-        for (String[] strings : _map) {
-            for (String string : strings) {
-                System.out.print(string);
-            }
-            System.out.println();
-        }
-        Display.display( GameUtils.WHITE_BG + "   " + GameUtils.RESET + " : Obstacles ||" + GameUtils.BLUE + " [⌘]" + GameUtils.RESET + " : Equipements || " + GameUtils.PURPLE + " [*]" + GameUtils.RESET + " : Entities ||" + GameUtils.RED + " [#]" + GameUtils.RESET + " : Monsters");
-    }
-
-
 
 
 
@@ -265,6 +254,8 @@ public class Dungeon {
      * take an Entity and a position as parameters.
      * They check if the position is valid, if the entity can perform the action,
      * and then perform the action.
+     * They return an ActionResult, which is an enum that indicates the result of the action. (duh)
+     * This is used to display the result in DM, and not in here
      */
     public ActionResult attack(Entity attacker, int x, int y) {
         Entity target = getEntityAtPosition(x,y);
@@ -314,11 +305,6 @@ public class Dungeon {
     public String comment(Entity entity, String text){
         return (entity.toString() + " : " + text);
     }
-    /**
-     * The only "different" method
-     * It does another switch case, but for the spells
-     *
-     * */
     public ActionResult castSpell(Entity entity) {
         if (entity.getType() == EntityType.MONSTER) {
             return ActionResult.WRONG_TYPE;
@@ -387,9 +373,11 @@ public class Dungeon {
 
     /**
      * Moves an entity to a new position (x, y) in the dungeon.
-     * Hurts an entity
-     * <br>
      *
+     * @param entity the entity to move
+     * @param x the new x-coordinate
+     * @param y the new y-coordinate
+     * @return ActionResult the result of the action
      */
     public ActionResult moveEntity(Entity entity, int x, int y) {
         if (isValidPosition(x, y)) {
@@ -404,6 +392,15 @@ public class Dungeon {
         }
         return ActionResult.SUCCESS;
     }
+
+    /**
+     * Hurts an entity for "dices"d"faces" dmg.
+     *
+     * @param pos the position of the entity to hurt
+     * @param dices the number of dice to roll for damage
+     * @param faces the number of faces of the die to roll
+     * @return ActionResult the result of the action
+     */
     public ActionResult hurtEntity(String pos, int dices, int faces){
         int[] position = parsePosition(pos);
         int x = position[0];
@@ -427,45 +424,12 @@ public class Dungeon {
     }
 
 
-
-
-    //? Getters
-    public int getDungeonNumber(){
-        return _number;
-    }
-    public Entity getEntityAtPosition(int x, int y) {
-        for (Map.Entry<Entity, int[]> entry : _entitiesPosition.entrySet()) {
-            int[] position = entry.getValue();
-            if (position[0] == x && position[1] == y) {
-                return entry.getKey();
-            }
-        }
-        return null;
-    }
-    public Equipment getEquipmentAtPosition(int x, int y) {
-        for (Map.Entry<Equipment, int[]> entry : _equipmentPosition.entrySet()) {
-            int[] position = entry.getValue();
-            if (position[0] == x && position[1] == y) {
-                return entry.getKey();
-            }
-        }
-        return null;
-    }
-    public int getNumber() {
-        return _number;
-    }
-
-
-
-
-
-
-    //? methods pour add et remove entities et tt le tralala t'as compris
-
-
-    public void addObstacle(int[] position) {
-        _obstacles.add(position);
-    }
+    /**
+     * Methods to add an obstacle, or remove entities or equipment
+     * Note : No need to remove obstacles
+     *
+     *
+     */
     public void removeEntity(Entity target) {
         _entitiesPosition.remove(target);
     }
@@ -494,22 +458,37 @@ public class Dungeon {
 
 
     //? Getters
-    public HashMap<Entity, int[]> getEntitiesPosition() {
-        return _entitiesPosition;
+    public int getDungeonNumber(){
+        return _number;
     }
-    public HashMap<Equipment, int[]> getEquipmentPosition() {
-        return _equipmentPosition;
+    public Entity getEntityAtPosition(int x, int y) {
+        for (Map.Entry<Entity, int[]> entry : _entitiesPosition.entrySet()) {
+            int[] position = entry.getValue();
+            if (position[0] == x && position[1] == y) {
+                return entry.getKey();
+            }
+        }
+        return null;
     }
-    public List<int[]> getObstacles() {
-        return _obstacles;
+    public Equipment getEquipmentAtPosition(int x, int y) {
+        for (Map.Entry<Equipment, int[]> entry : _equipmentPosition.entrySet()) {
+            int[] position = entry.getValue();
+            if (position[0] == x && position[1] == y) {
+                return entry.getKey();
+            }
+        }
+        return null;
     }
-    public int[] getEntityPosition(Entity entity) {
-        return _entitiesPosition.get(entity);
+    public int getNumber() {
+        return _number;
     }
     public int getHeight(){
         return _height;
     }
     public int getWidth(){
         return _width;}
+    public String[][] getMap() {
+        return _map;
+    }
 }
 
