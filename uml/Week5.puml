@@ -443,6 +443,7 @@ DM "1"  *--> "-_currentEntity" Entity : "> has"
 DM ..> Character : <<instantiate>>
 DM ..> Monster : <<instantiate>>
 DM ..> Dungeon : <<instantiate>>
+DM ..> ActionResult : <<uses>>
 
 
 
